@@ -16,7 +16,7 @@ mat-form-field {
   padding: 0;
 }
 
-a{
+a {
   color: #666;
 }
 
@@ -79,6 +79,13 @@ h5 {
   margin-bottom: 0;
   /* border-bottom: 1px solid #ddd; */
 }
+
+.myModal {
+  position: fixed;
+  top: 40%;
+  width: 100%;
+}
+
 .center {
   display: flex;
   align-items: center;

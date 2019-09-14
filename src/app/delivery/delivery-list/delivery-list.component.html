@@ -1,7 +1,5 @@
 <div class="container">
-    <div class="col-12">
-        <p>Hi {{name}}!</p>
-    </div>
+    <p style="padding: 12px; background-color: #333; color:#fff; text-align: center;">Hi {{name}}!</p>
     <div cdkDropList (cdkDropListDropped)="drop($event)">
         <div class="row box" cdkDrag *ngFor="let item of list; let i = index;"
             (click)="onCustomerClick($event, i,item.mobile)" id="{{'list_' + i}}">
@@ -15,10 +13,10 @@
                 <!-- <button style="margin:3px;" class="right">Call</button> -->
                 <!-- <a style="margin:3px;" href={{item.mobile}}>Call</a> -->
 
-                <button style="margin:3px; height: 36px;" class="btn btn-primary btns"
-                    (click)="viewAction()">View</button>
-                <button style="margin:3px; height: 36px;" class="btn btn-primary btns"
-                    (click)="deliveredAction()">Delivered</button>
+                <button style="margin:3px; height: 36px;" class="btn btn-primary btns" (click)="viewAction($event)"
+                    id="{{'view_'+i}}">View</button>
+                <button style="margin:3px; height: 36px;" class="btn btn-primary btns" (click)="deliveredAction($event)"
+                    id="{{'deliver_'+i}}">Delivered</button>
             </div>
             <div class="col-12">
                 <span class="delivery_count">2</span>&nbsp;

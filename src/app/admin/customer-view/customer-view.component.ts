@@ -174,7 +174,7 @@ export class CustomerViewComponent implements OnInit {
       this.mobile = params.get('mobile');
       this.status = params.get('status');
       this.c_name = params.get('name');
-      
+
       // console.log("this.mobile :: " + this.mobile);
       this.firebase.readOrders(this.mobile).subscribe((data: any) => {
         try {
@@ -182,7 +182,6 @@ export class CustomerViewComponent implements OnInit {
         } catch (e) {
           this._service.historyLength = 0;
         }
-        // console.log("this._service.historyLength :: " + this._service.historyLength);
 
         if (!data || this.status != 'active') {
           this.msg = "No active ordres.";
@@ -193,7 +192,6 @@ export class CustomerViewComponent implements OnInit {
         this.ordersExist = true;
         let _data = data[this._service.historyLength];
 
-        // debugger;
         this.historyObj = _data;
         let cnt = -1;
 
@@ -205,28 +203,20 @@ export class CustomerViewComponent implements OnInit {
           var __date = this.date_utils.dateFormater(key, "-");
           //day difference from todays date
           let diff = (this.date_utils.dateDiff(new Date(), new Date(this.date_utils.stdDateFormater(__date, "/"))));
-          // console.log("view diff :: " + diff);
-          // console.log("test :: " + (Math.sign(this.date_utils.dateDiff(new Date(), new Date(this.date_utils.stdDateFormater(__date, "/")))) == -1 || todayTime <= 11));
 
           this.orders[cnt] = {
             index: _data["dates"][key].index,
             date: this.date_utils.dateFormater(key, "-"),
             count: _data["dates"][key].count,
             assigned_to: _data["dates"][key].assigned_to,
-            //set expired if days or less than today || todaysTime >= 11
-            expired: (Math.sign(this.date_utils.dateDiff(new Date(), new Date(this.date_utils.stdDateFormater(__date, "/")))) == -1 || todayTime <= 11) ? true : false,
+            //set expired if days or less than today || todaysTime >= 11            
+            expired: (Math.sign(this.date_utils.dateDiff(new Date(), new Date(this.date_utils.stdDateFormater(__date, "/")))) == -1 && todayTime <= 11) ? true : false,
             postponed: (_data["dates"][key].index == 'postponed') ? true : false,
             stopped: (_data["dates"][key].index == 'Stopped') ? true : false,
             today: diff == 0 ? true : false,
             actualIndex: _data["dates"][key].actualIndex,
           };
-          // debugger;
         }
-        // debugger;
-        // let sortedDates = Object.keys(this.orders).sort();
-        // console.log(sortedDates);
-        // console.log("_________");
-        // debugger;
 
         this.orders.sort(function (a, b) {
           return a.actualIndex - b.actualIndex
@@ -243,7 +233,6 @@ export class CustomerViewComponent implements OnInit {
   @Output() stockValueChange = new EventEmitter();
 
   plusMinusValue(val) {
-    // console.log("tender plus minus called : " + val);
     this.unitsPerDay = val;
     this.renderChanges();
   }
@@ -326,6 +315,7 @@ export class CustomerViewComponent implements OnInit {
       "category": "Vegetables",
       "name": this.data["p_name"],
       "c_name": this.c_name,
+      "m_no": this.mobile,
       "img": "assets/products/veg/tender.jpg",
       "id": "product_1",
       "price": this.originalPrice,
@@ -343,8 +333,8 @@ export class CustomerViewComponent implements OnInit {
       "strawPrice": (this.strawFlag) ? (this.strawPrice * this.unitsPerDay) : 0,
       "units": 1,
       "delivery_status": "Not delivered",
-      "start_date": this.date_utils.getDateString(this.start_date, ""),
-      "end_date": this.date_utils.getDateString(this.end_date, ""),
+      "start_date": this.date_utils.getDateString(this.start_date, "-"),
+      "end_date": this.date_utils.getDateString(this.end_date, "-"),
       "paid": "No",
       "nut_type": "sweet",
       "assigned_to": this.assigned_to,

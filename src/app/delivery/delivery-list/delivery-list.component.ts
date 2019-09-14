@@ -17,6 +17,8 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
   name: string;
   list: Array<any> = [];
   listObservable: any;
+  selectedIndex: number = NaN;
+  selectedTarget: any;
 
   dateUtils: DateUtils;
   todaysDate: any;
@@ -25,7 +27,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
     private _activatedRoute: ActivatedRoute,
     private db: AngularFireDatabase,
     private changeDet: ChangeDetectorRef,
-    private _router: Router,    
+    private _router: Router,
   ) {
     this.fb = new FireBase(this.db);
     this.dateUtils = new DateUtils();
@@ -40,6 +42,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
     let todayTime = new Date().getHours();
     if (todayTime <= 11) {
       this.todaysDate = new Date();
+      this.todaysDate = this.dateUtils.getDateString(this.todaysDate, "");
     } else {
       this.todaysDate = new Date();
       this.todaysDate = this.dateUtils.getDateString(this.dateUtils.addDays(this.todaysDate, 1), "");
@@ -63,9 +66,12 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
     console.log(event.previousIndex, event.currentIndex);
   }
 
-  viewAction() {
-    console.log("view action.");
-    this._router.navigate(['/delivery/view-order/']);
+  viewAction(e) {
+    // debugger;
+    // console.log("view action.");
+    this.selectedIndex = e.currentTarget.id.split("_")[1] * 1;
+    this.selectedTarget = this.list[this.selectedIndex].data;
+    this._router.navigate(['/delivery/view-order/', { data: JSON.stringify(this.selectedTarget) }]);
     // this.ngZone.run(() => console.log("view route."));
   }
 

@@ -55,13 +55,14 @@ export class CustomerListComponent implements OnInit, OnDestroy {
     private _service: CommonsService,
     private _router: Router,
     public dialog1: MatDialog,
-    private ngZone: NgZone,    
+    private ngZone: NgZone,
     private date_utils: DateUtils,
     private ng2: Ng2SearchPipe,
     private _db: AngularFireDatabase,
   ) {
     this.firebase = new FireBase(this._db);
     // console.log("customer list class");
+    this._service.readCustomerList(false);
   }
 
   ngOnInit() {
@@ -84,9 +85,6 @@ export class CustomerListComponent implements OnInit, OnDestroy {
         index++;
         this.delivery_boys_list.push(data[key]);
       }
-      // debugger;
-      // this.delivery_boys_list = ;
-      // this._service.deliveryBoysList = this.delivery_boys_list;
     });
 
     this.userListUpdateObservable = this._service.onUserListUpdate.subscribe((data) => {
@@ -144,18 +142,15 @@ export class CustomerListComponent implements OnInit, OnDestroy {
         } catch (e) { }
         this.userList.push(data[key]);
       }
-      this.searchAry = this.userList;      
+      this.searchAry = this.userList;
       // this.ngZone.run(() => this._router.navigate(['customer_list']));
       this.ngZone.run(() => console.log("ng on init."));
     });
   }
 
   onCustomerClick(evt, index, mobile) {
-    // debugger;
     let trace = console.log;
-    // trace("-- " + this.userList[index].checked);
-    // trace("index :: " + index);
-
+    trace("customer view");
     // this.userList[index].checked = (this.userList[index].checked) ? false : true;
     this.searchAry[index].checked = (this.searchAry[index].checked) ? false : true;
 
@@ -173,11 +168,6 @@ export class CustomerListComponent implements OnInit, OnDestroy {
       // console.log("book an order");
       this.bookAnOrder(index, mobile, this.searchAry[index].active, this.searchAry[index].name);
     }
-
-    // if (evt.target.innerText == "Break") {
-    //   console.log("postponed");
-    //   this.postponedAnOrder(index, mobile);
-    // }
     return false;
   }
 

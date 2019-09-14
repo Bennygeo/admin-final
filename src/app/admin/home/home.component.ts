@@ -23,8 +23,8 @@ export class HomeComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this._router.navigate(["admin/customer_list"]);
-    this._service.readCustomerList(false);
+    // this._router.navigate(["admin/customer_list"]);
+    // this._service.readCustomerList(false);
   }
 
   view_customers() {
