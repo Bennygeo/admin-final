@@ -1,0 +1,112 @@
+<app-home></app-home>
+<div class="container">
+    <div class="row serachCont">
+        <div class="col-9">
+            <form class="input-form">
+                <mat-form-field class="input-full-width" style="margin-top:6px;">
+                    <input matInput placeholder="Search" value="" (input)="inputTxtChanged($event.target.value)">
+                </mat-form-field>
+            </form>
+        </div>
+        <div class="col-3 right" style="margin-top:18px;">
+            <button mat-flat-button color="primary" style="position: relative; float: right;"><i class="material-icons"
+                    style="margin:0; font-size:22px;">search</i></button>
+        </div>
+    </div>
+
+    <div class="row" style="padding: 6px;">
+        <div style="position: relative; padding-right: 0px; padding-left: 6px;">
+            <mat-checkbox [checked]='checkboxSelectors.all' style="margin-right: 12px;"
+                [(ngModel)]="checkboxSelectors.all" (change)="onAllClick($event)">
+                All
+            </mat-checkbox>
+        </div>
+        <div style="position: relative; padding-right: 0px; padding-left: 6px;">
+            <mat-checkbox [checked]='checkboxSelectors.active' [(ngModel)]="checkboxSelectors.active"
+                style="margin-right: 12px;" (change)="onActiveClick($event)">active
+            </mat-checkbox>
+        </div>
+        <div style="position: relative; padding-right: 0px; padding-left: 6px;">
+            <mat-checkbox [checked]='checkboxSelectors.inactive' [(ngModel)]="checkboxSelectors.inactive"
+                style="margin-right: 12px;" (change)="onAInactiveClick($event)">in-active
+            </mat-checkbox>
+        </div>
+    </div>
+
+    <!-- <p style="margin-left: -6px">Customer's list</p> -->
+    <div class="container customerList">
+        <div class="row box" *ngFor="let item of searchAry; let i = index;"
+            (click)="onCustomerClick($event, i,item.mobile)" id="{{'list_' + i}}">
+            <div class="col-9" style="margin-left: -6px; margin-right: -6px">
+                <div style="position: relative; float: left; padding-right: 6px;">
+                    <mat-checkbox [checked]='item.checked'></mat-checkbox>
+                </div>
+                <div class="customer_name">{{item.name}}&nbsp; <span
+                        [ngClass]="item.active == 'active' ? 'activeFlg':'inActiveFlg'">{{item.active}}</span>
+                    &nbsp;<span *ngIf="item.remainingDays != 0" class="remainingDays">{{item.remainingDays}}
+                        day(s) left.</span>
+                </div>
+
+                <div class="customer_m_no"><span style="font-size: 12px; color:#aaa; font-weight: 300;">+91</span>
+                    {{item.mobile}}</div>
+            </div>
+            <div class="col-3 my-auto" style="text-align: right; margin-left: -6px; margin-right: -6px;">
+                <!-- <button style="margin:3px;" class="right">Call</button> -->
+                <!-- <a style="margin:3px;" href={{item.mobile}}>Call</a> -->
+                <button style="margin:3px;" class="btn btn-primary btns">View</button>
+                <!-- <button style="margin:3px;" class="btn btn-primary btns">Break</button> -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- <mat-form-field style="position: absolute; left:10px;">
+    <mat-select placeholder="Assign delivery to" (selectionChange)="onDeliveryBoyChange($event)">
+        <mat-option *ngFor="let item of delivery_boys_list; let i=index;" [value]="item">
+            {{item}}
+        </mat-option>
+    </mat-select>
+</mat-form-field>
+
+<button [disabled]='assignBtnFlg' class="btn btn-light"
+    style="background: #008000; color:#fff; text-align: center; padding: 12px; z-index: 100; width: auto; position: absolute; bottom:0; right:0;"
+    (click)="assign()">Assign
+</button> -->
+
+<!-- <div class="container fixed-bottom">
+    <div class="row">
+        <div class="col-7">
+            <mat-form-field>
+                <mat-select placeholder="Assign delivery to" (selectionChange)="onDeliveryBoyChange($event)"
+                    style="z-index: 100;">
+                    <mat-option *ngFor="let item of delivery_boys_list; let i=index;" [value]="item">
+                        {{item}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div class="col-5">
+            
+        </div>
+    </div>
+</div> -->
+
+<div style="width:100%; height:60px; position:fixed; bottom:0; background-color: #fff;">
+    <div style="width: 60%; position:relative; float:left; left:10px;">
+        <mat-form-field>
+            <mat-select placeholder="Assign delivery to" (selectionChange)="onDeliveryBoyChange($event)"
+                style="z-index: 100;">
+                <mat-option *ngFor="let item of delivery_boys_list; let i=index;" [value]="item">
+                    {{item}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+
+    <div style="width: 40%; position:relative; float:left;">
+        <button [disabled]='assignBtnFlg' class="btn btn-light"
+            style="background: #008000; color:#fff; text-align: center; padding: 12px;width: auto; float: right;"
+            (click)="assign()">Assign
+        </button>
+    </div>
+</div>

@@ -1,0 +1,111 @@
+<div style="display: flex; flex-direction: row; flex-wrap: wrap;">
+    <div style="width:80%">
+        <h5
+            [ngStyle]="{'text-align': 'center', 'margin':'0', 'background':'#fafafa', 'margin-bottom':'6px', 'padding':'12px'}">
+            Address
+        </h5>
+    </div>
+    <div style="width:20%"
+        [ngStyle]="{'text-align': 'center', 'display': 'flex',  'align-items': 'center',  'justify-content': 'center' ,'margin-top':'-9px'}">
+        <button mat-mini-fab color="warn" style="margin: 0px; background-color: #ccc; color: #fff;"
+            (click)="closeDialog()"><i class="material-icons">close</i></button>
+    </div>
+
+    <!-- <div style="width: 10%"></div> -->
+    <div class="col-12">
+        <form [formGroup]="fifthFormGroup">
+            <ng-template matStepLabel>Fill out your area</ng-template>
+            <mat-form-field class="input-full-width">
+                <!-- <input matInput placeholder="Last name, First name" formControlName="firstCtrl" required> -->
+                <mat-select placeholder="Area name" style="color:black; width:100%;" formControlName="selectCtrl"
+                    [(ngModel)]="userArea" required (selectionChange)="onAreaSelect($event.value)">
+                    <mat-option *ngFor="let place of places" [value]="place.value">
+                        {{place.viewValue}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field class="input-full-width" *ngIf="!othersFlag">
+                <input matInput placeholder="Area name" formControlName="selectCtrl"
+                    (input)="onSearchChange($event.target.value)" required>
+            </mat-form-field>
+
+        </form>
+
+        <form [formGroup]="firstFormGroup">
+            <mat-form-field>
+                <input matInput placeholder="Mobile no." formControlName="mobile" [(ngModel)]="userDetails.mobileNo"
+                    required>
+            </mat-form-field>
+            <mat-form-field>
+                <input matInput placeholder="Name" formControlName="name" [(ngModel)]="userDetails.name" required>
+            </mat-form-field>
+        </form>
+
+        <form [formGroup]="thirdFormGroup">
+            <mat-form-field>
+                <!-- <input matInput placeholder="Email" > -->
+                <input matInput placeholder="Email" formControlName="emailCtrl" [errorStateMatcher]="matcher">
+                <mat-hint></mat-hint>
+                <mat-error *ngIf="emailFormControl.hasError('email') && !emailFormControl.hasError('required')">
+                    Email is <strong>required</strong>
+                </mat-error>
+                <mat-error *ngIf="emailFormControl.hasError('required')">
+                    Please enter a valid email address
+                </mat-error>
+            </mat-form-field>
+        </form>
+
+        <form class="example-container" [formGroup]="typeGroup">
+            <div style="padding-top: 12px; padding-bottom: 18px;">
+                <!-- <label>Type &nbsp;&nbsp; </label> -->
+                <mat-radio-group formControlName="floatLabel" required>
+                    <mat-radio-button value="home" style="margin-right:12px;">Home</mat-radio-button>
+                    <mat-radio-button value="office">Office</mat-radio-button>
+                </mat-radio-group>
+            </div>
+        </form>
+
+        <div style="display: flex; flex-direction: row">
+            <div style="width:20%">
+                <form [formGroup]="firstFormGroup">
+                    <mat-form-field>
+                        <input matInput placeholder="Floor" formControlName="floor" required>
+                    </mat-form-field>
+                </form>
+            </div>
+            <div style="width:80%">
+                <form [formGroup]="firstFormGroup">
+                    <mat-form-field>
+                        <input matInput placeholder="Block" formControlName="block" required>
+                    </mat-form-field>
+                </form>
+            </div>
+        </div>
+
+        <form [formGroup]="firstFormGroup">
+            <mat-form-field>
+                <input matInput placeholder="Building" formControlName="building">
+            </mat-form-field>
+        </form>
+
+        <form [formGroup]="firstFormGroup">
+            <mat-form-field>
+                <input matInput placeholder="Address" formControlName="street" required>
+            </mat-form-field>
+        </form>
+
+        <form [formGroup]="firstFormGroup">
+            <mat-form-field>
+                <input matInput placeholder="Landmark" formControlName="landmark">
+            </mat-form-field>
+        </form>
+
+        <button mat-flat-button color="primary" type="submit"
+            [disabled]="firstFormGroup.invalid || fifthFormGroup.invalid" style="width:100%; margin-bottom: 18px;"
+            (click)="onSaveBtnClick($event)" [formGroup]="firstFormGroup">Save</button>
+    </div>
+    <div style="width: 100%">
+
+    </div>
+</div>

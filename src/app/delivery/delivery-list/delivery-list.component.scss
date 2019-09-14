@@ -1,0 +1,129 @@
+.box {
+  height: auto;
+  //   background-color: #f3f9fd;
+  border-bottom: 1px dashed #ccc;
+  margin-bottom: 2px;
+  margin-top: 2px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+.customer_name {
+  font-size: 15px;
+  color: #111;
+  font-style: normal;
+  font-weight: 300;
+}
+.customer_m_no {
+  font-size: 20px;
+  color: #444;
+  font-weight: 500;
+}
+
+.btns {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  background-color: #eee;
+  border: 1px solid #ccc;
+  color: #333;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.custom-dialog {
+}
+
+.material-icons {
+  font-size: 12px;
+}
+
+.custom-dialog-container {
+  padding: 6px;
+  background-color: #f00;
+}
+
+.activeFlg {
+  background-color: #008000;
+  color: #fff;
+  font-size: 10px;
+  padding-left: 6px;
+  padding-right: 6px;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  border-radius: 3px;
+  margin: 0;
+  letter-spacing: 1.1px;
+}
+
+.inActiveFlg {
+  background-color: rgb(194, 00, 52);
+  font-size: 10px;
+  color: #fff;
+  padding-left: 6px;
+  padding-right: 6px;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  border-radius: 3px;
+  margin: 0;
+  letter-spacing: 1.1px;
+}
+
+.customerList {
+  height: 65vh;
+  // width:100vw;
+  overflow-y: auto;
+  padding: 0;
+  padding-left: 6px;
+  overflow-x: hidden;
+}
+
+.delivery_count {
+  background-color: #fff;
+  padding: 9px;
+  padding-bottom: 3px;
+  padding-top: 3px;
+  font-size: 11px;
+  border: 1px solid #ccc;
+  border-radius: 2;
+}
+
+.nut_type {
+  background-color: #fff;
+  padding: 9px;
+  padding-bottom: 3px;
+  padding-top: 3px;
+  font-size: 11px;
+  border: 1px solid #ccc;
+  border-radius: 2;
+}
+
+.dnd {
+  background-color: #fff;
+  font-size: 11px;
+  border: 1px solid #ccc;
+  border-radius: 2;
+  padding: 6px;
+  padding-bottom: 3px;
+  padding-top: 3px;
+}
+
+.paid {
+  background-color: #008000;
+  color: #fff;
+  font-size: 11px;
+  border: 1px solid #008000;
+  border-radius: 2;
+  padding: 6px;
+  padding-bottom: 3px;
+  padding-top: 3px;
+}
+
+.paid {
+  background-color: #f00;
+  color: #fff;
+  font-size: 11px;
+  border: 1px solid #f00;
+  border-radius: 2;
+  padding: 6px;
+  padding-bottom: 3px;
+  padding-top: 3px;
+}

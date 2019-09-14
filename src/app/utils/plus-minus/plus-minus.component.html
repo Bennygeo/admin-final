@@ -1,0 +1,19 @@
+<div class="mainCont">
+    <span style="margin-bottom: 6px; font-size:13px; color:#333; text-align:left; font-family:Montserrat;">{{caption}}
+        &nbsp;</span>
+    <div class="handle-counter" id="handleCounter"
+        style="border:0px solid #eee; background-color: #fff; margin-top:0px;">
+        <div class="btnCont">
+            <button class="counter-minus btn btn-primary" style="float:left; border-radius: none; margin-right: 0px;"
+                [disabled]="minusBtnFlg" (click)="decrement()">
+                <mat-icon>remove</mat-icon>
+            </button>
+            <div
+                style="width:30px; float:left; text-align: center; margin-top:5px; font-family:Montserrat, sans-serif;">
+                {{inputVal}}</div>
+            <button class="counter-plus btn btn-primary" style="float:left;" (click)="increment()">
+                <mat-icon>add</mat-icon>
+            </button>
+        </div>
+    </div>
+</div>

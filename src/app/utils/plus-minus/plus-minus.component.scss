@@ -1,0 +1,94 @@
+.handle-counter {
+    overflow: hidden;
+    /* font-family: RobotoLight; */
+    border: 0px solid #eee;
+    background-color: #fff;
+    margin-top: 0px;
+    width: 100%;
+    position: relative;
+    margin: 0 auto;
+  }
+  
+  .btnCont {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  plus-minus {
+    width: 100%;
+  }
+  
+  $Montserrat: Montserrat, sans-serif;
+  
+  .handle-counter .counter-minus,
+  .handle-counter .counter-plus,
+  .handle-counter input {
+    float: left;
+    text-align: center;
+    border-radius: none;
+    font-family: "Montserrat, sans-serif";
+  }
+  
+  .handle-counter .counter-minus,
+  .handle-counter .counter-plus {
+    text-align: center;
+    // padding-left: 16px;
+    // padding-right: 16px;
+  }
+  
+  .btn {
+    /* border: 1px solid transparent; */
+    color: #fff;
+    border-radius: 0 !important;
+    outline: none !important;
+    margin: 0;
+    border: none !important;
+    cursor: pointer;
+    font-size: 12px;
+    border-radius: 2px;
+    font-weight: bolder;
+    padding: 0px;
+    padding-right: 6px;
+    padding-top: 3px;
+    padding-left: 6px;
+  }
+  
+  .btn:focus,
+  .btn.focus {
+    box-shadow: none;
+  }
+  
+  .btn:disabled,
+  .btn:disabled:hover {
+    background: none;
+    opacity: 0.2;
+    color: black;
+    cursor: not-allowed;
+  }
+  
+  .btn-primary {
+    background-color: #fff;
+    color: #333;
+    border: 1px solid #000 !important;
+    font-family: Lato;
+  }
+  
+  .btn-primary:hover {
+    background-color: #95c342;
+    color: #fff;
+  }
+  
+  @media (max-width: 504px) {
+    .btnCont {
+      // width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+  
+  .mainCont {
+    padding-right: 6px;
+    display: block;
+  }
+  

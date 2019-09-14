@@ -1,0 +1,32 @@
+<div class="container">
+    <div class="col-12">
+        <p>Hi {{name}}!</p>
+    </div>
+    <div cdkDropList (cdkDropListDropped)="drop($event)">
+        <div class="row box" cdkDrag *ngFor="let item of list; let i = index;"
+            (click)="onCustomerClick($event, i,item.mobile)" id="{{'list_' + i}}">
+            <div class="col-7">
+                <div class="customer_name">{{item.data.c_name||'unknown'}}</div>
+                <div class="customer_m_no"><span style="font-size: 12px; color:#aaa; font-weight: 300;">+91</span>
+                    <a href="tel:{{item.no}}"> {{item.no}}</a></div>
+            </div>
+            <div class="col-5 d-flex flex-row-reverse"
+                style="text-align: right; margin-left: -6px; margin-right: -6px; padding-right: 0;">
+                <!-- <button style="margin:3px;" class="right">Call</button> -->
+                <!-- <a style="margin:3px;" href={{item.mobile}}>Call</a> -->
+
+                <button style="margin:3px; height: 36px;" class="btn btn-primary btns"
+                    (click)="viewAction()">View</button>
+                <button style="margin:3px; height: 36px;" class="btn btn-primary btns"
+                    (click)="deliveredAction()">Delivered</button>
+            </div>
+            <div class="col-12">
+                <span class="delivery_count">2</span>&nbsp;
+                <span class="nut_type">Orange</span>&nbsp;
+                <span class="nut_type">Open</span>&nbsp;
+                <span class="nut_type">DND</span>&nbsp;
+                <span class="paid">Paid</span>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,179 @@
+$break-small: 320px;
+$break-large: 1200px;
+
+$font-stack: Lato, sans-serif;
+$primary-bg-color: #efefef;
+$Montserrat: Montserrat, sans-serif;
+
+.tenderComp {
+  display: inline-block;
+}
+
+.vegProducts:first-child {
+  margin: 0;
+}
+
+.imgCont {
+  width: 140px;
+  margin-bottom: 12px;
+  order: 1;
+  margin: 0;
+  // @media (min-width: $break-small) {
+  // width:140px; margin:0 auto;
+  // }
+}
+
+.row > div > img {
+  width: 115px;
+}
+
+.pName,
+.price {
+  font-weight: bolder;
+  line-height: 1.5;
+  margin: 0;
+  font-family: $Montserrat;
+}
+
+::ng-deep .mat-checkbox .mat-checkbox-frame {
+  border-color: #95c342;
+}
+
+.daysCont {
+  display: flex;
+  flex-direction: row;
+  margin: 0;
+  cursor: pointer;
+  margin-top: 12px;
+  margin-bottom: 12px;
+
+  .days {
+    // width: 30px;
+    // height: 30px;
+    // line-height: 30px;
+    padding: 5px;
+    background-color: #fff;
+    color: #333;
+    font-size: 13px;
+    text-align: center;
+    margin: 0;
+    margin-right: 3.6px;
+    margin-left: 3px;
+    border-radius: 2px;
+    border: 1px solid #95c342;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -o-user-select: none;
+    font-family: $Montserrat;
+  }
+  :hover {
+    background-color: #eeeeee;
+    color: #333;
+  }
+  :active {
+    background-color: #95c342;
+    color: #fff;
+  }
+  .days:first-child {
+    margin-left: 0px;
+  }
+
+  .packs {
+    // height: 30px;
+    line-height: 30px;
+    padding: 3px;
+    padding-right: 9px;
+    padding-left: 10px;
+    background-color: #fff;
+    color: #333;
+    font-size: 13px;
+    text-align: center;
+    margin: 0;
+    margin-right: 2.6px;
+    margin-left: 2px;
+    border-radius: 2px;
+    border: 1px solid #95c342;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -o-user-select: none;
+    font-family: $Montserrat;
+  }
+}
+
+.active {
+  background-color: #95c342 !important;
+  color: #fff !important;
+}
+
+.subscribeCont {
+  display: none;
+}
+.tenderComp {
+  display: block;
+}
+
+@media only screen and (max-width: 600px) {
+  .tenderComp {
+    display: inline-flex;
+    vertical-align: middle;
+  }
+}
+
+.btn {
+  margin-top: 6px;
+  margin-bottom: 6px;
+  font-family: $Montserrat;
+}
+
+.btns-icons {
+  display: block;
+  color: #000;
+  margin: 6px;
+  font-size: 29px;
+}
+
+.first {
+  background: #64bb02;
+}
+.second {
+  // font-size: 24px;
+  color: #f00;
+}
+.third {
+  background: red;
+}
+
+.delivered {
+  background-color: #64bb02;
+  color: #fff;
+}
+.onTheWay {
+  background-color: orange;
+  color: #fff;
+}
+
+.notDelivered {
+  background-color: rgb(182, 10, 10);
+  color: #fff;
+}
+
+.assigned {
+  background-color: #f3fbff;
+  color: #000;
+}
+
+.missed {
+  background-color: rgb(255, 4, 4);
+  color: #fff;
+}
+
+.activeDate {
+  border: 1px solid #1d8aff;
+  width: 100%;
+  background: #1d8aff;
+  color: #fff;
+}

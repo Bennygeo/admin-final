@@ -1,1 +1,211 @@
 /* You can add global styles to this file, and also import other style files */
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+mat-form-field {
+  //   margin-right: 12px;
+  //   margin-bottom: 6px;
+  margin: 0;
+  padding: 0;
+}
+
+a{
+  color: #666;
+}
+
+/* You can add global styles to this file, and also import other style files */
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+
+@import "~bootstrap/dist/css/bootstrap.min.css";
+
+$break-small: 320px;
+$break-large: 1200px;
+
+$font-stack: Lato, sans-serif;
+$primary-bg-color: #efefef;
+$Montserrat: Montserrat, sans-serif;
+
+html,
+body {
+  margin: 0;
+  font-family: $Montserrat;
+}
+
+.container-ts {
+  font-family: $font-stack;
+  padding-right: 6px;
+  padding-left: 6px;
+  margin-right: auto;
+  margin-left: auto;
+  // background-color: $primary-bg-color;
+}
+
+@media (min-width: $break-large) {
+  .container-ts {
+    width: 1141px;
+  }
+}
+
+h3 {
+  font-family: $Montserrat;
+  color: #111;
+  text-align: center;
+  width: 100%;
+  font-size: 20px;
+  padding-top: 24px;
+  /* text-decoration: underline; */
+  /* padding-bottom: 24px; */
+  /* background-color: rgba(27, 188, 157, .1); */
+  /* border-bottom:1px solid #ddd; */
+}
+
+h5 {
+  // font-family: Lato, sans-serif;
+  font-family: $Montserrat;
+  color: #111;
+  text-align: center;
+  width: 100%;
+  padding-top: 24px;
+  padding-bottom: 24px;
+  font-size: 20px;
+  // font-weight: 600;
+  margin-bottom: 0;
+  /* border-bottom: 1px solid #ddd; */
+}
+.center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+button.active.focus,
+button.active:focus,
+button.focus,
+button.focus:active,
+button:active:focus,
+button:focus {
+  // outline: thin dotted;
+  // outline-offset: -2px;
+  box-shadow: none;
+}
+
+button,
+mat-raised-button {
+  box-shadow: none;
+  // width: 100%;
+}
+
+.mat-raised-button:not([class*="mat-elevation-z"]) {
+  box-shadow: none;
+}
+
+.mat-mini-fab:not([class*="mat-elevation-z"]) {
+  box-shadow: none;
+}
+
+mat-chip {
+  transition: none !important;
+  box-shadow: none !important;
+}
+
+.custom-dialog-container .mat-dialog-container {
+  /* add your styles */
+  padding: 0px;
+  -webkit-transition: height 0.6s; /* Safari */
+  transition: height 0.6s;
+}
+
+.mat-form-field,
+button,
+span {
+  font-family: Montserrat, sans-serif;
+}
+
+.custom-dialog-container,
+mat-dialog-container {
+  -webkit-transition: height 2s; /* Safari */
+  transition: height 2s;
+}
+
+// .row{
+//   display: flex;
+//   flex-direction: row;
+// }
+
+// .column{
+//   display: flex;
+//   flex-direction: column;
+//   flex-basis: 100%;
+//   flex: 1;
+// }
+
+.addToBagBtn {
+  background-color: #95c342;
+  color: #fff;
+  border-radius: 0 !important;
+}
+
+.removeFromBagBtn {
+  background-color: #eee;
+  color: #000;
+  border-radius: 0 !important;
+  margin-top: 12px;
+}
+
+// .container{
+//   display:flex;
+//   flex-flow: row wrap;
+// }
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
+
+.mat-button.mat-accent[disabled],
+.mat-button.mat-primary[disabled],
+.mat-button.mat-warn[disabled],
+.mat-button[disabled][disabled],
+.mat-icon-button.mat-accent[disabled],
+.mat-icon-button.mat-primary[disabled],
+.mat-icon-button.mat-warn[disabled],
+.mat-icon-button[disabled][disabled],
+.mat-stroked-button.mat-accent[disabled],
+.mat-stroked-button.mat-primary[disabled],
+.mat-stroked-button.mat-warn[disabled],
+.mat-stroked-button[disabled][disabled] {
+  background-color: #ccc;
+}
+
+label {
+  margin: 0px !important;
+}
+
+.emptyDot {
+  width: 12px;
+  height: 12px;
+  position: relative;
+  background-color: #ff4081;
+  border-radius: 50%;
+  display: block;
+  top: -47px;
+  right: -99px;
+} /* You can add global styles to this file, and also import other style files */

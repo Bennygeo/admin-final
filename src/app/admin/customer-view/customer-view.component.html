@@ -1,0 +1,200 @@
+<app-home></app-home>
+<div class="container">
+  <!-- <div class="row" style="margin-bottom: 6px; margin-left:-6px;">
+    <button (click)="clickToHome()">home</button>
+  </div> -->
+
+  <div class="row" style="margin-top:12px;">
+    <div class="col-3" *ngFor="let item of orders; let i = index;" (click)="onUserDatesClick($event, item)"
+      (clickOutside)=" closeOutsideSidenav()"
+      [ngStyle]="{'pointer-events': (item.expired || item.postponed|| item.stopped) ? 'none' : 'all', 'opacity': (item.expired || item.postponed || item.stopped) ? '0.5' : '1'}">
+      <div class="row" style="margin-bottom: 6px; margin-left:-14px; margin-right:-14px;">
+        <div style="border:1px solid #ccc; margin-bottom: 6px; width: 100%;"
+          [ngClass]="{'activeDate': selectedDateItem == item}">
+          <div class="col-12 center" style="font-size: 12px; background: #eee; margin-bottom: 6px; color: #111"
+            [ngStyle]="{'background': item.today ? '#007bff' : '#DDD'}">
+            {{item.index}}
+          </div>
+          <div class="col-12 center">{{item.count}}</div>
+          <div style="border-top:1px dashed #ccc; padding: 6px; text-align: center; font-size: 11px; "
+            class="col-12 center assigned"
+            [ngClass]="{'delivered': false, 'notDelivered': false, 'missed': false, 'assigned': true}">
+            {{item.date}}
+          </div>
+
+          <div
+            style="border-top:1px dashed #ccc; padding: 6px; text-align: center; font-size: 12px; background: rgba(230,230,230,.5);"
+            class="col-12 center">
+            {{item.assigned_to}}
+          </div>
+
+          <!-- <div>{{item.expired}}</div> -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit options -->
+  <div class="row" *ngIf="editEnabled">
+    <div class="col-md-12">
+      <h6 style="background-color: #eee; padding: 6px; font-size: 14px;">Edit on {{selectedDateItem.date}}</h6>
+      <plus-minus class="tenderComp" [caption]="'Select units'" [inputVal]="minCount" [stepVal]="1"
+        (updateValue)="orderCountUpdate($event)"></plus-minus>
+
+      <!-- <p style="margin-top: 18px; padding: 0; font-size: 12px;">Number of replacements</p> -->
+      <mat-form-field style="width: 100%; margin-top: 12px;">
+        <input matInput [(ngModel)]="noOfReplacements" placeholder="Number of replacements."
+          (keypress)="numberOnly($event)">
+      </mat-form-field>
+
+      <div [ngStyle]="{'margin-top': '12px', 'margin-bottom': '0px'}">
+        <mat-form-field [ngStyle]="{'width': '100%'}">
+          <mat-select placeholder="Assign delivery to" [value]="delivery_boys_list[assigned_to_index]"
+            (selectionChange)="onDeliveryBoyChange($event)">
+            <mat-option *ngFor="let item of delivery_boys_list; let i=index;" [value]="item">
+              {{item}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <button (click)="editUpdateAction()" class="btn btn-success" style="margin:6px; margin-left: 0;">Update</button>
+      <button (click)="editCancelAction()" class="btn btn-danger">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Postpone options -->
+  <div class="row" *ngIf="postponeEnabled">
+    <div class="col-md-12">
+      <h6 style="background-color: #eee; padding: 6px; font-size: 14px;">Postpone from {{selectedDateItem.date}}</h6>
+
+      <mat-form-field style="width: 100%; margin-top: 12px;">
+        <input matInput [(ngModel)]="noOfDaysToPostpone" placeholder="Number of days." onfocus="this.value=''"
+          maxlength="1" (keypress)="numberOnly($event)">
+      </mat-form-field>
+
+      <button (click)="postponeUpdateAction()" class="btn btn-success"
+        style="margin:6px; margin-left: 0;">Update</button>
+      <button (click)="postponeCancelAction()" class="btn btn-danger">Cancel</button>
+    </div>
+  </div>
+
+  <!-- stop enabled -->
+  <div class="row" *ngIf="stopEnabled">
+    <div class="col-md-12">
+      <h6 style="background-color: #eee; padding: 6px; font-size: 14px;">Delete from {{selectedDateItem.date}}</h6>
+      <p style="font-size: 14px;">All upcoming deliveries will be stopped.</p>
+      <button (click)="stopUpdateAction()" class="btn btn-success" style="margin:6px; margin-left: 0;">Update</button>
+      <button (click)="stopCancelAction()" class="btn btn-danger">Cancel</button>
+    </div>
+  </div>
+  <!-- Menus -->
+  <div class="row btn-group-vertical center" style="margin-left:-9px;margin-right:-9px;" *ngIf="btnsView">
+    <button class="btn btn-primary" (click)="editAction()">Edit</button>
+    <button class="btn btn-info" (click)="postponeAction()" [attr.disabled]="dayExpired ? true : null">Postpone</button>
+    <!-- <button class="btn btn-danger" (click)="pauseAction()">Pause</button> -->
+    <button class="btn btn-danger" (click)="stopAction()">Stop</button>
+  </div>
+
+  <!-- Tender coconut booking/subscription -->
+  <div class="row" *ngIf="!ordersExist">
+    <div class="col-md-2" align="center">
+      <plus-minus class="tenderComp" [caption]="'Select units'" [inputVal]="minCount" [stepVal]="1"
+        (updateValue)="plusMinusValue($event)"></plus-minus>
+    </div>
+
+    <div class="col-md-4">
+      <div class="pName"><span [ngStyle]="{'font-weight': 'normal'}">{{data.p_name}}</span> ({{selectedNutType}}) x {{
+          subscribedDays }} day(s)</div>
+
+      <div class="price">Rs. {{ totalPrice}} <span *ngIf="diff !=0"
+          style="text-decoration: line-through; color:#aaa; font-size: 14px; font-weight: 500;">
+          Rs. {{originalPrice}} </span> <span *ngIf="diff !=0"
+          style="font-size:12px; color:#00c300; font-style: italic; font-weight: 500;">
+          Rs.{{diff}}
+          discount has been applied.</span></div>
+
+      <div [ngStyle]="{'margin-top': '12px', 'margin-bottom': '0px'}">
+        <mat-form-field [ngStyle]="{'width': '100%'}">
+          <mat-select placeholder="Nut type" [value]="1" (selectionChange)="onNutTypeChange($event)">
+            <mat-option *ngFor="let item of nutTypes;" [value]="item.viewValue">
+              {{item.value}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div [ngStyle]="{'margin-top': '12px', 'margin-bottom': '0px'}">
+        <mat-form-field [ngStyle]="{'width': '100%'}">
+          <mat-select placeholder="Nut variety" [value]="nutVarieties[0]"
+            (selectionChange)="onNutVarietyChange($event)">
+            <mat-option *ngFor="let item of nutVarieties;" [value]="item">
+              {{item}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div style="margin-top:18px; margin-bottom:18px; padding-right:12px; padding-bottom: 3px;">
+        <mat-checkbox class="noselect" color="primary" [(ngModel)]="strawFlag" (change)="onStrawChange()">
+          <!-- add bio-degradable straw to package(2Rs/-) -->
+          add bio-degradable straw at <b>₹2</b>.
+        </mat-checkbox>
+      </div>
+
+      <div [ngStyle]="{'margin-top': '12px', 'margin-bottom': '0px'}">
+        <mat-form-field [ngStyle]="{'width': '100%'}">
+          <mat-select placeholder="Assign delivery to" [value]="delivery_boys_list[assigned_to_index]"
+            (selectionChange)="onDeliveryBoyChange($event)">
+            <mat-option *ngFor="let item of delivery_boys_list; let i=index;" [value]="item">
+              {{item}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <button mat-button class="addToBagBtn" (click)="addToCart()" [disabled]="addToCartBtnDisabled"
+        style="margin-bottom:60px;">
+        <mat-icon>shopping_cart</mat-icon> Add to bag
+      </button>
+
+      <!-- <button mat-button class="addToBagBtn" (click)="subscribeBtn()" style="margin-left:6px;">
+            Subscribe</button> -->
+
+      <!-- <div class="row" style="margin-top:18px; margin-bottom:18px; padding-right:12px; padding-bottom: 3px;"> -->
+      <mat-checkbox class="noselect" color="primary" [(ngModel)]="subsFlag" (change)="onSubscribeChange()"
+        style="margin-left:12px;">
+        <!-- add bio-degradable straw to package(2Rs/-) -->
+        Subscribe
+      </mat-checkbox>
+      <!-- </div> -->
+
+      <div *ngIf="subsFlag">
+        <div class="daysCont">
+          <div [class]="['packs']" (click)="sevenDaysClick()" [class.active]="subscribeActiveFlgs[0]">
+            7 days
+          </div>
+          <div [class]="['packs']" (click)="alternateDaysClick()" [class.active]="subscribeActiveFlgs[1]">
+            Alternate days
+          </div>
+          <div [class]="['packs']" (click)="every3DaysClick()" [class.active]="subscribeActiveFlgs[2]">
+            3 days a week
+          </div>
+        </div>
+
+        <div class="daysCont">
+          <div unselectable="on" onselectstart="return false;" (mousedown)="daysClickAction($event)" id='days{{i}}'
+            [ngClass]="['days']" *ngFor="let item of weekdays; let i=index;" [class.active]="selectedDays[(i+1)]">
+            {{item.slice(0,3)}}
+          </div>
+        </div>
+        <div *ngIf="changeDetecter" style="font-size: 12px; text-decoration: underline; margin: 9px; cursor: pointer;"
+          (click)="onResetClick()">Reset</div>
+
+        <button mat-button class="addToBagBtn" (click)="addToSubscriptionBag()" style="margin-bottom:60px;"
+          [disabled]="subsBtnVisibility">
+          Add to subscription bag</button>
+      </div>
+    </div>
+  </div>
+</div>

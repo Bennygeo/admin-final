@@ -1,0 +1,34 @@
+<div class="wrapper fadeInDown">
+    <div id="formContent">
+        <!-- Tabs Titles -->
+
+        <!-- Icon -->
+        <div class="fadeIn first">
+            <i class="material-icons" style="padding: 12px;">
+                person
+            </i>
+        </div>
+
+        <!-- Login Form -->
+        <form>
+            <div *ngIf="!pswdFlg" style="font-size:10px;">Mobile number</div>
+            <input *ngIf="!pswdFlg" type="text" id="login" class="fadeIn second" name="login" (focus)="onFocusAction(e)"
+                [(ngModel)]="username">
+            <div style="font-size:14px; color: #666;">{{credentialOwner}}</div>
+            <input *ngIf="pswdFlg" type="password" id="password" class="fadeIn third" name="login"
+                placeholder="password" [(ngModel)]="pswd" [disabled]="submit_btn_disable" [value]="mnbvcx">
+            <div style="font-size:14px; color: #666; padding-top:12px; padding-bottom: 12px;"
+                *ngIf="submit_btn_disable">
+                Successfully logged in. <br />Will be
+                redirecting to another page.</div>
+            <input type="submit" class="fadeIn fourth" (click)="onLoginAction($event)" [disabled]="submit_btn_disable"
+                *ngIf="!submit_btn_disable" value="Log In">
+        </form>
+
+        <!-- Remind Passowrd -->
+        <div id="formFooter">
+            <a class="underlineHover">Forgot Password?</a>
+        </div>
+
+    </div>
+</div>
