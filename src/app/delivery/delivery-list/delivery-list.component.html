@@ -1,8 +1,13 @@
 <div class="container">
-    <p style="padding: 12px; background-color: #333; color:#fff; text-align: center;">Hi {{name}}!</p>
+    <p style="padding: 12px; background-color: #333; color:#fff; text-align: center; margin-bottom: 0px;">Hi {{name}}!
+    </p>
+    <p style="padding: 6px;text-align: left; font-size: 14px; border-bottom:1px dotted #ccc;">Orders on
+        <span style="font-weight: 500;">{{todaysDateFormatted}}</span></p>
+
+    <mat-spinner *ngIf="listFlg" style="margin:0 auto;"></mat-spinner>
+
     <div cdkDropList (cdkDropListDropped)="drop($event)">
-        <div class="row box" cdkDrag *ngFor="let item of list; let i = index;"
-            (click)="onCustomerClick($event, i,item.mobile)" id="{{'list_' + i}}">
+        <div class="row box" cdkDrag *ngFor="let item of list; let i = index;" id="{{'list_' + i}}">
             <div class="col-7">
                 <div class="customer_name">{{item.data.c_name||'unknown'}}</div>
                 <div class="customer_m_no"><span style="font-size: 12px; color:#aaa; font-weight: 300;">+91</span>
@@ -19,8 +24,8 @@
                     id="{{'deliver_'+i}}">Delivered</button>
             </div>
             <div class="col-12">
-                <span class="delivery_count">2</span>&nbsp;
-                <span class="nut_type">Orange</span>&nbsp;
+                <span class="delivery_count">{{item.data.per_day}}</span>&nbsp;
+                <span class="nut_type">{{item.data.nut_type}}</span>&nbsp;
                 <span class="nut_type">Open</span>&nbsp;
                 <span class="nut_type">DND</span>&nbsp;
                 <span class="paid">Paid</span>

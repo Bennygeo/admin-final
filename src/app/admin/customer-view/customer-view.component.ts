@@ -120,6 +120,10 @@ export class CustomerViewComponent implements OnInit {
   //delete
   stopEnabled: boolean = false;
 
+  infoEnabled: boolean = true;
+  total_nut_cnt: number = 0;
+  pay_status: string = "";
+
   constructor(
     private _service: CommonsService,
 
@@ -177,6 +181,7 @@ export class CustomerViewComponent implements OnInit {
 
       // console.log("this.mobile :: " + this.mobile);
       this.firebase.readOrders(this.mobile).subscribe((data: any) => {
+        // debugger;
         try {
           this._service.historyLength = Object.keys(data).length || 0;
         } catch (e) {
@@ -193,16 +198,20 @@ export class CustomerViewComponent implements OnInit {
         let _data = data[this._service.historyLength];
 
         this.historyObj = _data;
+        // debugger;
         let cnt = -1;
 
         //todays time in hours(24 hr format)
         let todayTime = new Date().getHours();
 
+        this.total_nut_cnt = 0;
         for (var key in _data["dates"]) {
           cnt++;
           var __date = this.date_utils.dateFormater(key, "-");
           //day difference from todays date
           let diff = (this.date_utils.dateDiff(new Date(), new Date(this.date_utils.stdDateFormater(__date, "/"))));
+
+          this.total_nut_cnt += _data["dates"][key].count;
 
           this.orders[cnt] = {
             index: _data["dates"][key].index,
@@ -210,14 +219,17 @@ export class CustomerViewComponent implements OnInit {
             count: _data["dates"][key].count,
             assigned_to: _data["dates"][key].assigned_to,
             //set expired if days or less than today || todaysTime >= 11            
-            expired: (Math.sign(this.date_utils.dateDiff(new Date(), new Date(this.date_utils.stdDateFormater(__date, "/")))) == -1 && todayTime <= 11) ? true : false,
+            expired: (Math.sign(this.date_utils.dateDiff(new Date(), new Date(this.date_utils.stdDateFormater(__date, "/")))) == -1 || todayTime <= 11) ? true : false,
             postponed: (_data["dates"][key].index == 'postponed') ? true : false,
             stopped: (_data["dates"][key].index == 'Stopped') ? true : false,
             today: diff == 0 ? true : false,
             actualIndex: _data["dates"][key].actualIndex,
+            delivered_by: (_data["dates"][key].delivered_by == 'nil') ? "Undelivered" : "Delivered"
           };
         }
 
+        // console.log("total_nut_cnt :: " + total_nut_cnt);
+        // debugger;
         this.orders.sort(function (a, b) {
           return a.actualIndex - b.actualIndex
         });
@@ -312,31 +324,34 @@ export class CustomerViewComponent implements OnInit {
     this.end_date = this.date_utils.addDays(new Date(), this.subscribedDays);
 
     this.tenderDetails = {
-      "category": "Vegetables",
+      // "category": "Vegetables",
       "name": this.data["p_name"],
       "c_name": this.c_name,
       "m_no": this.mobile,
-      "img": "assets/products/veg/tender.jpg",
+      // "img": "assets/products/veg/tender.jpg",
       "id": "product_1",
-      "price": this.originalPrice,
+      // "price": this.originalPrice,
       "type": this.selectedNutType,
-      "quantity": (this.unitsPerDay * this.subscribedDays),
-      "totalPrice": this.totalPrice,
+      // "quantity": (this.unitsPerDay * this.subscribedDays),
+      // "totalPrice": this.totalPrice,
       "per_day": this.unitsPerDay,
-      "total": (this.unitsPerDay * this.subscribedDays),
-      "no_of_days": this.subscribedDays,
-      "sub_type": this.subscribe_type,
-      "subscribe": this.subsFlag,
-      "offers": this.diff,
-      "delivery_charge": this.deliveryCharges * (this.unitsPerDay * this.subscribedDays),
-      "straw": this.strawFlag,
-      "strawPrice": (this.strawFlag) ? (this.strawPrice * this.unitsPerDay) : 0,
-      "units": 1,
+      // "total": (this.unitsPerDay * this.subscribedDays),
+      // "paid_amt": 0,
+      // "remaining_to_pay": this.totalPrice,
+      // "no_of_days": this.subscribedDays,
+      // "sub_type": this.subscribe_type,
+      // "subscribe": this.subsFlag,
+      // "offers": this.diff,
+      // "delivery_charge": this.deliveryCharges * (this.unitsPerDay * this.subscribedDays),
+      // "straw": this.strawFlag,
+      // "strawPrice": (this.strawFlag) ? (this.strawPrice * this.unitsPerDay) : 0,
+      // "units": 1,
       "delivery_status": "Not delivered",
-      "start_date": this.date_utils.getDateString(this.start_date, "-"),
-      "end_date": this.date_utils.getDateString(this.end_date, "-"),
-      "paid": "No",
+      // "start_date": this.date_utils.getDateString(this.start_date, "-"),
+      // "end_date": this.date_utils.getDateString(this.end_date, "-"),
+      // "paid": "No",
       "nut_type": "sweet",
+      "DND": "No",
       "assigned_to": this.assigned_to,
     }
   }
@@ -427,29 +442,34 @@ export class CustomerViewComponent implements OnInit {
   addToSubscriptionBag() {
     this.subsBtnVisibility = true;
     let index = 0;
+    // debugger;
     this.historyObj = {
       // "start_date": this.date_utils.getDateString(this.start_date, "-"),
       // "end_date": this.date_utils.getDateString(this.end_date, "-"),
-      "totalPrice": this.totalPrice,
-      "per_day": this.unitsPerDay,
+      "total_price": this.totalPrice,
+      "remaining_to_pay": this.totalPrice,
+      // "per_day": this.unitsPerDay,
       "straw": this.strawFlag,
-      "offers": this.diff,
+      // "offers": this.diff,
       "no_of_days": this.subscribedDays,
       "active": "yes",
-      "price": this.originalPrice,
-      "paused": false,
-      "dates": {
-
-      }
+      // "price": this.originalPrice,
+      // "paused": false,
+      "nut_price": this.price + this.deliveryCharges - this.discount,
+      "paid_status": "No",
+      "paid_amt": 0,
+      "nut_type": "",
+      "DND": "No",
+      "dates": {}
     }
-
-    console.log("addToSubscriptionBag");
+    // console.log("addToSubscriptionBag");
     for (var key in this.selectedDays) {
       index++;
       if (this.selectedDays[key] == 1) {
-        // console.log("Key :: " + key);
         let _date = this.date_utils.addDays(new Date(), key);
-        // console.log("date :: " + _date);
+        // console.log(_date);
+        // console.log(this.tenderDetails);
+        // console.log("___________");
         // debugger;
         this.firebase.write_tc_orders(this.date_utils.getDateString(_date, ""), this.mobile, this.tenderDetails);
 
@@ -485,6 +505,7 @@ export class CustomerViewComponent implements OnInit {
   }
 
   onUserDatesClick(evt, data) {
+    this.infoEnabled = false;
     this.selectedDateIndex = data.actualIndex;
     this.selectedDateItem = data;
     this.dayExpired = data.expired;
@@ -532,20 +553,78 @@ export class CustomerViewComponent implements OnInit {
   }
 
   editUpdateAction() {
-    // console.log("editUpdateAction");
-    // console.log(this.selectedDateItem);
     let date = this.date_utils.dateFormater(this.selectedDateItem.date, "");
     // this.historyObj['dates'][date]['replacement'] = this.noOfReplacements;
     // this.historyObj['dates'][date]['count'] = this.editedUnitsPerDay;
 
-    // console.log(this.historyObj['dates'][date]);
-    this.firebase.editupdateWrite(this.mobile, this._service.historyLength, { count: this.editedUnitsPerDay, replacement: this.noOfReplacements, assigned_to: this.assigned_to, delivered_by: '' }, date, () => {
-      this.editEnabled = false;
-      this.btnsView = true;
-      this._changeDet.detectChanges();
-    });
-    // console.log("update : " + this.editedUnitsPerDay + "  -- :: " + this.noOfReplacements);
+    this.historyObj['dates'][date].count = this.editedUnitsPerDay;
     // debugger;
+    //total nut count
+    let _cnt = 0;
+    for (let key in this.historyObj['dates']) {
+      _cnt += this.historyObj['dates'][key].count;
+    }
+
+    // debugger;
+    let _total_price = _cnt * (this.price + this.deliveryCharges - this.discount);
+    // console.log("remainig amt :: " + (_total_price - this.historyObj['paid_amt']));
+    this.firebase.editupdateWrite(this.mobile, this._service.historyLength,
+      {
+        count: this.editedUnitsPerDay,
+        replacement: this.noOfReplacements,
+        assigned_to: this.assigned_to,
+        delivered_by: '',
+        "total_price": _total_price,
+        "remaining_to_pay": _total_price - this.historyObj['paid_amt']
+      },
+      date, () => {
+        // debugger;
+        this.editEnabled = false;
+        this.btnsView = true;
+        this._changeDet.detectChanges();
+      });
+
+
+    // this.tenderDetails = {
+    //   "category": "Vegetables",
+    //   "name": this.data["p_name"],
+    //   "c_name": this.c_name,
+    //   "m_no": this.mobile,
+    //   "img": "assets/products/veg/tender.jpg",
+    //   "id": "product_1",
+    //   "price": this.originalPrice,
+    //   "type": this.selectedNutType,
+    //   "quantity": (this.unitsPerDay * this.subscribedDays),
+    //   "totalPrice": this.totalPrice,
+    //   "per_day": this.unitsPerDay,
+    //   "total": (this.unitsPerDay * this.subscribedDays),
+    //   "no_of_days": this.subscribedDays,
+    //   "sub_type": this.subscribe_type,
+    //   "subscribe": this.subsFlag,
+    //   "offers": this.diff,
+    //   "delivery_charge": this.deliveryCharges * (this.unitsPerDay * this.subscribedDays),
+    //   "straw": this.strawFlag,
+    //   "strawPrice": (this.strawFlag) ? (this.strawPrice * this.unitsPerDay) : 0,
+    //   "units": 1,
+    //   "delivery_status": "Not delivered",
+    //   "start_date": this.date_utils.getDateString(this.start_date, "-"),
+    //   "end_date": this.date_utils.getDateString(this.end_date, "-"),
+    //   "paid": "No",
+    //   "nut_type": "sweet",
+    //   "DND": "No",
+    //   "assigned_to": this.assigned_to,
+    // }
+
+    this.tenderDetails['per_day'] = this.editedUnitsPerDay;
+    this.tenderDetails['replacement'] = this.noOfReplacements;
+    this.tenderDetails['assigned_to'] = this.assigned_to;
+    this.tenderDetails['c_name'] = this.c_name;
+    this.tenderDetails['m_no'] = this.mobile;
+
+    // debugger;
+    this.firebase.write_tc_orders(date, this.mobile, this.tenderDetails);
+
+    this.infoEnabled = true;
   }
 
   editCancelAction() {
@@ -671,7 +750,6 @@ export class CustomerViewComponent implements OnInit {
 
     let actualIndex1 = 0, index1 = 0;
     Object.keys(this.historyObj['dates']).sort().map((key, index) => {
-      trace("key :: " + key);
       actualIndex1++;
       this.historyObj['dates'][key].actualIndex = actualIndex1;
       if (this.historyObj['dates'][key].index != 'postponed') {

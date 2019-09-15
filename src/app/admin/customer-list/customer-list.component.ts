@@ -79,8 +79,7 @@ export class CustomerListComponent implements OnInit, OnDestroy {
     }
 
     this.userListObservable = this.firebase.readDeliverBoys().subscribe((data: any) => {
-      // debugger;
-      let index = -1;
+      var index = -1;
       for (let key in data) {
         index++;
         this.delivery_boys_list.push(data[key]);
@@ -88,13 +87,9 @@ export class CustomerListComponent implements OnInit, OnDestroy {
     });
 
     this.userListUpdateObservable = this._service.onUserListUpdate.subscribe((data) => {
-      // console.log("REcieve data");
-      // console.log(data);
-
       let trace = console.log;
       this.userList = [];
       for (let key in data) {
-        // debugger;
         data[key].mobile = key;
         data[key].checked = false;
 
@@ -113,15 +108,9 @@ export class CustomerListComponent implements OnInit, OnDestroy {
 
           let cnt = 0, _len = data[key].history[len].dates, postponedCnt = 0, todayIndex = 0;
 
-          // data[key].history[len].dates.sort(function (a, b) {
-          //   return a.index - b.index
-          // });
-
-          // let sortedDates = Object.keys(data[key].history[len].dates).sort();
           let lastDeliveryDate = Object.keys(data[key].history[len].dates).sort()[Object.keys(data[key].history[len].dates).length - 1];
           let __date = this.date_utils.dateFormater(lastDeliveryDate, "-");
           let diff = this.date_utils.dateDiff(new Date(), new Date(this.date_utils.stdDateFormater(__date, "/")));
-          // trace("diff :: " + diff);
           // debugger;
 
           // data[key].history[len].dates.sort();
@@ -133,12 +122,18 @@ export class CustomerListComponent implements OnInit, OnDestroy {
 
           // trace("postpooned cnt :: " + postponedCnt);
           if (diff > 0) {
-            data[key].remainingDays = (diff - postponedCnt);
+            // data[key].remainingDays = (diff - postponedCnt);
+            data[key].remainingDays = (diff);
           } else {
             // this.orderStatus = "in-active";
             data[key].active = "expired";
             // trace("in activbe");
+
           }
+          trace("diff :: " + diff);
+          trace("postponedCnt :: " + postponedCnt);
+          trace("key :: " + key);
+          trace("data[key].remainingDays :: " + data[key].remainingDays);
         } catch (e) { }
         this.userList.push(data[key]);
       }

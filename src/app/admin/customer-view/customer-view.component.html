@@ -4,6 +4,41 @@
     <button (click)="clickToHome()">home</button>
   </div> -->
 
+
+  <table class="tg" *ngIf="ordersExist">
+    <tr>
+      <th class="tg-0pky">Customer name </th>
+      <th class="tg-0pky">{{this.c_name}}</th>
+    </tr>
+    <tr>
+      <td class="tg-0lax">Contact </td>
+      <td class="tg-0lax">{{this.mobile}}</td>
+    </tr>
+    <tr>
+      <td class="tg-0lax">Total nut count </td>
+      <td class="tg-0lax">{{total_nut_cnt}}</td>
+    </tr>
+
+    <tr>
+      <td class="tg-0lax">Nut price </td>
+      <td class="tg-0lax">{{historyObj.nut_price}}</td>
+    </tr>
+
+    <tr>
+      <td class="tg-0lax">Total price</td>
+      <td class="tg-0lax">{{historyObj.total_price}}</td>
+    </tr>
+    <tr>
+      <td class="tg-0lax">Remaining to pay</td>
+      <td class="tg-0lax">{{historyObj.remaining_to_pay}}</td>
+    </tr>
+    <tr>
+      <td class="tg-0lax">Pay status</td>
+      <td class="tg-0lax">{{historyObj.paid_status}}</td>
+    </tr>
+
+  </table>
+
   <div class="row" style="margin-top:12px;">
     <div class="col-3" *ngFor="let item of orders; let i = index;" (click)="onUserDatesClick($event, item)"
       (clickOutside)=" closeOutsideSidenav()"
@@ -27,12 +62,19 @@
             class="col-12 center">
             {{item.assigned_to}}
           </div>
+          <div
+            style="border-top:1px dashed #ccc; padding: 6px; text-align: center; font-size: 12px; background: rgba(230,230,230,.5);"
+            class="col-12 center">
+            {{item.delivered_by}}
+          </div>
 
           <!-- <div>{{item.expired}}</div> -->
         </div>
       </div>
     </div>
   </div>
+
+
 
   <!-- Edit options -->
   <div class="row" *ngIf="editEnabled">

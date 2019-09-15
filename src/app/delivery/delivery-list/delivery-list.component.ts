@@ -22,6 +22,9 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
 
   dateUtils: DateUtils;
   todaysDate: any;
+  todaysDateFormatted: any;
+  listFlg: boolean = true;
+  sub: any;
 
   constructor(
     private _activatedRoute: ActivatedRoute,
@@ -34,7 +37,8 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this._activatedRoute.paramMap.subscribe(params => {
+
+    this.sub = this._activatedRoute.paramMap.subscribe(params => {
       this.mobile = params.get('mobile');
       this.name = params.get('name');
     });
@@ -48,7 +52,10 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
       this.todaysDate = this.dateUtils.getDateString(this.dateUtils.addDays(this.todaysDate, 1), "");
     }
 
+    this.todaysDateFormatted = this.dateUtils.dateFormater(this.todaysDate, "-");
+
     this.listObservable = this.fb.readDailyOrders(this.todaysDate).subscribe((data: any) => {
+      this.listFlg = false;
       for (let key in data) {
         if (JSON.parse(data[key].tender).assigned_to == this.name) {
           this.list.push({
@@ -57,6 +64,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
           });
         }
       }
+      // debugger;
       this.changeDet.detectChanges();
     });
   }
@@ -71,16 +79,22 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
     // console.log("view action.");
     this.selectedIndex = e.currentTarget.id.split("_")[1] * 1;
     this.selectedTarget = this.list[this.selectedIndex].data;
+    this.selectedTarget.date = this.todaysDate;
+    // debugger;
     this._router.navigate(['/delivery/view-order/', { data: JSON.stringify(this.selectedTarget) }]);
     // this.ngZone.run(() => console.log("view route."));
   }
 
-  deliveredAction() {
-
+  deliveredAction(e) {
+    console.log("deliverd");
+    this.selectedIndex = e.currentTarget.id.split("_")[1] * 1;
+    this.selectedTarget = this.list[this.selectedIndex].data;
+    // console.log(this.selectedTarget);
   }
 
   ngOnDestroy(): void {
     this.listObservable.unsubscribe();
+    this.sub.unsubscribe();
   }
 
 }

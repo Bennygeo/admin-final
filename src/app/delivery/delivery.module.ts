@@ -9,6 +9,8 @@ import { Ng2SearchPipe } from 'ng2-search-filter';
 
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { OrderViewComponent } from './order-view/order-view.component';
+import { MatProgressSpinnerModule, MatSnackBarModule } from '@angular/material';
+import { CommonsService } from '../services/commons.service';
 
 @NgModule({
   declarations: [
@@ -20,10 +22,13 @@ import { OrderViewComponent } from './order-view/order-view.component';
     CommonModule,
     DeliveryRoutingModule,
     FormsModule,
-    DragDropModule
+    DragDropModule,
+    MatProgressSpinnerModule,
+    MatSnackBarModule
   ],
   providers: [
-    Ng2SearchPipe
+    Ng2SearchPipe,
+    CommonsService
   ]
 })
 export class DeliveryModule { }

@@ -53,6 +53,15 @@ export class FireBase implements OnInit {
         });
     }
 
+    public readLastOrder(id, lastID) {
+        return new Observable((observer) => {
+            var ref = this.db.database.ref("users_info/" + id + '/history/' + lastID);
+            ref.on("value", function (snapshot) {
+                observer.next(snapshot.exportVal());
+            });
+        });
+    }
+
     public readDailyOrders(date) {
         // console.log("readDailyOrders");
         return new Observable((observer) => {
@@ -111,12 +120,18 @@ export class FireBase implements OnInit {
                 console.log("Data saved successfully!");
             }
         });
+    }
 
+    public write_package_info(mobile, data) {
+        this.db.database.ref("/users_info/" + mobile).update({
+
+        });
     }
 
     public user_history(id, obj, active, cnt, callback) {
-        this.db.database.ref("/users_info/" + id + '/history/').update({
-            [cnt]: obj
+        this.db.database.ref("/users_info/" + id).update({
+            [cnt]: obj,
+            ['/history/active']: active
         }, (error) => {
             if (error) console.log("The write failed...");
             else {
@@ -125,12 +140,22 @@ export class FireBase implements OnInit {
             }
         });
 
-        this.db.database.ref("/users_info/" + id + "/").update({
-            active: active
-        }, (error) => {
-            if (error) console.log("The write failed...");
-            // else console.log("Data saved successfully!");
-        });
+        // this.db.database.ref("/users_info/" + id + '/history/').update({
+        //     [cnt]: obj,
+        // }, (error) => {
+        //     if (error) console.log("The write failed...");
+        //     else {
+        //         console.log("Data saved successfully!");
+        //         callback();
+        //     }
+        // });
+
+        // this.db.database.ref("/users_info/" + id + "/").update({
+        //     active: active
+        // }, (error) => {
+        //     if (error) console.log("The write failed...");
+        //     // else console.log("Data saved successfully!");
+        // });
     }
 
     /*
@@ -149,6 +174,16 @@ export class FireBase implements OnInit {
     }
 
     public editupdateWrite(id, cnt, obj, date, callback) {
+        this.db.database.ref("/users_info/" + id + "/history/" + cnt).update({
+            "total_price": obj.total_price,
+            "remaining_to_pay": obj.remaining_to_pay,
+        }, (error) => {
+            if (error) console.log("The write failed :: editupdateWrite history main");
+            else {
+                // callback();
+                console.log("Data saved successfully!  history main");
+            }
+        });
         // debugger;
         this.db.database.ref("/users_info/" + id + "/history/" + cnt + "/dates/" + date).update({
             'replacement': obj.replacement,
