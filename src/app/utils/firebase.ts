@@ -177,6 +177,7 @@ export class FireBase implements OnInit {
         this.db.database.ref("/users_info/" + id + "/history/" + cnt).update({
             "total_price": obj.total_price,
             "remaining_to_pay": obj.remaining_to_pay,
+            "paid_status": obj.paid_status
         }, (error) => {
             if (error) console.log("The write failed :: editupdateWrite history main");
             else {
@@ -184,7 +185,6 @@ export class FireBase implements OnInit {
                 console.log("Data saved successfully!  history main");
             }
         });
-        // debugger;
         this.db.database.ref("/users_info/" + id + "/history/" + cnt + "/dates/" + date).update({
             'replacement': obj.replacement,
             'count': obj.count,
@@ -194,6 +194,22 @@ export class FireBase implements OnInit {
             else {
                 callback();
                 console.log("Data saved successfully!");
+            }
+        });
+    }
+
+    //write from order view component
+    public packageInfoUpdate(id, cnt, obj, date, callback) {
+        this.db.database.ref("/users_info/" + id + "/history/" + cnt).update({
+            "total_price": obj.total_price,
+            "remaining_to_pay": obj.remaining_to_pay,
+            "paid_amt": obj.paid_amt,
+            "paid_status": obj.paid_status
+        }, (error) => {
+            if (error) console.log("The write failed :: editupdateWrite history main");
+            else {
+                callback();
+                console.log("Data saved successfully!  history main");
             }
         });
     }

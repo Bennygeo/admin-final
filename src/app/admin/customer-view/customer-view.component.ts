@@ -219,7 +219,7 @@ export class CustomerViewComponent implements OnInit {
             count: _data["dates"][key].count,
             assigned_to: _data["dates"][key].assigned_to,
             //set expired if days or less than today || todaysTime >= 11            
-            expired: (Math.sign(this.date_utils.dateDiff(new Date(), new Date(this.date_utils.stdDateFormater(__date, "/")))) == -1 || todayTime <= 11) ? true : false,
+            expired: (Math.sign(this.date_utils.dateDiff(new Date(), new Date(this.date_utils.stdDateFormater(__date, "/")))) == -1 && todayTime <= 11) ? true : false,
             postponed: (_data["dates"][key].index == 'postponed') ? true : false,
             stopped: (_data["dates"][key].index == 'Stopped') ? true : false,
             today: diff == 0 ? true : false,
@@ -575,7 +575,8 @@ export class CustomerViewComponent implements OnInit {
         assigned_to: this.assigned_to,
         delivered_by: '',
         "total_price": _total_price,
-        "remaining_to_pay": _total_price - this.historyObj['paid_amt']
+        "remaining_to_pay": _total_price - this.historyObj['paid_amt'],
+        "paid_status": ""
       },
       date, () => {
         // debugger;

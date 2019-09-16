@@ -17,6 +17,7 @@ export class OrderViewComponent implements OnInit, OnDestroy {
   overlay: boolean = false;
   priceVal: number = 0;
   firebase: FireBase
+  historyLength: any;
   packageData: any = {
     'no_of_days': 0
   };
@@ -57,13 +58,12 @@ export class OrderViewComponent implements OnInit, OnDestroy {
   readPackageInfo() {
     console.log("readPackageInfo");
     this.readOrders = this.firebase.readOrders(this.data.m_no).subscribe((data: any) => {
-      var historyLength = 0;
       try {
-        historyLength = Object.keys(data).length || 0;
+        this.historyLength = Object.keys(data).length || 0;
       } catch (e) {
-        historyLength = 0;
+        this.historyLength = 0;
       }
-      this.packageData = data[historyLength];
+      this.packageData = data[this.historyLength];
       this._changeDet.detectChanges();
     });
   }
@@ -89,33 +89,54 @@ export class OrderViewComponent implements OnInit, OnDestroy {
   modalSaveAction() {
 
     console.log("modalSaveAction");
-    if (this.priceVal == this.data.totalPrice) {
-      // this.data.delivery_status = "Delivered";
-      this.data.paid_amt = this.priceVal;
-      this.data.paid = "paid";
-      this.data.remaining_to_pay = 0;
-    } else if (this.priceVal > 0 && this.priceVal < this.data.totalPrice) {
-      this.data.paid_amt = this.priceVal;
-      this.data.paid = "partially paid";
-      this.data.remaining_to_pay = this.data.totalPrice - this.priceVal;
-    } else {
-      this.data.paid = "Not paid";
-      this.data.remaining_to_pay = this.data.totalPrice;
-    }
+    // if (this.priceVal == this.data.totalPrice) {
+    //   // this.data.delivery_status = "Delivered";
+    //   this.data.paid_amt = this.priceVal;
+    //   this.data.paid = "paid";
+    //   this.data.remaining_to_pay = 0;
+    // } else if (this.priceVal > 0 && this.priceVal < this.data.totalPrice) {
+    //   this.data.paid_amt = this.priceVal;
+    //   this.data.paid = "partially paid";
+    //   this.data.remaining_to_pay = this.data.totalPrice - this.priceVal;
+    // } else {
+    //   this.data.paid = "Not paid";
+    //   this.data.remaining_to_pay = this.data.totalPrice;
+    // }
     (this.overlay) ? this.overlay = false : this.overlay = true;
+
+    console.log("this.packageData.total_price :: " + this.packageData.total_price);
+    console.log("this.priceVal :: " + this.priceVal);
+    console.log("paid amt :: " + (this.packageData.remaining_to_pay - this.priceVal));
+    let remaining = this.packageData.remaining_to_pay - this.priceVal;//this.packageData.remaining_to_pay - this.packageData.paid_amt;
+    let paid = Math.abs(remaining - this.packageData.total_price);
+    let status = "";
+    console.log("paid : " + paid);
+    console.log("remaining : " + remaining);
     // debugger;
     // this.firebase.write_tc_orders(this.data.date, this.data.m_no, this.data);
 
-    // this.firebase.editupdateWrite(this.mobile, this._service.historyLength,
-    //   {
-    //     "total_price": _total_price,
-    //     "remaining_to_pay": _total_price - this.historyObj['paid_amt'],
-    //     "paid_status": ""
-    //   },
-    //   date, () => {
-    //     // debugger;
-    //     this._changeDet.detectChanges();
-    //   });
+    if (paid == this.packageData.total_price) {
+      status = "Paid";
+    } else if (paid != 0 && paid < this.packageData.total_price) {
+      status = "Partially paid";
+    } else {
+      status = "Not paid";
+    }
+
+    this.firebase.packageInfoUpdate(this.data.m_no, this.historyLength,
+      {
+        "total_price": this.packageData.total_price,
+        "paid_amt": paid,
+        "remaining_to_pay": remaining,
+        "paid_status": status
+      },
+      this.data.date, () => {
+        // debugger;
+        this._changeDet.detectChanges();
+      });
+
+
+
   }
 
   modalCancelAction() {
