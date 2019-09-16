@@ -63,7 +63,7 @@ export class OrderViewComponent implements OnInit, OnDestroy {
       } catch (e) {
         this.historyLength = 0;
       }
-      this.packageData = data[this.historyLength];
+      this.packageData = data[this.historyLength].details;
       this._changeDet.detectChanges();
     });
   }
@@ -87,31 +87,17 @@ export class OrderViewComponent implements OnInit, OnDestroy {
   }
 
   modalSaveAction() {
-
     console.log("modalSaveAction");
-    // if (this.priceVal == this.data.totalPrice) {
-    //   // this.data.delivery_status = "Delivered";
-    //   this.data.paid_amt = this.priceVal;
-    //   this.data.paid = "paid";
-    //   this.data.remaining_to_pay = 0;
-    // } else if (this.priceVal > 0 && this.priceVal < this.data.totalPrice) {
-    //   this.data.paid_amt = this.priceVal;
-    //   this.data.paid = "partially paid";
-    //   this.data.remaining_to_pay = this.data.totalPrice - this.priceVal;
-    // } else {
-    //   this.data.paid = "Not paid";
-    //   this.data.remaining_to_pay = this.data.totalPrice;
-    // }
     (this.overlay) ? this.overlay = false : this.overlay = true;
 
-    console.log("this.packageData.total_price :: " + this.packageData.total_price);
-    console.log("this.priceVal :: " + this.priceVal);
-    console.log("paid amt :: " + (this.packageData.remaining_to_pay - this.priceVal));
+    // console.log("this.packageData.total_price :: " + this.packageData.total_price);
+    // console.log("this.priceVal :: " + this.priceVal);
+    // console.log("paid amt :: " + (this.packageData.remaining_to_pay - this.priceVal));
     let remaining = this.packageData.remaining_to_pay - this.priceVal;//this.packageData.remaining_to_pay - this.packageData.paid_amt;
     let paid = Math.abs(remaining - this.packageData.total_price);
     let status = "";
-    console.log("paid : " + paid);
-    console.log("remaining : " + remaining);
+    // console.log("paid : " + paid);
+    // console.log("remaining : " + remaining);
     // debugger;
     // this.firebase.write_tc_orders(this.data.date, this.data.m_no, this.data);
 
@@ -134,9 +120,6 @@ export class OrderViewComponent implements OnInit, OnDestroy {
         // debugger;
         this._changeDet.detectChanges();
       });
-
-
-
   }
 
   modalCancelAction() {

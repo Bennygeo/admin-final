@@ -129,9 +129,9 @@ export class FireBase implements OnInit {
     }
 
     public user_history(id, obj, active, cnt, callback) {
-        this.db.database.ref("/users_info/" + id).update({
+        this.db.database.ref("/users_info/" + id + '/history/').update({
             [cnt]: obj,
-            ['/history/active']: active
+            // 'active': active
         }, (error) => {
             if (error) console.log("The write failed...");
             else {
@@ -200,7 +200,7 @@ export class FireBase implements OnInit {
 
     //write from order view component
     public packageInfoUpdate(id, cnt, obj, date, callback) {
-        this.db.database.ref("/users_info/" + id + "/history/" + cnt).update({
+        this.db.database.ref("/users_info/" + id + "/history/" + cnt + "/details").update({
             "total_price": obj.total_price,
             "remaining_to_pay": obj.remaining_to_pay,
             "paid_amt": obj.paid_amt,

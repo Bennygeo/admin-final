@@ -86,9 +86,10 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
   }
 
   deliveredAction(e) {
-    console.log("deliverd");
+    // console.log("deliverd");
     this.selectedIndex = e.currentTarget.id.split("_")[1] * 1;
     this.selectedTarget = this.list[this.selectedIndex].data;
+    debugger;
     // console.log(this.selectedTarget);
   }
 

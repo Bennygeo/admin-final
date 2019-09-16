@@ -1,10 +1,11 @@
-import { Component, OnInit, ChangeDetectorRef, Input, Output, EventEmitter, HostListener } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, Input, Output, EventEmitter, HostListener, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CommonsService } from 'src/app/services/commons.service';
 import { FireBase } from 'src/app/utils/firebase';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { Utils } from 'src/app/utils/utils';
 import { DateUtils } from 'src/app/utils/date-utils';
+import { Observable, Subscriber } from 'rxjs';
 
 @Component({
   selector: 'app-customer-view',
@@ -12,7 +13,8 @@ import { DateUtils } from 'src/app/utils/date-utils';
   styleUrls: ['./customer-view.component.scss']
 })
 
-export class CustomerViewComponent implements OnInit {
+export class CustomerViewComponent implements OnInit, OnDestroy {
+
 
   /*
   * Tender types
@@ -96,6 +98,7 @@ export class CustomerViewComponent implements OnInit {
   //orders;
   orders: Array<any>;
   historyObj: Object = {};
+  orderInfo: Object = {};
   msg: string;
   btnsView: boolean = false;
   ordersExist: boolean = true;
@@ -123,6 +126,9 @@ export class CustomerViewComponent implements OnInit {
   infoEnabled: boolean = true;
   total_nut_cnt: number = 0;
   pay_status: string = "";
+
+  sub: any;
+  orders_subscriber: any;
 
   constructor(
     private _service: CommonsService,
@@ -174,14 +180,16 @@ export class CustomerViewComponent implements OnInit {
       }
     });
 
-    this._activatedRoute.paramMap.subscribe(params => {
+    this.sub = this._activatedRoute.paramMap.subscribe(params => {
+      console.log("router params");
       this.mobile = params.get('mobile');
       this.status = params.get('status');
       this.c_name = params.get('name');
 
       // console.log("this.mobile :: " + this.mobile);
-      this.firebase.readOrders(this.mobile).subscribe((data: any) => {
+      this.orders_subscriber = this.firebase.readOrders(this.mobile).subscribe((data: any) => {
         // debugger;
+        // console.log("this.orders_subscriber.unsubscribe();");
         try {
           this._service.historyLength = Object.keys(data).length || 0;
         } catch (e) {
@@ -195,9 +203,12 @@ export class CustomerViewComponent implements OnInit {
         };
 
         this.ordersExist = true;
+        // debugger;
         let _data = data[this._service.historyLength];
 
+        // debugger;
         this.historyObj = _data;
+        this.orderInfo = _data.details;
         // debugger;
         let cnt = -1;
 
@@ -205,6 +216,7 @@ export class CustomerViewComponent implements OnInit {
         let todayTime = new Date().getHours();
 
         this.total_nut_cnt = 0;
+        let todayFlg = false;
         for (var key in _data["dates"]) {
           cnt++;
           var __date = this.date_utils.dateFormater(key, "-");
@@ -212,6 +224,8 @@ export class CustomerViewComponent implements OnInit {
           let diff = (this.date_utils.dateDiff(new Date(), new Date(this.date_utils.stdDateFormater(__date, "/"))));
 
           this.total_nut_cnt += _data["dates"][key].count;
+          todayFlg = (Math.sign(this.date_utils.dateDiff(new Date(), new Date(this.date_utils.stdDateFormater(__date, "/"))))) == 0 ? true : false;
+          if (todayFlg && todayTime <= 10) todayFlg = false;
 
           this.orders[cnt] = {
             index: _data["dates"][key].index,
@@ -219,7 +233,8 @@ export class CustomerViewComponent implements OnInit {
             count: _data["dates"][key].count,
             assigned_to: _data["dates"][key].assigned_to,
             //set expired if days or less than today || todaysTime >= 11            
-            expired: (Math.sign(this.date_utils.dateDiff(new Date(), new Date(this.date_utils.stdDateFormater(__date, "/")))) == -1 && todayTime <= 11) ? true : false,
+            // expired: (Math.sign(this.date_utils.dateDiff(new Date(), new Date(this.date_utils.stdDateFormater(__date, "/")))) == -1 || todayFlg) ? true : false,
+            expired: (Math.sign(this.date_utils.dateDiff(new Date(), new Date(this.date_utils.stdDateFormater(__date, "/")))) == -1) ? true : false,
             postponed: (_data["dates"][key].index == 'postponed') ? true : false,
             stopped: (_data["dates"][key].index == 'Stopped') ? true : false,
             today: diff == 0 ? true : false,
@@ -233,9 +248,9 @@ export class CustomerViewComponent implements OnInit {
         this.orders.sort(function (a, b) {
           return a.actualIndex - b.actualIndex
         });
-        // this._changeDet.detectChanges();
-      });
 
+        this._changeDet.detectChanges();
+      });
     });
   }
 
@@ -350,9 +365,10 @@ export class CustomerViewComponent implements OnInit {
       // "start_date": this.date_utils.getDateString(this.start_date, "-"),
       // "end_date": this.date_utils.getDateString(this.end_date, "-"),
       // "paid": "No",
-      "nut_type": "sweet",
-      "DND": "No",
+      // "nut_type": "sweet",
+      // "DND": "No",
       "assigned_to": this.assigned_to,
+      "history_id": this._service.historyLength + 1
     }
   }
 
@@ -443,34 +459,57 @@ export class CustomerViewComponent implements OnInit {
     this.subsBtnVisibility = true;
     let index = 0;
     // debugger;
+    // this.historyObj = {
+    //   // "start_date": this.date_utils.getDateString(this.start_date, "-"),
+    //   // "end_date": this.date_utils.getDateString(this.end_date, "-"),
+    //   "total_price": this.totalPrice,
+    //   "remaining_to_pay": this.totalPrice,
+    //   // "per_day": this.unitsPerDay,
+    //   "straw": this.strawFlag,
+    //   // "offers": this.diff,
+    //   "no_of_days": this.subscribedDays,
+    //   "active": "yes",
+    //   // "price": this.originalPrice,
+    //   // "paused": false,
+    //   "nut_price": this.price + this.deliveryCharges - this.discount,
+    //   "paid_status": "No",
+    //   "paid_amt": 0,
+    //   "nut_type": "",
+    //   "DND": "No",
+    //   "instructions": "hole and open",
+    //   "special_notes": "",
+    //   "dates": {}
+    // }
+
     this.historyObj = {
-      // "start_date": this.date_utils.getDateString(this.start_date, "-"),
-      // "end_date": this.date_utils.getDateString(this.end_date, "-"),
-      "total_price": this.totalPrice,
-      "remaining_to_pay": this.totalPrice,
-      // "per_day": this.unitsPerDay,
-      "straw": this.strawFlag,
-      // "offers": this.diff,
-      "no_of_days": this.subscribedDays,
-      "active": "yes",
-      // "price": this.originalPrice,
-      // "paused": false,
-      "nut_price": this.price + this.deliveryCharges - this.discount,
-      "paid_status": "No",
-      "paid_amt": 0,
-      "nut_type": "",
-      "DND": "No",
+      "details": {
+        // "start_date": this.date_utils.getDateString(this.start_date, "-"),
+        // "end_date": this.date_utils.getDateString(this.end_date, "-"),
+        "total_price": this.totalPrice,
+        "remaining_to_pay": this.totalPrice,
+        // "per_day": this.unitsPerDay,
+        "straw": this.strawFlag,
+        // "offers": this.diff,
+        "no_of_days": this.subscribedDays,
+        "active": "yes",
+        // "price": this.originalPrice,
+        // "paused": false,
+        "nut_price": this.price + this.deliveryCharges - this.discount,
+        "paid_status": "No",
+        "paid_amt": 0,
+        "nut_type": "",
+        "DND": "No",
+        "instructions": "hole and open",
+        "special_notes": "",
+      },
       "dates": {}
     }
+
     // console.log("addToSubscriptionBag");
     for (var key in this.selectedDays) {
       index++;
       if (this.selectedDays[key] == 1) {
         let _date = this.date_utils.addDays(new Date(), key);
-        // console.log(_date);
-        // console.log(this.tenderDetails);
-        // console.log("___________");
-        // debugger;
         this.firebase.write_tc_orders(this.date_utils.getDateString(_date, ""), this.mobile, this.tenderDetails);
 
         this.historyObj['dates'][this.date_utils.getDateString(_date, "")] = {
@@ -797,6 +836,11 @@ export class CustomerViewComponent implements OnInit {
   stopCancelAction() {
     this.stopEnabled = false;
     this.btnsView = true;
+  }
+
+  ngOnDestroy(): void {
+    this.sub.unsubscribe();
+    this.orders_subscriber.unsubscribe();
   }
 }
 
