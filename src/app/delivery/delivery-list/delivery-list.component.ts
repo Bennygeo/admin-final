@@ -25,6 +25,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
   todaysDateFormatted: any;
   listFlg: boolean = true;
   sub: any;
+  deliveredFlg: boolean = false;
 
   constructor(
     private _activatedRoute: ActivatedRoute,
@@ -57,10 +58,13 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
     this.listObservable = this.fb.readDailyOrders(this.todaysDate).subscribe((data: any) => {
       this.listFlg = false;
       for (let key in data) {
-        if (JSON.parse(data[key].tender).assigned_to == this.name) {
+        let _data = JSON.parse(data[key].tender);
+        let deliveryFlg = (_data.delivery_status == "Delivered") ? true : false;
+        if (_data.assigned_to == this.name) {
           this.list.push({
             no: key,
-            data: JSON.parse(data[key].tender)
+            delivery_status: deliveryFlg,
+            data: _data
           });
         }
       }
@@ -75,12 +79,9 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
   }
 
   viewAction(e) {
-    // debugger;
-    // console.log("view action.");
     this.selectedIndex = e.currentTarget.id.split("_")[1] * 1;
     this.selectedTarget = this.list[this.selectedIndex].data;
     this.selectedTarget.date = this.todaysDate;
-    // debugger;
     this._router.navigate(['/delivery/view-order/', { data: JSON.stringify(this.selectedTarget) }]);
     // this.ngZone.run(() => console.log("view route."));
   }
@@ -89,8 +90,9 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
     // console.log("deliverd");
     this.selectedIndex = e.currentTarget.id.split("_")[1] * 1;
     this.selectedTarget = this.list[this.selectedIndex].data;
-    debugger;
-    // console.log(this.selectedTarget);
+
+    this.selectedTarget.delivery_status = "Delivered";
+    this.fb.update_delivery_status(this.selectedTarget.m_no, this.selectedTarget, this.todaysDate);
   }
 
   ngOnDestroy(): void {

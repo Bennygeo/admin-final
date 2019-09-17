@@ -6,7 +6,7 @@
 
     <mat-spinner *ngIf="listFlg" style="margin:0 auto;"></mat-spinner>
 
-    <div cdkDropList (cdkDropListDropped)="drop($event)">
+    <div cdkDropList (cdkDropListDropped)="drop($event)" disabled>
         <div class="row box" cdkDrag *ngFor="let item of list; let i = index;" id="{{'list_' + i}}">
             <div class="col-7">
                 <div class="customer_name">{{item.data.c_name||'unknown'}}</div>
@@ -21,7 +21,8 @@
                 <button style="margin:3px; height: 36px;" class="btn btn-primary btns" (click)="viewAction($event)"
                     id="{{'view_'+i}}">View</button>
                 <button style="margin:3px; height: 36px;" class="btn btn-primary btns" (click)="deliveredAction($event)"
-                    id="{{'deliver_'+i}}">Delivered</button>
+                    id="{{'deliver_'+i}}" [ngClass]="[item.delivery_status ? 'delivered' : 'notDelivered']"
+                    [disabled]=item.delivery_status>Delivered</button>
             </div>
             <div class="col-12">
                 <span class="delivery_count">{{item.data.per_day}} units</span>&nbsp;

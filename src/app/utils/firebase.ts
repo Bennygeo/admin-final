@@ -173,6 +173,18 @@ export class FireBase implements OnInit {
         });
     }
 
+    public update_delivery_status(id, obj, date) {
+        this.db.database.ref("/orders/" + date + "/" + id + "/").update({
+            "tender": JSON.stringify(obj)
+        }, (error) => {
+            if (error) console.log("The write failed :: updateDeliveryStatus");
+            else {
+                // callback();
+                console.log("Data saved successfully! :: updateDeliveryStatus");
+            }
+        });
+    }
+
     public editupdateWrite(id, cnt, obj, date, callback) {
         this.db.database.ref("/users_info/" + id + "/history/" + cnt).update({
             "total_price": obj.total_price,
