@@ -64,7 +64,7 @@
           </div>
           <div
             style="border-top:1px dashed #ccc; padding: 6px; text-align: center; font-size: 12px; background: rgba(230,230,230,.5);"
-            class="col-12 center">
+            class="col-12 center" [ngStyle]="{'background': item.delivered ? '#53e43a5c' : '#DDD'}">
             {{item.delivered_by}}
           </div>
 

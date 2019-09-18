@@ -22,7 +22,7 @@
                     id="{{'view_'+i}}">View</button>
                 <button style="margin:3px; height: 36px;" class="btn btn-primary btns" (click)="deliveredAction($event)"
                     id="{{'deliver_'+i}}" [ngClass]="[item.delivery_status ? 'delivered' : 'notDelivered']"
-                    [disabled]=item.delivery_status>Delivered</button>
+                    [disabled]=item.delivery_status>{{item.delivery_string}}</button>
             </div>
             <div class="col-12">
                 <span class="delivery_count">{{item.data.per_day}} units</span>&nbsp;

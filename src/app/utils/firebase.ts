@@ -173,7 +173,7 @@ export class FireBase implements OnInit {
         });
     }
 
-    public update_delivery_status(id, obj, date) {
+    public update_delivery_status_order(id, obj, date) {
         this.db.database.ref("/orders/" + date + "/" + id + "/").update({
             "tender": JSON.stringify(obj)
         }, (error) => {
@@ -181,6 +181,20 @@ export class FireBase implements OnInit {
             else {
                 // callback();
                 console.log("Data saved successfully! :: updateDeliveryStatus");
+            }
+        });
+    }
+
+    public update_delivery_status_user_history(mobile, index, date, obj) {
+        console.log("update_delivery_status_user_history :: ", mobile, index, date, obj);
+        this.db.database.ref("/users_info/" + mobile + "/history/" + index + "/dates/" + date + "/").update({
+            "delivered": obj.delivered,
+            "delivered_by": obj.delivered_by
+        }, (error) => {
+            if (error) console.log("The write failed :: update_delivery_status_user_history");
+            else {
+                // callback();
+                // console.log("Data saved successfully! :: updateDeliveryStatus");
             }
         });
     }

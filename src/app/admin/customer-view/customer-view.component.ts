@@ -234,11 +234,12 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
             assigned_to: _data["dates"][key].assigned_to,
             //set expired if days or less than today || todaysTime >= 11            
             // expired: (Math.sign(this.date_utils.dateDiff(new Date(), new Date(this.date_utils.stdDateFormater(__date, "/")))) == -1 || todayFlg) ? true : false,
-            expired: (Math.sign(this.date_utils.dateDiff(new Date(), new Date(this.date_utils.stdDateFormater(__date, "/")))) == -1) ? true : false,
+            expired: (Math.sign(this.date_utils.dateDiff(new Date(), new Date(this.date_utils.stdDateFormater(__date, "/")))) == -1 || _data["dates"][key].delivered || todayFlg) ? true : false,
             postponed: (_data["dates"][key].index == 'postponed') ? true : false,
             stopped: (_data["dates"][key].index == 'Stopped') ? true : false,
             today: diff == 0 ? true : false,
             actualIndex: _data["dates"][key].actualIndex,
+            delivered: (_data["dates"][key].delivered),
             delivered_by: (_data["dates"][key].delivered_by == 'nil') ? "Undelivered" : "Delivered"
           };
         }
@@ -459,27 +460,6 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     this.subsBtnVisibility = true;
     let index = 0;
     // debugger;
-    // this.historyObj = {
-    //   // "start_date": this.date_utils.getDateString(this.start_date, "-"),
-    //   // "end_date": this.date_utils.getDateString(this.end_date, "-"),
-    //   "total_price": this.totalPrice,
-    //   "remaining_to_pay": this.totalPrice,
-    //   // "per_day": this.unitsPerDay,
-    //   "straw": this.strawFlag,
-    //   // "offers": this.diff,
-    //   "no_of_days": this.subscribedDays,
-    //   "active": "yes",
-    //   // "price": this.originalPrice,
-    //   // "paused": false,
-    //   "nut_price": this.price + this.deliveryCharges - this.discount,
-    //   "paid_status": "No",
-    //   "paid_amt": 0,
-    //   "nut_type": "",
-    //   "DND": "No",
-    //   "instructions": "hole and open",
-    //   "special_notes": "",
-    //   "dates": {}
-    // }
 
     this.historyObj = {
       "details": {

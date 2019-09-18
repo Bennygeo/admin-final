@@ -25,6 +25,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
   todaysDateFormatted: any;
   listFlg: boolean = true;
   sub: any;
+  deliveredStatus: string = "Delivered";
   deliveredFlg: boolean = false;
 
   constructor(
@@ -60,10 +61,12 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
       for (let key in data) {
         let _data = JSON.parse(data[key].tender);
         let deliveryFlg = (_data.delivery_status == "Delivered") ? true : false;
+        this.deliveredStatus = (deliveryFlg) ? "Done" : "Delivered";
         if (_data.assigned_to == this.name) {
           this.list.push({
             no: key,
             delivery_status: deliveryFlg,
+            delivery_string: this.deliveredStatus,
             data: _data
           });
         }
@@ -91,8 +94,16 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
     this.selectedIndex = e.currentTarget.id.split("_")[1] * 1;
     this.selectedTarget = this.list[this.selectedIndex].data;
 
+    // debugger;
     this.selectedTarget.delivery_status = "Delivered";
-    this.fb.update_delivery_status(this.selectedTarget.m_no, this.selectedTarget, this.todaysDate);
+    // update order history
+    this.fb.update_delivery_status_order(this.selectedTarget.m_no, this.selectedTarget, this.todaysDate);
+    // //update user history
+    // // console.log("this.todaysDate :: " + this.todaysDate);
+    this.fb.update_delivery_status_user_history(this.selectedTarget.m_no, this.selectedTarget.history_id, this.todaysDate, {
+      delivered: true,
+      delivered_by: this.selectedTarget.assigned_to
+    });
   }
 
   ngOnDestroy(): void {
