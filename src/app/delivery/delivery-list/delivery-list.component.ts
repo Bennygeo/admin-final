@@ -85,6 +85,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
     this.selectedIndex = e.currentTarget.id.split("_")[1] * 1;
     this.selectedTarget = this.list[this.selectedIndex].data;
     this.selectedTarget.date = this.todaysDate;
+    // debugger;
     this._router.navigate(['/delivery/view-order/', { data: JSON.stringify(this.selectedTarget) }]);
     // this.ngZone.run(() => console.log("view route."));
   }

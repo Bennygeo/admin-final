@@ -1,7 +1,8 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { LoginComponent } from './login/login.component';
-import { AddressComponent } from './admin/address/address.component';
+import { NoAccessComponent } from './others/no-access/no-access.component';
+import { PageNotFoundComponent } from './others/page-not-found/page-not-found.component';
 
 const routes: Routes = [
   {
@@ -26,7 +27,9 @@ const routes: Routes = [
   {
     path: 'delivery',
     loadChildren: './delivery/delivery.module#DeliveryModule'
-  }
+  },
+  { path: 'no-access', component: NoAccessComponent },
+  { path: '**', component: PageNotFoundComponent }
 ];
 
 @NgModule({

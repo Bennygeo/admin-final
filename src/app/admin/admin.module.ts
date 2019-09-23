@@ -16,6 +16,8 @@ import { DateUtils } from '../utils/date-utils';
 import { PlusMinusComponent } from '../utils/plus-minus/plus-minus.component';
 import { CommonsService } from '../services/commons.service';
 import { MatDialogComponent } from '../others/mat-dialog/mat-dialog.component';
+import { ScrollDispatchModule } from '@angular/cdk/scrolling';
+import { HttpClientModule } from '@angular/common/http';
 
 
 @NgModule({
@@ -27,16 +29,18 @@ import { MatDialogComponent } from '../others/mat-dialog/mat-dialog.component';
     HomeComponent,
     BookOrderComponent,
     PlusMinusComponent,
-    MatDialogComponent
+    MatDialogComponent,
   ],
   imports: [
     CommonModule,
+    HttpClientModule,
     AdminRoutingModule,
     FormsModule,
     MatFormFieldModule, MatOptionModule, MatSelectModule, MatButtonModule, MatInputModule, MatSnackBarModule, MatCheckboxModule, MatIconModule, MatRadioModule,
     MatDialogModule,
     ReactiveFormsModule,
-    Ng2SearchPipeModule
+    Ng2SearchPipeModule,
+    ScrollDispatchModule,
   ],
   entryComponents: [
     MatDialogComponent

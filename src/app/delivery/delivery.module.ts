@@ -11,20 +11,23 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { OrderViewComponent } from './order-view/order-view.component';
 import { MatProgressSpinnerModule, MatSnackBarModule } from '@angular/material';
 import { CommonsService } from '../services/commons.service';
+import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
     TestComponent,
     DeliveryListComponent,
-    OrderViewComponent,
+    OrderViewComponent
   ],
   imports: [
     CommonModule,
+    HttpClientModule,
     DeliveryRoutingModule,
     FormsModule,
     DragDropModule,
     MatProgressSpinnerModule,
-    MatSnackBarModule
+    MatSnackBarModule,
   ],
   providers: [
     Ng2SearchPipe,

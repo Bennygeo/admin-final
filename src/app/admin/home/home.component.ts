@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material';
 import { Subject } from 'rxjs';
@@ -10,7 +10,8 @@ import { MatDialogComponent } from 'src/app/others/mat-dialog/mat-dialog.compone
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
+
 
   results: Object;
   searchTerm$ = new Subject<string>();
@@ -53,7 +54,6 @@ export class HomeComponent implements OnInit {
     //   // this._router.navigate([{ outlets: { dialogeOutlet: null } }]);
     // });
 
-
   }
 
   clickToHome() {
@@ -61,10 +61,19 @@ export class HomeComponent implements OnInit {
     this._service.readCustomerList(false);
   }
 
+  sendMessage() {
+    console.log("Send Message to customers.");
+    this._service.sendCustomerMsg.emit();
+  }
+
   @HostListener('window:popstate', ['$event'])
   onPopState(event) {
     console.log('Back button pressed');
     // this.homeBtnClick();
+  }
+
+  ngOnDestroy(): void {
+    // this._service.sendCustomerMsg.unsubscribe();
   }
 }
 

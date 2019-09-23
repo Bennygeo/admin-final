@@ -12,11 +12,11 @@
         <!-- Login Form -->
         <form>
             <div *ngIf="!pswdFlg" style="font-size:10px;">Mobile number</div>
-            <input *ngIf="!pswdFlg" type="text" id="login" class="fadeIn second" name="login" (focus)="onFocusAction(e)"
+            <input *ngIf="!pswdFlg" type="text" id="login" class="fadeIn second" name="login" (focus)="onFocusAction()"
                 [(ngModel)]="username">
             <div style="font-size:14px; color: #666;">{{credentialOwner}}</div>
             <input *ngIf="pswdFlg" type="password" id="password" class="fadeIn third" name="login"
-                placeholder="password" [(ngModel)]="pswd" [disabled]="submit_btn_disable" [value]="mnbvcx">
+                placeholder="password" [(ngModel)]="pswd" [disabled]="submit_btn_disable">
             <div style="font-size:14px; color: #666; padding-top:12px; padding-bottom: 12px;"
                 *ngIf="submit_btn_disable">
                 Successfully logged in. <br />Will be

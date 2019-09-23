@@ -69,7 +69,7 @@ export class LoginComponent implements OnInit {
     return false;
   }
 
-  onFocusAction(evt) {
+  onFocusAction() {
     console.log("focus");
     this.credentialOwner = "";
     this.username = "8870029847";

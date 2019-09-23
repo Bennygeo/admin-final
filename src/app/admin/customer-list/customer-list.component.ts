@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone, OnDestroy } from '@angular/core';
+import { Component, OnInit, NgZone, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { CommonsService } from 'src/app/services/commons.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material';
@@ -10,7 +10,8 @@ import { AngularFireDatabase } from 'angularfire2/database';
 @Component({
   selector: 'customer-list',
   templateUrl: './customer-list.component.html',
-  styleUrls: ['./customer-list.component.scss']
+  styleUrls: ['./customer-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CustomerListComponent implements OnInit, OnDestroy {
 
@@ -42,12 +43,14 @@ export class CustomerListComponent implements OnInit, OnDestroy {
   readDataObservable: any;
   userListObservable: any;
   userListUpdateObservable: any;
+  msgBtnSubscriber: any;
 
   checkboxSelectors: CustomSelctors = {
     all: false,
     active: false,
     inactive: false
   }
+  overlay:boolean = true;
 
   private firebase: FireBase;
 
@@ -130,10 +133,10 @@ export class CustomerListComponent implements OnInit, OnDestroy {
             // trace("in activbe");
 
           }
-          trace("diff :: " + diff);
-          trace("postponedCnt :: " + postponedCnt);
-          trace("key :: " + key);
-          trace("data[key].remainingDays :: " + data[key].remainingDays);
+          // trace("diff :: " + diff);
+          // trace("postponedCnt :: " + postponedCnt);
+          // trace("key :: " + key);
+          // trace("data[key].remainingDays :: " + data[key].remainingDays);
         } catch (e) { }
         this.userList.push(data[key]);
       }
@@ -141,6 +144,29 @@ export class CustomerListComponent implements OnInit, OnDestroy {
       // this.ngZone.run(() => this._router.navigate(['customer_list']));
       this.ngZone.run(() => console.log("ng on init."));
     });
+
+    // debugger;
+    // console.log(this._service.sendCustomerMsg.observers.length);
+    // trace("**************");
+    if (this._service.sendCustomerMsg.observers.length == 0) {
+      this._service.sendCustomerMsg.subscribe(() => {
+        console.log("message btn clicked.");
+        let selected: Array<string> = [];
+        for (let i = 0; i < this.userList.length; i++) {
+          if (this.userList[i].checked) {
+            // debugger;
+            this.checkedCnt++;
+            selected.push(this.userList[i].mobile);
+          }
+        }
+        trace(selected);
+        trace("**********");
+        // this._service.send_bulk_sms({
+        //   'mobile_nos': ['9486140936','8072129358'],
+        //   'fName':'Benny'
+        // });
+      });
+    }
   }
 
   onCustomerClick(evt, index, mobile) {
@@ -166,6 +192,19 @@ export class CustomerListComponent implements OnInit, OnDestroy {
     return false;
   }
 
+  inputTxtChanged(evt) {
+    // console.log(evt);
+    this.searchText = evt;
+    this.searchAry = this.ng2.transform(this.userList, this.searchText);
+    // this.renderSearchList(this.searchAry, false);
+    // let data = this._service.userList;
+    // https://stackblitz.com/edit/angular-search-filter
+
+    this.checkboxSelectors['active'] = false;
+    this.checkboxSelectors['all'] = false;
+    this.checkboxSelectors['inactive'] = false;
+  }
+
   bookAnOrder(index, mobile, status, name) {
     // console.log("bookAnOrder");
     // customer_view
@@ -183,9 +222,8 @@ export class CustomerListComponent implements OnInit, OnDestroy {
     // console.log("datre :: " + _date);
     this.readDataObservable = this.firebase.readDailyOrders(_date).subscribe((data) => {
       this.assignBtnFlg = false;
-      // console.log(data);
-      for (let key in this.searchAry) {
 
+      for (let key in this.searchAry) {
         if (this.searchAry[key].active == "active" && this.searchAry[key].checked) {
 
           // debugger;
@@ -216,14 +254,20 @@ export class CustomerListComponent implements OnInit, OnDestroy {
   checkedItemCnt() {
     this.checkedCnt = 0;
     for (let i = 0; i < this.userList.length; i++) {
-      if (this.userList[i].checked) this.checkedCnt++;
+      if (this.userList[i].checked) {
+        this.checkedCnt++;
+      }
     }
   }
 
   onAllClick(e) {
     this.checkboxSelectors['all'] = e.checked;
-    for (let i = 0; i < this.userList.length; i++) {
-      this.userList[i].checked = e.checked;
+    // for (let i = 0; i < this.userList.length; i++) {
+    //   this.userList[i].checked = e.checked;
+    // }
+
+    for (let i = 0; i < this.searchAry.length; i++) {
+      this.searchAry[i].checked = e.checked;
     }
 
     // this.searchAry = this.userList;
@@ -272,19 +316,6 @@ export class CustomerListComponent implements OnInit, OnDestroy {
     }
   }
 
-  inputTxtChanged(evt) {
-    // console.log(evt);
-    this.searchText = evt;
-    this.searchAry = this.ng2.transform(this.userList, this.searchText);
-    this.renderSearchList(this.searchAry, false);
-    // let data = this._service.userList;
-    // https://stackblitz.com/edit/angular-search-filter
-
-    this.checkboxSelectors['active'] = false;
-    this.checkboxSelectors['all'] = false;
-    this.checkboxSelectors['inactive'] = false;
-  }
-
   renderSearchList(ary, flg) {
     if (ary.length != 0) {
       for (let i = 0; i < ary.length; i++) {
@@ -300,7 +331,7 @@ export class CustomerListComponent implements OnInit, OnDestroy {
   }
 
   onDeliveryBoyChange(evt): void {
-    console.log(evt.value);
+    // console.log(evt.value);
     this.selected_delivery_boy = evt.value;
   }
 
@@ -308,6 +339,7 @@ export class CustomerListComponent implements OnInit, OnDestroy {
     console.log("ng destroy");
     this.userListObservable.unsubscribe();
     this.userListUpdateObservable.unsubscribe();
+    // this.msgBtnSubscriber.unsubscribe();
     try {
       this.readDataObservable.unsubscribe();
     } catch (e) {

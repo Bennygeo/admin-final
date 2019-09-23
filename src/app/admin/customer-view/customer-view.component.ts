@@ -5,7 +5,7 @@ import { FireBase } from 'src/app/utils/firebase';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { Utils } from 'src/app/utils/utils';
 import { DateUtils } from 'src/app/utils/date-utils';
-import { Observable, Subscriber } from 'rxjs';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-customer-view',
@@ -15,7 +15,6 @@ import { Observable, Subscriber } from 'rxjs';
 
 export class CustomerViewComponent implements OnInit, OnDestroy {
 
-
   /*
   * Tender types
   */
@@ -23,8 +22,8 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   type: string;
 
   /*
- * discount price
- */
+  * discount price
+  */
   discount: number = 5;
 
   priceWithoutDiscount: number = 0;
@@ -63,8 +62,8 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   nutVarieties: Array<string> = ["Water", "Hard", "Orange"];
   selectedNutVariety: string;
   /*
-* delivery charges
-*/
+  * delivery charges
+  */
   deliveryCharges: number = 10;
   selectedNutType: string = this.nutTypes[0]["value"];
   price: number = this.nutTypes[0]["price"];
@@ -130,6 +129,10 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   sub: any;
   orders_subscriber: any;
 
+  
+
+  //Date range picker properties
+ 
   constructor(
     private _service: CommonsService,
 
@@ -149,7 +152,8 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       1: 0,
       2: 0,
       3: 0,
-      4: 0
+      4: 0,
+      5: 0
     }
     this.selectedNutVariety = this.nutVarieties[0];
     this.date_utils = new DateUtils();
@@ -398,6 +402,16 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     for (let key in this.selectedDays) this.selectedDays[key] = 1;
     this.changeDetecter = true;
     this.renderChanges();
+    return false;
+  }
+
+  fifteenDaysClick() {
+
+    return false;
+  }
+
+  thirtyDaysClick() {
+    return false;
   }
 
   alternateDaysClick() {
@@ -586,15 +600,15 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
 
     // debugger;
     let _total_price = _cnt * (this.price + this.deliveryCharges - this.discount);
-    // console.log("remainig amt :: " + (_total_price - this.historyObj['paid_amt']));
+    console.log("remainig amt :: " + (_total_price - this.historyObj["details"]['paid_amt']));
+    // debugger;
     this.firebase.editupdateWrite(this.mobile, this._service.historyLength,
       {
         count: this.editedUnitsPerDay,
         replacement: this.noOfReplacements,
         assigned_to: this.assigned_to,
-        delivered_by: '',
         "total_price": _total_price,
-        "remaining_to_pay": _total_price - this.historyObj['paid_amt'],
+        "remaining_to_pay": _total_price - this.historyObj["details"]['paid_amt'],
         "paid_status": ""
       },
       date, () => {
@@ -604,7 +618,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
         this._changeDet.detectChanges();
       });
 
-
+    this.orderInfo = this.historyObj["details"];
     // this.tenderDetails = {
     //   "category": "Vegetables",
     //   "name": this.data["p_name"],
@@ -822,6 +836,12 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     this.sub.unsubscribe();
     this.orders_subscriber.unsubscribe();
   }
+
+  /*
+  Date Range picker methods
+  */
+ 
+  /* End of Date Range picker */
 }
 
 export interface NuType {

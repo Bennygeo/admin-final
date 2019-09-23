@@ -4,6 +4,8 @@ import { CustomerListComponent } from './customer-list/customer-list.component';
 import { CustomerViewComponent } from './customer-view/customer-view.component';
 import { BookOrderComponent } from './book-order/book-order.component';
 import { AddressComponent } from './address/address.component';
+import { NoAccessComponent } from '../others/no-access/no-access.component';
+import { PageNotFoundComponent } from '../others/page-not-found/page-not-found.component';
 
 const routes: Routes = [
   {
@@ -35,7 +37,9 @@ const routes: Routes = [
     path: 'book_order',
     component: BookOrderComponent,
     // outlet: 'homeOutlet'
-  }
+  },
+  // { path: 'no-access', component: NoAccessComponent },
+  // { path: '**', component: PageNotFoundComponent }
 ];
 
 @NgModule({

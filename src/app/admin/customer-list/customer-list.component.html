@@ -34,31 +34,34 @@
     </div>
 
     <!-- <p style="margin-left: -6px">Customer's list</p> -->
-    <div class="container customerList">
-        <div class="row box" *ngFor="let item of searchAry; let i = index;"
-            (click)="onCustomerClick($event, i,item.mobile)" id="{{'list_' + i}}">
-            <div class="col-9" style="margin-left: -6px; margin-right: -6px">
-                <div style="position: relative; float: left; padding-right: 6px;">
-                    <mat-checkbox [checked]='item.checked'></mat-checkbox>
-                </div>
-                <div class="customer_name">{{item.name}}&nbsp; <span
-                        [ngClass]="item.active == 'active' ? 'activeFlg':'inActiveFlg'">{{item.active}}</span>
-                    &nbsp;<span *ngIf="item.remainingDays != 0" class="remainingDays">{{item.remainingDays}}
-                        day(s) left.</span>
-                </div>
+    <cdk-virtual-scroll-viewport itemSize="50" class="customerList">
+        <div class="container">
+            <div class="row box" *cdkVirtualFor="let item of searchAry; let i = index;"
+                (click)="onCustomerClick($event, i,item.mobile)" id="{{'list_' + i}}">
+                <div class="col-9" style="margin-left: -6px; margin-right: -6px">
+                    <div style="position: relative; float: left; padding-right: 6px;">
+                        <mat-checkbox [checked]='item.checked'></mat-checkbox>
+                    </div>
+                    <div class="customer_name">{{item.name}}&nbsp; <span
+                            [ngClass]="item.active == 'active' ? 'activeFlg':'inActiveFlg'">{{item.active}}</span>
+                        &nbsp;<span *ngIf="item.remainingDays != 0" class="remainingDays">{{item.remainingDays}}
+                            day(s) left.</span>
+                    </div>
 
-                <div class="customer_m_no"><span style="font-size: 12px; color:#aaa; font-weight: 300;">+91</span>
-                    {{item.mobile}}</div>
-            </div>
-            <div class="col-3 my-auto" style="text-align: right; margin-left: -6px; margin-right: -6px;">
-                <!-- <button style="margin:3px;" class="right">Call</button> -->
-                <!-- <a style="margin:3px;" href={{item.mobile}}>Call</a> -->
-                <button style="margin:3px;" class="btn btn-primary btns">View</button>
-                <!-- <button style="margin:3px;" class="btn btn-primary btns">Break</button> -->
+                    <div class="customer_m_no"><span style="font-size: 12px; color:#aaa; font-weight: 300;">+91</span>
+                        {{item.mobile}}</div>
+                </div>
+                <div class="col-3 my-auto" style="text-align: right; margin-left: -6px; margin-right: -6px;">
+                    <!-- <button style="margin:3px;" class="right">Call</button> -->
+                    <!-- <a style="margin:3px;" href={{item.mobile}}>Call</a> -->
+                    <button style="margin:3px;" class="btn btn-primary btns">View</button>
+                    <!-- <button style="margin:3px;" class="btn btn-primary btns">Break</button> -->
+                </div>
             </div>
         </div>
-    </div>
+    </cdk-virtual-scroll-viewport>
 </div>
+
 
 <!-- <mat-form-field style="position: absolute; left:10px;">
     <mat-select placeholder="Assign delivery to" (selectionChange)="onDeliveryBoyChange($event)">
@@ -108,5 +111,19 @@
             style="background: #008000; color:#fff; text-align: center; padding: 12px;width: auto; float: right;"
             (click)="assign()">Assign
         </button>
+    </div>
+</div>
+
+<div id="overlay" (click)="overlayClickHandler()" *ngIf="overlay"></div>
+<div class="myModal center" *ngIf="overlay">
+    <div style="background-color: #fff; padding:24px; border-radius:2px;">
+
+        <textarea style="width:80vw; height:300px;"></textarea>
+        <div style="display: flex; justify-content:center;">
+            <button class="btn btn-outline-secondary orderPage-btns" style="margin-left: 0 !important"
+                (click)="sendMessageAction()">Send</button>
+            <button class="btn btn-outline-secondary orderPage-btns"
+                (click)="sendMeessageCancelAction()">Cancel</button>
+        </div>
     </div>
 </div>

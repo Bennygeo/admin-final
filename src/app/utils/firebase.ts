@@ -111,6 +111,7 @@ export class FireBase implements OnInit {
         });
     }
 
+
     public write_tc_orders(date, id, obj) {
         this.db.database.ref("/orders/" + date + "/" + id + "/").update({
             tender: JSON.stringify(obj)
@@ -200,7 +201,7 @@ export class FireBase implements OnInit {
     }
 
     public editupdateWrite(id, cnt, obj, date, callback) {
-        this.db.database.ref("/users_info/" + id + "/history/" + cnt).update({
+        this.db.database.ref("/users_info/" + id + "/history/" + cnt + "/details").update({
             "total_price": obj.total_price,
             "remaining_to_pay": obj.remaining_to_pay,
             "paid_status": obj.paid_status
