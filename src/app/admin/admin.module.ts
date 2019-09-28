@@ -18,6 +18,7 @@ import { CommonsService } from '../services/commons.service';
 import { MatDialogComponent } from '../others/mat-dialog/mat-dialog.component';
 import { ScrollDispatchModule } from '@angular/cdk/scrolling';
 import { HttpClientModule } from '@angular/common/http';
+import { Daterangepicker } from 'ng2-daterangepicker';
 
 
 @NgModule({
@@ -41,6 +42,7 @@ import { HttpClientModule } from '@angular/common/http';
     ReactiveFormsModule,
     Ng2SearchPipeModule,
     ScrollDispatchModule,
+    Daterangepicker
   ],
   entryComponents: [
     MatDialogComponent

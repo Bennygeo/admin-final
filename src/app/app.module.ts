@@ -14,13 +14,15 @@ import { CommonsService } from './services/commons.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NoAccessComponent } from './others/no-access/no-access.component';
 import { PageNotFoundComponent } from './others/page-not-found/page-not-found.component';
+import { ScrollToTopDirective } from './others/scroll-to-top.directive';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     NoAccessComponent,
-    PageNotFoundComponent
+    PageNotFoundComponent,
+    ScrollToTopDirective
   ],
   imports: [
     BrowserModule,

@@ -6,6 +6,7 @@ import { AngularFireDatabase } from 'angularfire2/database';
 import { Utils } from 'src/app/utils/utils';
 import { DateUtils } from 'src/app/utils/date-utils';
 import * as moment from 'moment';
+import { DaterangepickerConfig } from 'ng2-daterangepicker';
 
 @Component({
   selector: 'app-customer-view',
@@ -37,8 +38,10 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   /*
   * Subscription flags
   */
-  subsFlag: boolean = false;
-  subsBtnVisibility: boolean = false;
+  subsFlag: boolean = true;
+  subsBtnVisibility: boolean = true;
+  customSubsBtnVisibility: boolean = true;
+
 
   /*
   * Straw price and flags
@@ -128,11 +131,17 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
 
   sub: any;
   orders_subscriber: any;
+  trace: any;
 
-  
 
   //Date range picker properties
- 
+  public daterange: any = {};
+  public options: any = {
+    locale: { format: 'DD-MM-YYYY' },
+    alwaysShowCalendars: false,
+  };
+  public rangepicker_data: any = {};
+
   constructor(
     private _service: CommonsService,
 
@@ -141,6 +150,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     private db: AngularFireDatabase,
     private _activatedRoute: ActivatedRoute,
     private _changeDet: ChangeDetectorRef,
+    private _router: Router
   ) {
     this.type = this.types[0];
     this.weekdays = this._utils.weekdays.slice(this._utils.todayNo + 1, 7).concat(this._utils.weekdays.slice(0, this._utils.todayNo + 1));
@@ -160,6 +170,9 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     this.start_date = new Date();
     this.firebase = new FireBase(this.db);
     this.orders = [];
+
+    this.trace = console.log;
+    // this.daterangepickerOptions.skipCSS = true;
   }
 
   ngOnInit() {
@@ -284,10 +297,13 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   }
 
   public renderChanges() {
+    this.customSubsBtnVisibility = true;
+    this.subsBtnVisibility = false;
     this.packageOptions = {
       "pack7": this.price - this.discount + this.deliveryCharges + ((this.strawFlag) ? 2 : 0),
       "3andmore": this.price - this.discount + this.deliveryCharges + ((this.strawFlag) ? 2 : 0),
       "std": this.price + this.deliveryCharges + ((this.strawFlag) ? 2 : 0),
+      "custom_pack": this.price - this.discount + this.deliveryCharges + ((this.strawFlag) ? 2 : 0),
     }
 
     let totalDays: number = 0;
@@ -399,6 +415,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   sevenDaysClick() {
     this.subscribe_type = "Seven days pack";
     this.setSubscribeSetActiveButton(0);
+    // debugger;
     for (let key in this.selectedDays) this.selectedDays[key] = 1;
     this.changeDetecter = true;
     this.renderChanges();
@@ -450,6 +467,8 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   }
 
   onResetClick() {
+    this.subsBtnVisibility = true;
+    this.customSubsBtnVisibility = true;
     for (let key in this.subscribeActiveFlgs) this.subscribeActiveFlgs[key] = 0;
     for (let key in this.selectedDays) this.selectedDays[key] = 0;
     this.selectedDays[1] = 1;
@@ -832,6 +851,126 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     this.btnsView = true;
   }
 
+  public selectedDate(value: any, datepicker?: any) {
+    // this is the date the iser selected
+    console.log(value);
+
+    // any object can be passed to the selected event and it will be passed back here
+    datepicker.start = value.start;
+    datepicker.end = value.end;
+
+    // or manupulat your own internal property
+    this.daterange.start = value.start;
+    this.daterange.end = value.end;
+    this.daterange.label = value.label;
+  }
+
+  public selectedDateRangePicker(evt, data) {
+    console.log(evt, data);
+    // debugger;
+    this.rangepicker_data = {
+      evt: evt,
+      start: evt.start._d.toDateString(),
+      end: evt.end._d.toDateString()
+    };
+    let _diff = this.date_utils.dateDiff(evt.start._d, evt.end._d);
+    // console.log("diff :: " + _diff);
+    // this.trace(evt.start._d, evt.end._d);
+    this.onResetClick();
+    this.customSubsBtnVisibility = false;
+    this.subsBtnVisibility = true;
+    this.subscribedDays = _diff;
+  }
+
+  public addToCustomSubscriptionBag() {
+
+    this.packageOptions = {
+      "custom_pack": this.price - this.discount + this.deliveryCharges + ((this.strawFlag) ? 2 : 0)
+    }
+    this.totalPrice = this.priceOption * this.subscribedDays * this.unitsPerDay;
+    this.originalPrice = (this.packageOptions['custom_pack'] * this.unitsPerDay * this.subscribedDays);
+    this.diff = Math.abs((this.priceOption * this.subscribedDays *
+      this.unitsPerDay) - (this.packageOptions['custom_pack'] * this.unitsPerDay * this.subscribedDays));
+
+    this.tenderDetails = {
+      "name": this.data["p_name"],
+      "c_name": this.c_name,
+      "m_no": this.mobile,
+      "id": "product_1",
+      "type": this.selectedNutType,
+      "per_day": this.unitsPerDay,
+      "delivery_status": "Not delivered",
+      "assigned_to": this.assigned_to,
+      "history_id": this._service.historyLength + 1
+    }
+    // debugger;
+
+    // this.subsBtnVisibility = true;
+    this.customSubsBtnVisibility = true;
+
+    // debugger;
+
+    this.historyObj = {
+      "details": {
+        "total_price": this.totalPrice,
+        "remaining_to_pay": this.totalPrice,
+        "straw": this.strawFlag,
+        "no_of_days": this.subscribedDays,
+        "active": "yes",
+        "nut_price": this.price + this.deliveryCharges - this.discount,
+        "paid_status": "No",
+        "paid_amt": 0,
+        "nut_type": "",
+        "DND": "No",
+        "instructions": "hole and open",
+        "special_notes": "",
+      },
+      "dates": {}
+    }
+
+    let _dates = [];
+    _dates.push(this.rangepicker_data.start);
+    for (let i = 0; i < this.subscribedDays - 1; i++) {
+      let _date = this.date_utils.addDays(new Date(this.rangepicker_data.start), i + 1);
+      // this.trace(_date);
+      _dates.push(_date.toDateString());
+    }
+
+    // this.trace(_dates);
+    // debugger;
+    // this.trace("end : " + this.rangepicker_data.end)
+    // this.trace("start : " + this.rangepicker_data.start)
+    let index = 0;
+    // console.log("addToSubscriptionBag");
+    for (let i = 0; i < _dates.length; i++) {
+      index++;
+      let _date = new Date(_dates[i]);
+      this.trace(_date);
+      this.firebase.write_tc_orders(this.date_utils.getDateString(_date, ""), this.mobile, this.tenderDetails);
+      this.historyObj['dates'][this.date_utils.getDateString(_date, "")] = {
+        index: index,
+        actualIndex: index,
+        'delivered': false,
+        'missed': false,
+        'replacement': 0,
+        'assigned_to': this.assigned_to,
+        'delivered_by': 'nil',
+        'count': this.unitsPerDay
+      }
+    }
+    // let start = this.date_utils.stdDateFormater(this.historyObj['start_date']);
+    // console.log("this._service.historyLength + 1 :: " + (this._service.historyLength * 1 + 1));
+    this.firebase.user_history(this.mobile, this.historyObj, "yes", (this._service.historyLength * 1 + 1), () => {
+      // console.log("added to the history.");
+      this.subsBtnVisibility = true;
+      this.ordersExist = true;
+      // debugger;
+      this._router.navigate(['/admin/customer_view/' + Date.now(), { mobile: this.mobile, index: 0, status: 'active', name: this.c_name }]);
+      // this._changeDet.detectChanges();
+    });
+
+  }
+
   ngOnDestroy(): void {
     this.sub.unsubscribe();
     this.orders_subscriber.unsubscribe();
@@ -840,7 +979,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   /*
   Date Range picker methods
   */
- 
+
   /* End of Date Range picker */
 }
 

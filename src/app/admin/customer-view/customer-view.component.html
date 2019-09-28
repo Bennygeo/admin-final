@@ -5,7 +5,7 @@
   </div> -->
 
 
-  <table class="tg" *ngIf="ordersExist">
+  <table class="orderView tg" *ngIf="ordersExist">
     <tr>
       <th class="tg-0pky">Customer name </th>
       <th class="tg-0pky">{{this.c_name}}</th>
@@ -194,8 +194,7 @@
         </mat-form-field>
       </div>
 
-      <button mat-button class="addToBagBtn" (click)="addToCart()" [disabled]="addToCartBtnDisabled"
-        style="margin-bottom:60px;">
+      <button mat-button class="addToBagBtn" (click)="addToCart()" [disabled]="addToCartBtnDisabled">
         <mat-icon>shopping_cart</mat-icon> Add to bag
       </button>
 
@@ -229,12 +228,23 @@
             {{item.slice(0,3)}}
           </div>
         </div>
+
+
+        <div style="margin-bottom: 6px;">
+          <p style="padding-bottom: 0; margin-bottom:0; color:#999; font-size: 12px;">Select custom days.</p>
+          <input ScrollToTop type="text" name="daterangeInput" daterangepicker [options]="options"
+            (selected)="selectedDateRangePicker($event, daterange)" />
+        </div>
+
         <div *ngIf="changeDetecter" style="font-size: 12px; text-decoration: underline; margin: 9px; cursor: pointer;"
           (click)="onResetClick()">Reset</div>
 
-        <button mat-button class="addToBagBtn" (click)="addToSubscriptionBag()" style="margin-bottom:60px;"
-          [disabled]="subsBtnVisibility">
-          Add to subscription bag</button>
+        <button mat-button class="addToBagBtn" (click)="addToSubscriptionBag()" [disabled]="subsBtnVisibility"
+          style="margin-bottom: 6px;">
+          Add to subscription</button>
+        <button mat-button class="addToBagBtn" (click)="addToCustomSubscriptionBag()"
+          [disabled]="customSubsBtnVisibility" style="margin-bottom: 6px; margin-left: 6px;">
+          Custom bag</button>
       </div>
     </div>
   </div>

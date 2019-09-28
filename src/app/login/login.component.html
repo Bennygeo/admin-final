@@ -21,6 +21,9 @@
                 *ngIf="submit_btn_disable">
                 Successfully logged in. <br />Will be
                 redirecting to another page.</div>
+            <!-- <ng-template #other_content *ngIf="!submit_btn_disable">Check your password.</ng-template> -->
+            <div *ngIf="pswdErr" style="font-size:14px; color: #666; padding-top:12px; padding-bottom: 12px;">Wrong
+                password.</div>
             <input type="submit" class="fadeIn fourth" (click)="onLoginAction($event)" [disabled]="submit_btn_disable"
                 *ngIf="!submit_btn_disable" value="Log In">
         </form>

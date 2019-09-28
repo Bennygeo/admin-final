@@ -20,6 +20,7 @@
 
                 <button style="margin:3px; height: 36px;" class="btn btn-primary btns" (click)="viewAction($event)"
                     id="{{'view_'+i}}">View</button>
+                    
                 <button style="margin:3px; height: 36px;" class="btn btn-primary btns" (click)="deliveredAction($event)"
                     id="{{'deliver_'+i}}" [ngClass]="[item.delivery_status ? 'delivered' : 'notDelivered']"
                     [disabled]=item.delivery_status>{{item.delivery_string}}</button>

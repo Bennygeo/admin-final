@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, NgZone, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonsService } from 'src/app/services/commons.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material';
@@ -50,7 +50,7 @@ export class CustomerListComponent implements OnInit, OnDestroy {
     active: false,
     inactive: false
   }
-  overlay:boolean = true;
+  overlay: boolean = false;
 
   private firebase: FireBase;
 
@@ -62,6 +62,7 @@ export class CustomerListComponent implements OnInit, OnDestroy {
     private date_utils: DateUtils,
     private ng2: Ng2SearchPipe,
     private _db: AngularFireDatabase,
+    private _changeDet: ChangeDetectorRef
   ) {
     this.firebase = new FireBase(this._db);
     // console.log("customer list class");
@@ -142,7 +143,9 @@ export class CustomerListComponent implements OnInit, OnDestroy {
       }
       this.searchAry = this.userList;
       // this.ngZone.run(() => this._router.navigate(['customer_list']));
-      this.ngZone.run(() => console.log("ng on init."));
+      // this.ngZone.run(() => console.log("ng on init."));
+      this._changeDet.detectChanges();
+
     });
 
     // debugger;
@@ -151,20 +154,8 @@ export class CustomerListComponent implements OnInit, OnDestroy {
     if (this._service.sendCustomerMsg.observers.length == 0) {
       this._service.sendCustomerMsg.subscribe(() => {
         console.log("message btn clicked.");
-        let selected: Array<string> = [];
-        for (let i = 0; i < this.userList.length; i++) {
-          if (this.userList[i].checked) {
-            // debugger;
-            this.checkedCnt++;
-            selected.push(this.userList[i].mobile);
-          }
-        }
-        trace(selected);
-        trace("**********");
-        // this._service.send_bulk_sms({
-        //   'mobile_nos': ['9486140936','8072129358'],
-        //   'fName':'Benny'
-        // });
+        (this.overlay) ? this.overlay = false : this.overlay = true;
+        console.log("this.overlay :: " + this.overlay);
       });
     }
   }
@@ -189,7 +180,7 @@ export class CustomerListComponent implements OnInit, OnDestroy {
       // console.log("book an order");
       this.bookAnOrder(index, mobile, this.searchAry[index].active, this.searchAry[index].name);
     }
-    return false;
+    // return false;
   }
 
   inputTxtChanged(evt) {
@@ -222,11 +213,14 @@ export class CustomerListComponent implements OnInit, OnDestroy {
     // console.log("datre :: " + _date);
     this.readDataObservable = this.firebase.readDailyOrders(_date).subscribe((data) => {
       this.assignBtnFlg = false;
-
+      // debugger;
       for (let key in this.searchAry) {
         if (this.searchAry[key].active == "active" && this.searchAry[key].checked) {
 
           // debugger;
+          // console.log("key :: " + key);
+          // debugger;
+          // console.log("tender :: " + data[this.searchAry[key].mobile].tender);
           let tmp = JSON.parse(data[this.searchAry[key].mobile].tender);
           tmp.assigned_to = this.selected_delivery_boy;
           modifiedData[this.searchAry[key].mobile] = tmp;
@@ -333,6 +327,35 @@ export class CustomerListComponent implements OnInit, OnDestroy {
   onDeliveryBoyChange(evt): void {
     // console.log(evt.value);
     this.selected_delivery_boy = evt.value;
+  }
+
+  overlayClickHandler() {
+    (this.overlay) ? this.overlay = false : this.overlay = true;
+  }
+
+  sendMessageCancelAction() {
+    (this.overlay) ? this.overlay = false : this.overlay = true;
+  }
+
+  sendMessageAction(val) {
+    // (this.overlay) ? this.overlay = false : this.overlay = true;
+    let trace = console.log;
+    let selected: Array<string> = [];
+    for (let i = 0; i < this.userList.length; i++) {
+      if (this.userList[i].checked) {
+        // debugger;
+        this.checkedCnt++;
+        selected.push(this.userList[i].mobile);
+      }
+    }
+    trace(selected);
+    // trace("**********");
+    this._service.send_bulk_sms({
+      'mobile_nos': selected,
+      'fName': 'Benny',
+      'content': val.value
+    });
+    (this.overlay) ? this.overlay = false : this.overlay = true;
   }
 
   ngOnDestroy(): void {

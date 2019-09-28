@@ -77,7 +77,7 @@ export class CommonsService {
   }
 
   send_bulk_sms(data) {
-    console.log(data);
+    // console.log(data);
 
 
     // let headerOptions = new HttpHeaders();
@@ -115,7 +115,8 @@ export class CommonsService {
       data: {
         name: data.fName,
         mobile: data.mobile_nos,
-        otp: '333'
+        content: data.content,
+        // otp: '333'
       }
     });
 
