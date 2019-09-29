@@ -63,6 +63,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
         let deliveryFlg = (_data.delivery_status == "Delivered") ? true : false;
         this.deliveredStatus = (deliveryFlg) ? "Done" : "Delivered";
         if (_data.assigned_to == this.name) {
+          // console.log("key :: " + key);
           this.list.push({
             no: key,
             delivery_status: deliveryFlg,
@@ -71,7 +72,6 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
           });
         }
       }
-      // debugger;
       this.changeDet.detectChanges();
     });
   }

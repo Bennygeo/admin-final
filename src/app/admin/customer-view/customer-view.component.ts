@@ -514,6 +514,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
         "DND": "No",
         "instructions": "hole and open",
         "special_notes": "",
+        "assigned_to": this.assigned_to,
       },
       "dates": {}
     }
@@ -543,7 +544,8 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       // console.log("added to the history.");
       this.subsBtnVisibility = true;
       this.ordersExist = true;
-      this._changeDet.detectChanges();
+      this._router.navigate(['/admin/customer_view/' + Date.now(), { mobile: this.mobile, index: 0, status: 'active', name: this.c_name }]);
+      // this._changeDet.detectChanges();
     });
   }
 

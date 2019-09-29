@@ -499,14 +499,14 @@ export class AddressComponent implements OnInit {
       "notes": "New Customer (Light coconut meat) hole and Open (Previous balance 150)",
       "area": "Porur"
     },
-    {
-      "apartment": "Prestige Bella Vista",
-      "name": "Thilakavathi",
-      "mobile": "",
-      "address": "13 Tower, 11th Floor, 131211",
-      "notes": "",
-      "area": "Porur"
-    },
+    // {
+    //   "apartment": "Prestige Bella Vista",
+    //   "name": "Thilakavathi",
+    //   "mobile": "",
+    //   "address": "13 Tower, 11th Floor, 131211",
+    //   "notes": "",
+    //   "area": "Porur"
+    // },
     {
       "apartment": "Prestige Bella Vista",
       "name": "Gayathri Selvarasan",
@@ -1275,14 +1275,14 @@ export class AddressComponent implements OnInit {
       "notes": "",
       "area": "unknown"
     },
-    {
-      "apartment": "Sterling Ganges",
-      "name": "Priyank",
-      "mobile": "",
-      "address": "D-32",
-      "notes": "",
-      "area": "unknown"
-    },
+    // {
+    //   "apartment": "Sterling Ganges",
+    //   "name": "Priyank",
+    //   "mobile": "",
+    //   "address": "D-32",
+    //   "notes": "",
+    //   "area": "unknown"
+    // },
     {
       "apartment": "Muktha Nirman Appartments",
       "name": "Sindhu",
@@ -1707,14 +1707,14 @@ export class AddressComponent implements OnInit {
       "notes": "Renew?",
       "area": "Maduravoyal"
     },
-    {
-      "apartment": "Location sent",
-      "name": "Shreedar RM",
-      "mobile": "",
-      "address": "Plot No 32, F2, 1st Floor, Murali Krishna Nagar Main Road,Alwarthirunagar",
-      "notes": "Only Green nuts!",
-      "area": "Maduravoyal"
-    },
+    // {
+    //   "apartment": "Location sent",
+    //   "name": "Shreedar RM",
+    //   "mobile": "",
+    //   "address": "Plot No 32, F2, 1st Floor, Murali Krishna Nagar Main Road,Alwarthirunagar",
+    //   "notes": "Only Green nuts!",
+    //   "area": "Maduravoyal"
+    // },
     {
       "apartment": "Location sent",
       "name": "Beaula",
@@ -1782,7 +1782,7 @@ export class AddressComponent implements OnInit {
     {
       "apartment": "Sky City",
       "name": "Vijay",
-      "mobile": "950001005589600095967",
+      "mobile": "95000100558",
       "address": "Tower 8, 1st Floor, 101",
       "notes": "",
       "area": "Vanagaram"
@@ -2019,52 +2019,52 @@ export class AddressComponent implements OnInit {
       "notes": "",
       "area": "nolambur"
     },
-    {
-      "apartment": "Jains Nakshatra",
-      "name": "Rajeshwari",
-      "mobile": "Ask for phone",
-      "address": "Block 3, FF",
-      "notes": "",
-      "area": "nolambur"
-    },
-    {
-      "apartment": "Jains Nakshatra",
-      "name": "Ask for Name",
-      "mobile": "Ask for phone",
-      "address": "Block 1, FOF",
-      "notes": "",
-      "area": "nolambur"
-    },
-    {
-      "apartment": "Jains Nakshatra",
-      "name": "Ask for Name",
-      "mobile": "Ask for phone",
-      "address": "Block 1, FOF",
-      "notes": "",
-      "area": "nolambur"
-    },
-    {
-      "apartment": "Jains Nakshatra",
-      "name": "Bagyalaxmi",
-      "mobile": "Ask for phone",
-      "address": "Block 3, FC",
-      "notes": "",
-      "area": "nolambur"
-    },
-    {
-      "apartment": "Jains Nakshatra",
-      "name": "Get Name",
-      "mobile": "Ask for phone",
-      "address": "Block 15, FOE",
-      "notes": "",
-      "area": "nolambur"
-    },
+    // {
+    //   "apartment": "Jains Nakshatra",
+    //   "name": "Rajeshwari",
+    //   "mobile": "Ask for phone",
+    //   "address": "Block 3, FF",
+    //   "notes": "",
+    //   "area": "nolambur"
+    // },
+    // {
+    //   "apartment": "Jains Nakshatra",
+    //   "name": "Ask for Name",
+    //   "mobile": "Ask for phone",
+    //   "address": "Block 1, FOF",
+    //   "notes": "",
+    //   "area": "nolambur"
+    // },
+    // {
+    //   "apartment": "Jains Nakshatra",
+    //   "name": "Ask for Name",
+    //   "mobile": "Ask for phone",
+    //   "address": "Block 1, FOF",
+    //   "notes": "",
+    //   "area": "nolambur"
+    // },
+    // {
+    //   "apartment": "Jains Nakshatra",
+    //   "name": "Bagyalaxmi",
+    //   "mobile": "Ask for phone",
+    //   "address": "Block 3, FC",
+    //   "notes": "",
+    //   "area": "nolambur"
+    // },
+    // {
+    //   "apartment": "Jains Nakshatra",
+    //   "name": "Get Name",
+    //   "mobile": "Ask for phone",
+    //   "address": "Block 15, FOE",
+    //   "notes": "",
+    //   "area": "nolambur"
+    // },
     {
       "apartment": "Indus Metropolitian",
       "name": "Padmapriya",
       "mobile": "9840215533",
       "address": "1st Floor, A31",
-      "notes": "Hole --- Renew?",
+      "notes": "Hole",
       "area": "vanagaram"
     },
     {
@@ -2104,7 +2104,7 @@ export class AddressComponent implements OnInit {
       "name": "Prasant",
       "mobile": "9790840834",
       "address": "Tower 5, 302",
-      "notes": "Hole & Open --- Sweet water",
+      "notes": "Hole and Open Sweet water",
       "area": "vanagaram"
     },
     {
@@ -2329,8 +2329,10 @@ export class AddressComponent implements OnInit {
     //     "name": data.name,
     //     "address": data.address,
     //     "area": data.area,
-    //     "active": "no "
+    //     "active": "no ",
+    //     "apartment": data.apartment
     //   }, (result) => {
+    //     console.log("user info writew");
     //     // this._commons.openSnackBar(result, "");
     //   });
     // }

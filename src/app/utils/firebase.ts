@@ -104,7 +104,8 @@ export class FireBase implements OnInit {
         this.db.database.ref('/users_info/' + obj.id).update({
             name: obj.name,
             ['/address/address' + 1]: JSON.stringify(obj.address),
-            area: obj.area
+            area: obj.area,
+            aprtment: obj.apartment
         }, (error) => {
             if (error) callback("Write Failed.");
             else callback("Success");
@@ -248,6 +249,15 @@ export class FireBase implements OnInit {
         }, (error) => {
             if (error) console.log("The write failed...");
             else console.log("Data saved successfully!");
+        });
+    }
+
+    public readUserAddress(id) {
+        return new Observable((observer) => {
+            var ref = this.db.database.ref('/users_info/' + id);
+            ref.on("value", function (snapshot) {
+                observer.next(snapshot.exportVal());
+            });
         });
     }
 
