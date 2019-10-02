@@ -9,7 +9,7 @@ import { Ng2SearchPipe } from 'ng2-search-filter';
 
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { OrderViewComponent } from './order-view/order-view.component';
-import { MatProgressSpinnerModule, MatSnackBarModule } from '@angular/material';
+import { MatProgressSpinnerModule, MatSnackBarModule, MatTabsModule } from '@angular/material';
 import { CommonsService } from '../services/commons.service';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
@@ -28,6 +28,7 @@ import { HttpClientModule } from '@angular/common/http';
     DragDropModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
+    MatTabsModule
   ],
   providers: [
     Ng2SearchPipe,

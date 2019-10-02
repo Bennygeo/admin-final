@@ -78,10 +78,11 @@ export class LoginComponent implements OnInit {
   }
 
   onFocusAction() {
-    console.log("focus");
+    // console.log("focus");
     this.credentialOwner = "";
-    this.username = "8870029847";
+    // this.username = "8870029847";
     // this.username = "9486140936";
+    this.username = "9884380539";
     this.pswdErr = false;
   }
 

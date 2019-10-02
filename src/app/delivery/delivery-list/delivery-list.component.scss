@@ -8,15 +8,15 @@
   padding-bottom: 6px;
 }
 .customer_name {
-  font-size: 15px;
+  font-size: 16px;
   color: #111;
   font-style: normal;
-  font-weight: 300;
+  font-weight: 500;
 }
 .customer_m_no {
-  font-size: 20px;
+  font-size: 14px;
   color: #444;
-  font-weight: 500;
+  // font-weight: 500;
 }
 
 .btns {
@@ -81,7 +81,20 @@
   padding: 9px;
   padding-bottom: 3px;
   padding-top: 3px;
-  font-size: 11px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 2;
+  font-weight: 500;
+  color:#fff;
+  background-color: #666;
+}
+
+.apartment {
+  background-color: #fff;
+  padding: 9px;
+  padding-bottom: 3px;
+  padding-top: 3px;
+  font-size: 13px;
   border: 1px solid #ccc;
   border-radius: 2;
 }
@@ -130,9 +143,15 @@
 
 .notDelivered {
   background-color: #dc6504;
-  color:#fff;
+  color: #fff;
 }
 .delivered {
   background-color: #008000;
-  color:#fff;
+  color: #fff;
+}
+
+.addr{
+  margin-top:12px;
+  margin-bottom:6px;
+  font-size: 14px;
 }

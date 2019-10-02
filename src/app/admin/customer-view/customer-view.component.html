@@ -36,8 +36,27 @@
       <td class="tg-0lax">Pay status</td>
       <td class="tg-0lax">{{orderInfo['paid_status']}}</td>
     </tr>
-
+    <tr>
+      <td class="tg-0lax">Pay</td>
+      <td class="tg-0lax"><input type="number" #price value="{{orderInfo['remaining_to_pay']}}" />
+        <div style="display: flex; justify-content:left;">
+          <button class="btn btn-outline-secondary orderPage-btns"
+            style="margin-left: 0 !important; margin-right: 3px; font-size: 12px;"
+            (click)="paySaveAction(price)">Save</button>
+          <button class="btn btn-outline-secondary orderPage-btns" (click)="payCancelAction()"
+            style=" font-size: 12px;">Cancel</button>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td class="tg-0lax">Paid history</td>
+      <td class="tg-0lax">
+        <li *ngFor="let item of paid_history">{{item}}</li>
+      </td>
+    </tr>
   </table>
+
+  <div *ngIf="ordersExist"> <button class="btn btn-danger" (click)="deleteOrderAction()">Delete Order</button></div>
 
   <div class="row" style="margin-top:12px;">
     <div class="col-3" *ngFor="let item of orders; let i = index;" (click)="onUserDatesClick($event, item)"
@@ -67,7 +86,6 @@
             class="col-12 center" [ngStyle]="{'background': item.delivered ? '#53e43a5c' : '#DDD'}">
             {{item.delivered_by}}
           </div>
-
         </div>
       </div>
     </div>
@@ -228,7 +246,6 @@
             {{item.slice(0,3)}}
           </div>
         </div>
-
 
         <div style="margin-bottom: 6px;">
           <p style="padding-bottom: 0; margin-bottom:0; color:#999; font-size: 12px;">Select custom days.</p>

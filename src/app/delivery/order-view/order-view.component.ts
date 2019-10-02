@@ -48,7 +48,6 @@ export class OrderViewComponent implements OnInit, OnDestroy {
       this.sub.unsubscribe();
     });
     this.firebase = new FireBase(this._db);
-
   }
 
   ngOnInit() {
@@ -66,6 +65,7 @@ export class OrderViewComponent implements OnInit, OnDestroy {
       this.packageData = data[this.historyLength].details;
       this._changeDet.detectChanges();
     });
+    // debugger;
   }
 
   clickToGoBack() {
@@ -90,17 +90,10 @@ export class OrderViewComponent implements OnInit, OnDestroy {
     console.log("modalSaveAction");
     (this.overlay) ? this.overlay = false : this.overlay = true;
 
-    // console.log("this.packageData.total_price :: " + this.packageData.total_price);
-    // console.log("this.priceVal :: " + this.priceVal);
-    // console.log("paid amt :: " + (this.packageData.remaining_to_pay - this.priceVal));
-    let remaining = this.packageData.remaining_to_pay - this.priceVal;//this.packageData.remaining_to_pay - this.packageData.paid_amt;
+    let remaining = Math.abs(this.priceVal - this.packageData.remaining_to_pay);//this.packageData.remaining_to_pay - this.packageData.paid_amt;
     let paid = Math.abs(remaining - this.packageData.total_price);
     let status = "";
-    // console.log("paid : " + paid);
-    // console.log("remaining : " + remaining);
     // debugger;
-    // this.firebase.write_tc_orders(this.data.date, this.data.m_no, this.data);
-
     if (paid == this.packageData.total_price) {
       status = "Paid";
     } else if (paid != 0 && paid < this.packageData.total_price) {
@@ -120,6 +113,10 @@ export class OrderViewComponent implements OnInit, OnDestroy {
         // debugger;
         this._changeDet.detectChanges();
       });
+
+    this.firebase.packagePaidHistoryUpdate(this.data.m_no, this._service.historyLength, this.priceVal, () => {
+      this._changeDet.detectChanges();
+    });
   }
 
   modalCancelAction() {

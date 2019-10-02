@@ -1,6 +1,7 @@
 import { AngularFireDatabase } from 'angularfire2/database';
 import { Observable } from 'rxjs';
 import { OnInit } from '@angular/core';
+import { callbackify } from 'util';
 
 export class FireBase implements OnInit {
 
@@ -175,19 +176,19 @@ export class FireBase implements OnInit {
         });
     }
 
-    public update_delivery_status_order(id, obj, date) {
+    public update_delivery_status_order(id, obj, date, callback) {
         this.db.database.ref("/orders/" + date + "/" + id + "/").update({
             "tender": JSON.stringify(obj)
         }, (error) => {
             if (error) console.log("The write failed :: updateDeliveryStatus");
             else {
-                // callback();
+                callback();
                 console.log("Data saved successfully! :: updateDeliveryStatus");
             }
         });
     }
 
-    public update_delivery_status_user_history(mobile, index, date, obj) {
+    public update_delivery_status_user_history(mobile, index, date, obj, callback) {
         console.log("update_delivery_status_user_history :: ", mobile, index, date, obj);
         this.db.database.ref("/users_info/" + mobile + "/history/" + index + "/dates/" + date + "/").update({
             "delivered": obj.delivered,
@@ -195,7 +196,7 @@ export class FireBase implements OnInit {
         }, (error) => {
             if (error) console.log("The write failed :: update_delivery_status_user_history");
             else {
-                // callback();
+                callback();
                 // console.log("Data saved successfully! :: updateDeliveryStatus");
             }
         });
@@ -233,6 +234,18 @@ export class FireBase implements OnInit {
             "remaining_to_pay": obj.remaining_to_pay,
             "paid_amt": obj.paid_amt,
             "paid_status": obj.paid_status
+        }, (error) => {
+            if (error) console.log("The write failed :: editupdateWrite history main");
+            else {
+                callback();
+                console.log("Data saved successfully!  history main");
+            }
+        });
+    }
+
+    public packagePaidHistoryUpdate(id, cnt, val, callback) {
+        this.db.database.ref("/users_info/" + id + "/history/" + cnt + "/details/history/").update({
+            [new Date().getTime()]: val,
         }, (error) => {
             if (error) console.log("The write failed :: editupdateWrite history main");
             else {
@@ -298,6 +311,32 @@ export class FireBase implements OnInit {
                 }
             });
         });
+    }
+
+    deleteUserHistory(id, historyLen, callback) {
+        var ref = this.db.database.ref("/users_info/" + id + "/history/" + historyLen);
+
+        ref.remove()
+            .then(function () {
+                console.log("Remove succeeded.");
+                callback();
+            })
+            .catch(function (error) {
+                console.log("Remove failed: " + error.message)
+            });
+    }
+
+
+    deleteUserOrder(id, date, callback) {
+        var ref = this.db.database.ref("/orders/" + date + "/" + id);
+        ref.remove()
+            .then(function () {
+                console.log("Remove succeeded from orders.");
+                callback();
+            })
+            .catch(function (error) {
+                console.log("Remove failed: " + error.message)
+            });
     }
 
     deleteFromCart(target, user_id, product_id) {

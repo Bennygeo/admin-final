@@ -99,6 +99,8 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
 
   //orders;
   orders: Array<any>;
+  order_start_date: any;
+  order_end_date: any;
   historyObj: Object = {};
   orderInfo: Object = {};
   msg: string;
@@ -128,10 +130,16 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   infoEnabled: boolean = true;
   total_nut_cnt: number = 0;
   pay_status: string = "";
+  paid_history: Array<any> = [];
+  _route_index: any;
+
 
   sub: any;
   orders_subscriber: any;
+  delete_subscriber: any;
+  delete_orders_subscriber: any;
   trace: any;
+  // save_btn_flg:boolean = true;
 
 
   //Date range picker properties
@@ -198,10 +206,11 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     });
 
     this.sub = this._activatedRoute.paramMap.subscribe(params => {
-      console.log("router params");
+      this.trace("params subscriber");
       this.mobile = params.get('mobile');
       this.status = params.get('status');
       this.c_name = params.get('name');
+      this._route_index = params.get('index');
 
       // console.log("this.mobile :: " + this.mobile);
       this.orders_subscriber = this.firebase.readOrders(this.mobile).subscribe((data: any) => {
@@ -226,6 +235,14 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
         // debugger;
         this.historyObj = _data;
         this.orderInfo = _data.details;
+        // debugger;
+        this.paid_history = [];
+        if (_data.details['history']) {
+          for (let val in _data.details['history']) {
+            // debugger;
+            this.paid_history.push("Paid " + _data.details['history'][val] + " on " + new Date(Number(val)).toDateString() + " " + new Date(Number(val)).toLocaleTimeString());
+          }
+        }
         // debugger;
         let cnt = -1;
 
@@ -261,11 +278,13 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
           };
         }
 
-        // console.log("total_nut_cnt :: " + total_nut_cnt);
-        // debugger;
         this.orders.sort(function (a, b) {
           return a.actualIndex - b.actualIndex
         });
+
+        // this.order_start_date = this.orders[0].date;
+        // this.order_end_date = this.orders[this.orders.length - 1].date;
+        // debugger;
 
         this._changeDet.detectChanges();
       });
@@ -526,6 +545,9 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
         let _date = this.date_utils.addDays(new Date(), key);
         this.firebase.write_tc_orders(this.date_utils.getDateString(_date, ""), this.mobile, this.tenderDetails);
 
+        this.trace("*****************");
+        this.trace("this.assigned_to :: "  +this.assigned_to);
+        this.trace("*****************");
         this.historyObj['dates'][this.date_utils.getDateString(_date, "")] = {
           index: index,
           actualIndex: index,
@@ -544,7 +566,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       // console.log("added to the history.");
       this.subsBtnVisibility = true;
       this.ordersExist = true;
-      this._router.navigate(['/admin/customer_view/' + Date.now(), { mobile: this.mobile, index: 0, status: 'active', name: this.c_name }]);
+      this._router.navigate(['/admin/customer_view/' + Date.now(), { mobile: this.mobile, index: this._route_index, status: 'active', name: this.c_name }]);
       // this._changeDet.detectChanges();
     });
   }
@@ -947,11 +969,11 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     for (let i = 0; i < _dates.length; i++) {
       index++;
       let _date = new Date(_dates[i]);
-      this.trace(_date);
+      // this.trace(_date);
       this.firebase.write_tc_orders(this.date_utils.getDateString(_date, ""), this.mobile, this.tenderDetails);
       this.historyObj['dates'][this.date_utils.getDateString(_date, "")] = {
-        index: index,
-        actualIndex: index,
+        "index": index,
+        "actualIndex": index,
         'delivered': false,
         'missed': false,
         'replacement': 0,
@@ -973,16 +995,70 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
 
   }
 
+  paySaveAction(val: any) {
+    console.log("Save action :: " + val.value);
+
+    let inpVal = val.value;
+    let remaining = Math.abs(val.value - this.orderInfo['remaining_to_pay']);//this.packageData.remaining_to_pay - this.packageData.paid_amt;
+    let paid = Math.abs(remaining - this.orderInfo['total_price']);
+    let status = "";
+
+    if (paid == this.orderInfo['total_price']) {
+      status = "Paid";
+    } else if (paid != 0 && paid < this.orderInfo['total_price']) {
+      status = "Partially paid";
+    } else {
+      status = "Not paid";
+    }
+
+    if (val.value && val.value != 0) {
+      // debugger;
+      this.firebase.packageInfoUpdate(this.mobile, this._service.historyLength, {
+        "total_price": this.orderInfo['total_price'],
+        "paid_amt": paid,
+        "remaining_to_pay": remaining,
+        "paid_status": status
+      },
+        this.data.date, () => {
+          this._changeDet.detectChanges();
+        });
+
+
+      this.firebase.packagePaidHistoryUpdate(this.mobile, this._service.historyLength, inpVal, () => {
+        // this._changeDet.detectChanges();
+      });
+    }
+
+    //empty the value;
+    val.value = 0;
+  }
+
+  payCancelAction() {
+    console.log("Cancel action.");
+  }
+
+  deleteOrderAction() {
+    // console.log("delete order action.", this._service.historyLength, this.mobile);
+    this.delete_subscriber = this.firebase.deleteUserHistory(this.mobile, this._service.historyLength, () => {
+      // this._router.navigate(["admin/customer_list"]);
+      this.ordersExist = false;
+      this.orders = [];
+      this._changeDet.detectChanges();
+      this.delete_subscriber.unsubscribe();
+    });
+
+    for (let i = 0; i < this.orders.length; i++) {
+      this.delete_orders_subscriber = this.firebase.deleteUserOrder(this.mobile, this.date_utils.dateFormater(this.orders[i].date, "-"), () => {
+        this.delete_orders_subscriber.unsubscribe();
+      })
+    }
+
+  }
+
   ngOnDestroy(): void {
     this.sub.unsubscribe();
     this.orders_subscriber.unsubscribe();
   }
-
-  /*
-  Date Range picker methods
-  */
-
-  /* End of Date Range picker */
 }
 
 export interface NuType {

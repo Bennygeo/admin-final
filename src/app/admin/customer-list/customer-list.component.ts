@@ -93,29 +93,50 @@ export class CustomerListComponent implements OnInit, OnDestroy {
     this.userListUpdateObservable = this._service.onUserListUpdate.subscribe((data) => {
       let trace = console.log;
       this.userList = [];
+      let sort_date_ary = [];
+      // debugger;
+
       for (let key in data) {
         data[key].mobile = key;
         data[key].checked = false;
 
+        sort_date_ary = [];
         try {
           data[key].active = "expired/others";
           this.orderStatus = "in-active";
           data[key].remainingDays = 0;
+
           //history length
           let len = Object.keys(data[key].history).length;
-          // trace("history len :: " + len);
+
           //orders length
-          // let ordersLen = Object.keys(data[key].history[len].dates).length + 1;
-          // trace("ordersLen :: " + ordersLen);
+          let order_length = Object.keys(data[key].history[len].dates).length - 1;
           data[key].active = "active";
           this.orderStatus = "active";
 
           let cnt = 0, _len = data[key].history[len].dates, postponedCnt = 0, todayIndex = 0;
 
-          let lastDeliveryDate = Object.keys(data[key].history[len].dates).sort()[Object.keys(data[key].history[len].dates).length - 1];
-          let __date = this.date_utils.dateFormater(lastDeliveryDate, "-");
-          let diff = this.date_utils.dateDiff(new Date(), new Date(this.date_utils.stdDateFormater(__date, "/")));
+          let tmp = Object.keys(data[key].history[len].dates);
+          for (let j = 0; j <= order_length; j++) {
+            sort_date_ary.push(new Date(this.date_utils.stdDateFormater(this.date_utils.dateFormater(tmp[j], "-"), "/")));
+          }
+
+          // /* Do sort the dates array */
+          sort_date_ary.sort(function (a, b) {
+            // Turn your strings into dates, and then subtract them
+            // to get a value that is either negative, positive, or zero.
+            return a.getTime() - b.getTime();
+          });
+
+          let startDate = sort_date_ary[0];
+          let lastDeliveryDate = sort_date_ary[order_length];
+
+          let _diff = this.date_utils.dateDiff(new Date(), lastDeliveryDate);
+          if (_diff < 0) data[key].active = "expired/others";
+
+          let diff = this.date_utils.dateDiff(startDate, lastDeliveryDate);
           // debugger;
+          // if (key == "9840717270") debugger;
 
           // data[key].history[len].dates.sort();
           for (let date in data[key].history[len].dates) {
@@ -123,21 +144,14 @@ export class CustomerListComponent implements OnInit, OnDestroy {
               postponedCnt++;
             }
           }
-
           // trace("postpooned cnt :: " + postponedCnt);
-          if (diff > 0) {
+          if (diff > -1) {
             // data[key].remainingDays = (diff - postponedCnt);
             data[key].remainingDays = (diff);
           } else {
-            // this.orderStatus = "in-active";
             data[key].active = "expired";
-            // trace("in activbe");
-
           }
-          // trace("diff :: " + diff);
-          // trace("postponedCnt :: " + postponedCnt);
-          // trace("key :: " + key);
-          // trace("data[key].remainingDays :: " + data[key].remainingDays);
+
         } catch (e) { }
         this.userList.push(data[key]);
       }
@@ -214,6 +228,7 @@ export class CustomerListComponent implements OnInit, OnDestroy {
     this.readDataObservable = this.firebase.readDailyOrders(_date).subscribe((data) => {
       this.assignBtnFlg = false;
       // debugger;
+
       for (let key in this.searchAry) {
         if (this.searchAry[key].active == "active" && this.searchAry[key].checked) {
 

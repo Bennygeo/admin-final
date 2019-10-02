@@ -2403,7 +2403,8 @@ export class AddressComponent implements OnInit {
         type: typeLabel
       },
       "area": areaLabel,
-      "active": "no "
+      "active": "no ",
+      "apartment":vals.building
     }, (result) => {
       this._commons.openSnackBar(result, "");
     });
