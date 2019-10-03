@@ -82,7 +82,8 @@ export class LoginComponent implements OnInit {
     this.credentialOwner = "";
     // this.username = "8870029847";
     // this.username = "9486140936";
-    this.username = "9884380539";
+    // this.username = "9884380539";
+    this.username = "";
     this.pswdErr = false;
   }
 

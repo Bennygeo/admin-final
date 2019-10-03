@@ -7,8 +7,8 @@
 
     <mat-tab-group #tabGroup (selectedTabChange)="tabChanged($event)">
         <mat-tab label="Undelivered :: {{total_undelivered}}">
-            <div cdkDropList (cdkDropListDropped)="drop($event)" disabled>
-                <div class="row box" cdkDrag *ngFor="let item of undelivered_list; let i = index;" id="{{'list_' + i}}">
+            <div disabled>
+                <div class="row box" *ngFor="let item of undelivered_list; let i = index;" id="{{'list_' + i}}">
                     <div class="col-7">
                         <div class="customer_name">{{item.data.c_name||'unknown'}}</div>
                         <div class="customer_m_no"><span

@@ -210,7 +210,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       this.mobile = params.get('mobile');
       this.status = params.get('status');
       this.c_name = params.get('name');
-      this._route_index = params.get('index');
+      // this._route_index = params.get('index');
 
       // console.log("this.mobile :: " + this.mobile);
       this.orders_subscriber = this.firebase.readOrders(this.mobile).subscribe((data: any) => {
@@ -566,7 +566,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       // console.log("added to the history.");
       this.subsBtnVisibility = true;
       this.ordersExist = true;
-      this._router.navigate(['/admin/customer_view/' + Date.now(), { mobile: this.mobile, index: this._route_index, status: 'active', name: this.c_name }]);
+      this._router.navigate(['/admin/customer_view/' + Date.now(), { mobile: this.mobile, status: 'active', name: this.c_name }]);
       // this._changeDet.detectChanges();
     });
   }
@@ -927,12 +927,8 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       "assigned_to": this.assigned_to,
       "history_id": this._service.historyLength + 1
     }
-    // debugger;
-
     // this.subsBtnVisibility = true;
     this.customSubsBtnVisibility = true;
-
-    // debugger;
 
     this.historyObj = {
       "details": {
@@ -956,16 +952,9 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     _dates.push(this.rangepicker_data.start);
     for (let i = 0; i < this.subscribedDays - 1; i++) {
       let _date = this.date_utils.addDays(new Date(this.rangepicker_data.start), i + 1);
-      // this.trace(_date);
       _dates.push(_date.toDateString());
     }
-
-    // this.trace(_dates);
-    // debugger;
-    // this.trace("end : " + this.rangepicker_data.end)
-    // this.trace("start : " + this.rangepicker_data.start)
     let index = 0;
-    // console.log("addToSubscriptionBag");
     for (let i = 0; i < _dates.length; i++) {
       index++;
       let _date = new Date(_dates[i]);

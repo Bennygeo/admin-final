@@ -114,7 +114,7 @@ export class OrderViewComponent implements OnInit, OnDestroy {
         this._changeDet.detectChanges();
       });
 
-    this.firebase.packagePaidHistoryUpdate(this.data.m_no, this._service.historyLength, this.priceVal, () => {
+    this.firebase.packagePaidHistoryUpdate(this.data.m_no, this.historyLength, this.priceVal, () => {
       this._changeDet.detectChanges();
     });
   }

@@ -215,7 +215,7 @@ export class CustomerListComponent implements OnInit, OnDestroy {
     // customer_view
     // this._router.navigate([{ outlets: { dialogeOutlet: null } }]);
     // console.log("index :: " + index);
-    this._router.navigate(['/admin/customer_view/' + Date.now(), { mobile: mobile, index: index, status: status, name: name }]);
+    this._router.navigate(['/admin/customer_view/' + Date.now(), { mobile: mobile, status: status, name: name }]);
   }
 
   assign() {

@@ -139,7 +139,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
     if (this.tab_index == 0) this.list = this.undelivered_list;
     if (this.tab_index == 1) this.list = this.delivered_list;
 
-    this.selectedTarget = this.undelivered_list[this.selectedIndex].data;
+    this.selectedTarget = this.list[this.selectedIndex].data;
     this.selectedTarget.date = this.todaysDate;
     // debugger;
     this._router.navigate(['/delivery/view-order/', { data: JSON.stringify(this.selectedTarget) }]);
@@ -148,6 +148,9 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
 
   deliveredAction(e) {
     // console.log("deliverd");
+    if (this.tab_index == 0) this.list = this.undelivered_list;
+    if (this.tab_index == 1) this.list = this.delivered_list;
+
     this.selectedIndex = e.currentTarget.id.split("_")[1] * 1;
     this.selectedTarget = this.list[this.selectedIndex].data;
 
