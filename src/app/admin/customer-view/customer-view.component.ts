@@ -107,9 +107,13 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   btnsView: boolean = false;
   ordersExist: boolean = true;
 
+  start_d: any;
+  end_d: any;
+
   mobile: any;
   status: any;
   c_name: any;
+
   selectedDateItem: any;
   selectedDateIndex: number = 0;
   editEnabled: boolean = false;
@@ -132,7 +136,6 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   pay_status: string = "";
   paid_history: Array<any> = [];
   _route_index: any;
-
 
   sub: any;
   orders_subscriber: any;
@@ -210,6 +213,8 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       this.mobile = params.get('mobile');
       this.status = params.get('status');
       this.c_name = params.get('name');
+      this.start_d = params.get('start');
+      this.end_d = params.get('end');
       // this._route_index = params.get('index');
 
       // console.log("this.mobile :: " + this.mobile);
@@ -235,7 +240,6 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
         // debugger;
         this.historyObj = _data;
         this.orderInfo = _data.details;
-        // debugger;
         this.paid_history = [];
         if (_data.details['history']) {
           for (let val in _data.details['history']) {
@@ -260,6 +264,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
           this.total_nut_cnt += _data["dates"][key].count;
           todayFlg = (Math.sign(this.date_utils.dateDiff(new Date(), new Date(this.date_utils.stdDateFormater(__date, "/"))))) == 0 ? true : false;
           if (todayFlg && todayTime <= 10) todayFlg = false;
+
 
           this.orders[cnt] = {
             index: _data["dates"][key].index,
@@ -546,7 +551,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
         this.firebase.write_tc_orders(this.date_utils.getDateString(_date, ""), this.mobile, this.tenderDetails);
 
         this.trace("*****************");
-        this.trace("this.assigned_to :: "  +this.assigned_to);
+        this.trace("this.assigned_to :: " + this.assigned_to);
         this.trace("*****************");
         this.historyObj['dates'][this.date_utils.getDateString(_date, "")] = {
           index: index,

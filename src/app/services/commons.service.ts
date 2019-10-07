@@ -17,20 +17,29 @@ export class CommonsService {
   orders: Object = {};
   deliveryBoysList: Object = {};
 
-
   onUserListUpdate: EventEmitter<any> = new EventEmitter();
   userOrdersUpdate: EventEmitter<any> = new EventEmitter();
   sendCustomerMsg: EventEmitter<any> = new EventEmitter();
+  deliveryBoysUpdate: EventEmitter<any> = new EventEmitter();
   historyLength: number = 0;
 
-  private _fb: FireBase;
+  private firebase: FireBase;
+  delivery_boys_observable: any;
+  delivery_boys_list: Array<String> = [];
 
   constructor(
     private _snackBar: MatSnackBar,
     private _db: AngularFireDatabase,
     private http: HttpClient
   ) {
-    this._fb = new FireBase(this._db);
+    this.firebase = new FireBase(this._db);
+
+    this.delivery_boys_observable = this.firebase.readDeliverBoys().subscribe((data: any) => {
+      for (let key in data) {
+        this.delivery_boys_list.push(data[key]);
+      }
+      this.deliveryBoysUpdate.emit();
+    });
   }
 
   public openSnackBar(message: string, action: string) {
@@ -50,7 +59,7 @@ export class CommonsService {
         console.log("user list emit 1");
       }, 0, this.userList);
     } else {
-      this._fb.readUsers().subscribe((val: any) => {
+      this.firebase.readUsers().subscribe((val: any) => {
         this.userList = val;
         window.setTimeout((val) => {
           this.onUserListUpdate.emit(val);
@@ -62,7 +71,7 @@ export class CommonsService {
   }
 
   public readOrdersList() {
-    this._fb.readOrders("9486140936").subscribe((val: any) => {
+    this.firebase.readOrders("9486140936").subscribe((val: any) => {
       // debugger;
       this.orders = val;
       window.setTimeout((val) => {

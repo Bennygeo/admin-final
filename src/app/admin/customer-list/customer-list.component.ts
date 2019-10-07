@@ -37,7 +37,7 @@ export class CustomerListComponent implements OnInit, OnDestroy {
   orderStatus: string = "";
   assignBtnFlg: boolean = true;
 
-  delivery_boys_list: Array<string> = [];
+  delivery_boys_list: any;
   selected_delivery_boy: string = "nil";
 
   readDataObservable: any;
@@ -82,12 +82,16 @@ export class CustomerListComponent implements OnInit, OnDestroy {
       this.todaysDate = this.date_utils.getDateString(this.date_utils.addDays(this.todaysDate, 1), "");
     }
 
-    this.userListObservable = this.firebase.readDeliverBoys().subscribe((data: any) => {
-      var index = -1;
-      for (let key in data) {
-        index++;
-        this.delivery_boys_list.push(data[key]);
-      }
+    // this.userListObservable = this.firebase.readDeliverBoys().subscribe((data: any) => {
+    //   var index = -1;
+    //   for (let key in data) {
+    //     index++;
+    //     this.delivery_boys_list.push(data[key]);
+    //   }
+    // });
+
+    this._service.deliveryBoysUpdate.subscribe(() => {
+      this.delivery_boys_list = this._service.delivery_boys_list;
     });
 
     this.userListUpdateObservable = this._service.onUserListUpdate.subscribe((data) => {
@@ -102,6 +106,10 @@ export class CustomerListComponent implements OnInit, OnDestroy {
 
         sort_date_ary = [];
         try {
+
+          data[key].start_date = new Date();
+          data[key].end_date = new Date();
+
           data[key].active = "expired/others";
           this.orderStatus = "in-active";
           data[key].remainingDays = 0;
@@ -132,11 +140,13 @@ export class CustomerListComponent implements OnInit, OnDestroy {
           let lastDeliveryDate = sort_date_ary[order_length];
 
           let _diff = this.date_utils.dateDiff(new Date(), lastDeliveryDate);
+
           if (_diff < 0) data[key].active = "expired/others";
 
           let diff = this.date_utils.dateDiff(startDate, lastDeliveryDate);
+          let diff_start_current = this.date_utils.dateDiff(new Date(), startDate);
           // debugger;
-          // if (key == "9840717270") debugger;
+
 
           // data[key].history[len].dates.sort();
           for (let date in data[key].history[len].dates) {
@@ -144,14 +154,20 @@ export class CustomerListComponent implements OnInit, OnDestroy {
               postponedCnt++;
             }
           }
+
+          // if (key == "6382009070") debugger;
           // trace("postpooned cnt :: " + postponedCnt);
-          if (diff > -1) {
+          if (_diff > -1) {
             // data[key].remainingDays = (diff - postponedCnt);
-            data[key].remainingDays = (diff);
+            data[key].remainingDays = Math.abs(_diff);
+            data[key].package = diff;
+            data[key].rtp = data[key].history[len].details.remaining_to_pay;
+            data[key].start_date = startDate;
+            data[key].end_date = lastDeliveryDate;
           } else {
             data[key].active = "expired";
-          }
 
+          }
         } catch (e) { }
         this.userList.push(data[key]);
       }
@@ -192,7 +208,8 @@ export class CustomerListComponent implements OnInit, OnDestroy {
 
     if (evt.target.innerText == "View") {
       // console.log("book an order");
-      this.bookAnOrder(index, mobile, this.searchAry[index].active, this.searchAry[index].name);
+      // debugger;
+      this.bookAnOrder(mobile, this.searchAry[index].active, this.searchAry[index].name, this.searchAry[index].start_date.toDateString(), this.searchAry[index].end_date.toDateString());
     }
     // return false;
   }
@@ -210,12 +227,9 @@ export class CustomerListComponent implements OnInit, OnDestroy {
     this.checkboxSelectors['inactive'] = false;
   }
 
-  bookAnOrder(index, mobile, status, name) {
-    // console.log("bookAnOrder");
-    // customer_view
-    // this._router.navigate([{ outlets: { dialogeOutlet: null } }]);
-    // console.log("index :: " + index);
-    this._router.navigate(['/admin/customer_view/' + Date.now(), { mobile: mobile, status: status, name: name }]);
+  bookAnOrder(mobile, status, name, startDate, endDate) {
+    // debugger;
+    this._router.navigate(['/admin/customer_view/' + Date.now(), { mobile: mobile, status: status, name: name, start: startDate, end: endDate }]);
   }
 
   assign() {
@@ -232,10 +246,6 @@ export class CustomerListComponent implements OnInit, OnDestroy {
       for (let key in this.searchAry) {
         if (this.searchAry[key].active == "active" && this.searchAry[key].checked) {
 
-          // debugger;
-          // console.log("key :: " + key);
-          // debugger;
-          // console.log("tender :: " + data[this.searchAry[key].mobile].tender);
           let tmp = JSON.parse(data[this.searchAry[key].mobile].tender);
           tmp.assigned_to = this.selected_delivery_boy;
           modifiedData[this.searchAry[key].mobile] = tmp;
@@ -363,7 +373,7 @@ export class CustomerListComponent implements OnInit, OnDestroy {
         selected.push(this.userList[i].mobile);
       }
     }
-    trace(selected);
+    // trace(selected);
     // trace("**********");
     this._service.send_bulk_sms({
       'mobile_nos': selected,
@@ -375,7 +385,7 @@ export class CustomerListComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     console.log("ng destroy");
-    this.userListObservable.unsubscribe();
+    // this.userListObservable.unsubscribe();
     this.userListUpdateObservable.unsubscribe();
     // this.msgBtnSubscriber.unsubscribe();
     try {

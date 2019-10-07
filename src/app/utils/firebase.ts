@@ -106,12 +106,30 @@ export class FireBase implements OnInit {
             name: obj.name,
             ['/address/address' + 1]: JSON.stringify(obj.address),
             area: obj.area,
-            aprtment: obj.apartment
+            floor: obj.floor,
+            door: obj.door,
+            block: obj.block,
+            landmark: obj.landmark,
+            pincode: obj.pincode,
+            aprtment: obj.apartment,
+            inst: obj.inst
         }, (error) => {
             if (error) callback("Write Failed.");
             else callback("Success");
         });
     }
+
+    // "name": data.Name,
+    //     "address": data.Address,
+    //     "active": "no ",
+    //     "apartment": data.Apartment,
+    //     "door": data.Door || "",
+    //     "block": data.Block || "",
+    //     "floor": data.Floor || "",
+    //     "inst": data.Instructions || "",
+    //     "area": data.Area || "",
+    //     "landmark": data.Landmark || "",
+    //     "pincode": data.Pincode || ""
 
 
     public write_tc_orders(date, id, obj) {

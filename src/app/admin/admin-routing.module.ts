@@ -6,6 +6,7 @@ import { BookOrderComponent } from './book-order/book-order.component';
 import { AddressComponent } from './address/address.component';
 import { NoAccessComponent } from '../others/no-access/no-access.component';
 import { PageNotFoundComponent } from '../others/page-not-found/page-not-found.component';
+import { ReportComponent } from './report/report.component';
 
 const routes: Routes = [
   {
@@ -21,6 +22,10 @@ const routes: Routes = [
     // customer-list
     path: 'customer_list',
     component: CustomerListComponent,
+  },
+  {
+    path: 'report',
+    component: ReportComponent,
   },
   {
     path: 'address',

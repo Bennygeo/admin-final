@@ -35,7 +35,8 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   report() {
     console.log("Report.");
-    this._router.navigate(["admin/customer_list"]);
+    this._service.deliveryBoysUpdate.emit();
+    this._router.navigate(["admin/report"]);
   }
 
   add_person() {

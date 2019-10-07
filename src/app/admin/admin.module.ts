@@ -19,6 +19,7 @@ import { MatDialogComponent } from '../others/mat-dialog/mat-dialog.component';
 import { ScrollDispatchModule } from '@angular/cdk/scrolling';
 import { HttpClientModule } from '@angular/common/http';
 import { Daterangepicker } from 'ng2-daterangepicker';
+import { ReportComponent } from './report/report.component';
 
 
 @NgModule({
@@ -31,6 +32,7 @@ import { Daterangepicker } from 'ng2-daterangepicker';
     BookOrderComponent,
     PlusMinusComponent,
     MatDialogComponent,
+    ReportComponent,
   ],
   imports: [
     CommonModule,

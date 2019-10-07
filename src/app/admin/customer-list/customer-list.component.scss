@@ -80,15 +80,24 @@
 }
 
 .remainingDays {
-  border: 1px solid #eee;
-  font-size: 10px;
+  background-color: #eee;
+  border: 1px solid #aaa;
+  font-size: 12px;
   border-radius: 3px;
   padding-left: 6px;
   padding-right: 6px;
   padding-top: 1px;
   padding-bottom: 1px;
 }
-
+.packageDays {
+  border: 1px solid #aaa;
+  font-size: 12px;
+  border-radius: 3px;
+  padding-left: 6px;
+  padding-right: 6px;
+  padding-top: 1px;
+  padding-bottom: 1px;
+}
 .customerList {
   height: 65vh;
   // width:100vw;
@@ -135,13 +144,40 @@
   z-index: 101;
 }
 .apmt {
-  // background-color: #666;
+  background-color: #ff7a0021;
   // color: #fff;
-  border:1px solid #aaa;
+  border: 1px solid #aaa;
   font-size: 12px;
   display: inline;
   padding: 2px;
   padding-right: 6px;
   padding-left: 6px;
   border-radius: 3px;
+}
+
+.rtp {
+  // background-color: #ff7a0021;
+  // color: #fff;
+  border: 1px solid #aaa;
+  font-size: 12px;
+  display: inline;
+  padding: 2px;
+  padding-right: 6px;
+  padding-left: 6px;
+  border-radius: 3px;
+  font-weight: 500;
+}
+
+.danger {
+  // color: red;
+  // border: 1px solid #f00;
+  background-color: #e1170e;
+  color: #fff;
+  border: 1px solid #d24039;
+}
+
+.normal {
+  background-color: #63ba2d;
+  color: #fff;
+  border: 1px solid #0092a9;
 }

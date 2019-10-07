@@ -41,6 +41,9 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
   total_delivered: number = 0;
   tab_index: number = 0;
 
+  collected_amt: number = 0;
+  paid_customers_list: Array<Object> = [];
+
   constructor(
     private _activatedRoute: ActivatedRoute,
     private db: AngularFireDatabase,
@@ -60,7 +63,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
     });
 
     let todayTime = new Date().getHours();
-    if (todayTime <= 11) {
+    if (todayTime <= 23) {
       this.todaysDate = new Date();
       this.todaysDate = this.dateUtils.getDateString(this.todaysDate, "");
     } else {
@@ -86,17 +89,36 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
         this.total_delivered = 0;
         this.total_undelivered = 0;
 
-
         for (let key in data) {
           index++;
           let _data = JSON.parse(data[key].tender);
-
           let deliveryFlg = (_data.delivery_status == "Delivered") ? true : false;
           this.deliveredStatus = (deliveryFlg) ? "Done" : "Delivered";
+          
           if (_data.assigned_to == this.name) {
             this.total_deliveries += _data.per_day;
+            let history_len = Object.keys(user_data[_data.m_no].history).length;
 
-            // debugger;
+            let _pay_history_len;
+            try {
+              _pay_history_len = Object.keys(user_data[key].history[history_len].details.history).length;
+            } catch (e) { }
+
+            if (_pay_history_len > 0) {
+              for (let _date in user_data[key].history[history_len].details.history) {
+                if (new Date(Number(_date) * 1).toDateString() == new Date().toDateString()) {
+                  // debugger;
+                  this.collected_amt += user_data[key].history[history_len].details.history[_date] * 1;
+                  this.paid_customers_list.push({
+                    name: _data.c_name,
+                    no: _data.m_no,
+                    paid: user_data[key].history[history_len].details.history[_date] * 1
+                  })
+                }
+              }
+            }
+
+            // console.log("--- :: " + user_data[key].history[history_len].details.remaining_to_pay);
             if (!deliveryFlg) {
               this.total_undelivered += _data.per_day;
               this.undelivered_list.push({
@@ -105,7 +127,9 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
                 'delivery_string': this.deliveredStatus,
                 'data': _data,
                 'apartment': user_data[key].aprtment,
-                'address': user_data[key].address.address1
+                'address': user_data[key].address.address1,
+                'rtp': user_data[key].history[history_len].details.remaining_to_pay,
+                'instructions': user_data[key].history[history_len].details.instructions
               });
               // debugger;
             } else {
@@ -116,7 +140,9 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
                 'delivery_string': this.deliveredStatus,
                 'data': _data,
                 'apartment': user_data[key].aprtment,
-                'address': user_data[key].address.address1
+                'address': user_data[key].address.address1,
+                'rtp': user_data[key].history[history_len].details.remaining_to_pay,
+                'instructions': user_data[key].history[history_len].details.instructions
               });
             }
           }

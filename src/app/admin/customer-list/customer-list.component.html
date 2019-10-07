@@ -38,16 +38,21 @@
         <div class="container">
             <div class="row box" *cdkVirtualFor="let item of searchAry; let i = index;"
                 (click)="onCustomerClick($event, i,item.mobile)" id="{{'list_' + i}}">
-                <div class="col-9" style="margin-left: -6px; margin-right: -6px">
+                <div class="col-10" style="margin-left: -6px; margin-right: -6px">
                     <div style="position: relative; float: left; padding-right: 6px;">
                         <mat-checkbox [checked]='item.checked'></mat-checkbox>
                     </div>
-                    <div class="customer_name">{{item.name}}&nbsp; <span
-                            [ngClass]="item.active == 'active' ? 'activeFlg':'inActiveFlg'">{{item.active}}</span>
-                        &nbsp;<span *ngIf="item.remainingDays != 0" class="remainingDays">{{item.remainingDays}}
-                            day(s) left.</span>
+                    <div class="customer_name">{{item.name}}&nbsp;
+                        <span
+                            [ngClass]="item.active == 'active' ? 'activeFlg':'inActiveFlg'">{{item.active}}</span>&nbsp;
+                        <span class="rtp" *ngIf="item.rtp">₹{{item.rtp}}</span><br *ngIf="item.active == 'active'" />
+                        &nbsp;<span *ngIf="item.remainingDays > -1 && item.active == 'active'" class="remainingDays"
+                            [ngClass]="{'danger': item.remainingDays<3, 'normal':item.remainingDays>3 }">{{item.remainingDays}}
+                            day(s) left.</span>&nbsp;
+                        <span class="packageDays" *ngIf="item.package > -1">{{item.package+1}} days
+                            package.</span>
+
                     </div>
-                    
 
                     <div class="customer_m_no"><span style="font-size: 12px; color:#aaa; font-weight: 300;">+91</span>
                         <!-- {{item.mobile}} -->
@@ -55,7 +60,7 @@
                     </div>
                     <div class="apmt">{{item.aprtment}}</div>
                 </div>
-                <div class="col-3 my-auto" style="text-align: right; padding: 0">
+                <div class="col-2 my-auto" style="text-align: right; padding: 0">
                     <!-- <button style="margin:3px;" class="right">Call</button> -->
                     <!-- <a style="margin:3px;" href={{item.mobile}}>Call</a> -->
                     <button style="margin:3px;" class="btn btn-primary btns">View</button>
