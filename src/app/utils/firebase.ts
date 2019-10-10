@@ -102,6 +102,7 @@ export class FireBase implements OnInit {
     }
 
     public adminWriteUserAddress(obj, callback) {
+        // debugger;
         this.db.database.ref('/users_info/' + obj.id).update({
             name: obj.name,
             ['/address/address' + 1]: JSON.stringify(obj.address),

@@ -155,6 +155,7 @@ export class CustomerListComponent implements OnInit, OnDestroy {
             }
           }
 
+          console.log(key + " : " + _diff);
           // if (key == "6382009070") debugger;
           // trace("postpooned cnt :: " + postponedCnt);
           if (_diff > -1) {
@@ -166,8 +167,12 @@ export class CustomerListComponent implements OnInit, OnDestroy {
             data[key].end_date = lastDeliveryDate;
           } else {
             data[key].active = "expired";
-
           }
+
+          if (_diff == 0) {
+            data[key].active = "done";
+          }
+
         } catch (e) { }
         this.userList.push(data[key]);
       }

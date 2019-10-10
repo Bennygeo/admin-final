@@ -2950,6 +2950,15 @@ export class AddressComponent implements OnInit {
     let typeLabel = this.typeGroup.value.floatLabel;
     let areaLabel = this.fifthFormGroup.value.selectCtrl;
 
+    // debugger;
+    // floor: obj.floor,
+    //         door: obj.door,
+    //         block: obj.block,
+    //         landmark: obj.landmark,
+    //         pincode: obj.pincode,
+    //         aprtment: obj.apartment,
+    //         inst: obj.inst
+
     this.firebase.adminWriteUserAddress({
       "id": vals.mobile,
       "email": emailVal,
@@ -2961,9 +2970,16 @@ export class AddressComponent implements OnInit {
         street: vals.street,
         type: typeLabel
       },
-      "area": areaLabel,
+      "door": "",
+      "floor": vals.floor,
+      "block": vals.block,
+      "landmark": vals.landmark || "",
+      "pincode": vals.pincode || "",
+      "area": areaLabel || "",
+      "aprtment": vals.apartment || "",
+      "inst": vals.inst || "",
       "active": "no ",
-      "apartment": vals.building
+      "apartment": vals.building || ""
     }, (result) => {
       this._commons.openSnackBar(result, "");
     });

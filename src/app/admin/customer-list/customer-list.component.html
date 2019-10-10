@@ -46,7 +46,7 @@
                         <span
                             [ngClass]="item.active == 'active' ? 'activeFlg':'inActiveFlg'">{{item.active}}</span>&nbsp;
                         <span class="rtp" *ngIf="item.rtp">₹{{item.rtp}}</span><br *ngIf="item.active == 'active'" />
-                        &nbsp;<span *ngIf="item.remainingDays > -1 && item.active == 'active'" class="remainingDays"
+                        &nbsp;<span *ngIf="item.remainingDays > -1 && (item.active == 'active' || item.active == 'end')" class="remainingDays"
                             [ngClass]="{'danger': item.remainingDays<3, 'normal':item.remainingDays>3 }">{{item.remainingDays}}
                             day(s) left.</span>&nbsp;
                         <span class="packageDays" *ngIf="item.package > -1">{{item.package+1}} days
