@@ -418,7 +418,8 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   }
 
   onNutVarietyChange(e): void {
-    console.log(e.value);
+    // console.log(e.value);
+    this.selectedNutVariety = e.value;
   }
 
   public onNutTypeChange(e) {
@@ -529,6 +530,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
         // "offers": this.diff,
         "no_of_days": this.subscribedDays,
         "active": "yes",
+        "nut_variety": this.selectedNutVariety,
         // "price": this.originalPrice,
         // "paused": false,
         "nut_price": this.price + this.deliveryCharges - this.discount,
@@ -547,12 +549,13 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     for (var key in this.selectedDays) {
       index++;
       if (this.selectedDays[key] == 1) {
+        debugger;
         let _date = this.date_utils.addDays(new Date(), key);
         this.firebase.write_tc_orders(this.date_utils.getDateString(_date, ""), this.mobile, this.tenderDetails);
 
-        this.trace("*****************");
-        this.trace("this.assigned_to :: " + this.assigned_to);
-        this.trace("*****************");
+        // this.trace("*****************");
+        // this.trace("this.assigned_to :: " + this.assigned_to);
+        // this.trace("*****************");
         this.historyObj['dates'][this.date_utils.getDateString(_date, "")] = {
           index: index,
           actualIndex: index,

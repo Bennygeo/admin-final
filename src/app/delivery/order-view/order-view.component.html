@@ -35,12 +35,16 @@
         <td class="tg-0lax">{{packageData.no_of_days}} days</td>
     </tr>
     <tr>
-        <td class="tg-0lax">Address</td>
-        <td class="tg-0lax"></td>
+        <td class="tg-0lax">Start</td>
+        <td class="tg-0lax" style="background-color: #f4ffe4;">{{start_delivery_date}}</td>
     </tr>
     <tr>
-        <td class="tg-0lax">DND</td>
-        <td class="tg-0lax"></td>
+        <td class="tg-0lax">End</td>
+        <td class="tg-0lax" style="background-color: #ffe7e7;">{{last_delivery_date}}</td>
+    </tr>
+    <tr>
+        <td class="tg-0lax">Remaining days</td>
+        <td class="tg-0lax">{{remaining_days}} days left.</td>
     </tr>
     <tr>
         <td class="tg-0lax">Nut price</td>
@@ -56,7 +60,7 @@
     </tr>
     <tr>
         <td class="tg-0lax">Remaining amount</td>
-        <td class="tg-0lax">₹ {{packageData.remaining_to_pay}}</td>
+        <td class="tg-0lax" style="background-color: #ffe7e7;">₹ {{packageData.remaining_to_pay}}</td>
     </tr>
     <tr>
         <td class="tg-0lax">Paid</td>
@@ -67,14 +71,6 @@
         <td class="tg-0lax">{{(packageData.straw)?"Yes":"No"}}</td>
     </tr>
     <tr>
-        <td class="tg-0lax">Instructions</td>
-        <td class="tg-0lax"></td>
-    </tr>
-    <tr>
-        <td class="tg-0lax">Speical Instructions</td>
-        <td class="tg-0lax"></td>
-    </tr>
-    <tr>
         <td class="tg-0lax">Replacements</td>
         <td class="tg-0lax"></td>
     </tr>
@@ -82,10 +78,7 @@
         <td class="tg-0lax">Compliments</td>
         <td class="tg-0lax"></td>
     </tr>
-    <tr>
-        <td class="tg-0lax">Remaining days</td>
-        <td class="tg-0lax"></td>
-    </tr>
+
 
     <tr>
         <td class="tg-0lax">Break days</td>

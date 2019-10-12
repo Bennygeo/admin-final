@@ -63,7 +63,7 @@ export class LoginComponent implements OnInit {
           console.log("Bad");
           this.pswdErr = true;
         }
-      } else if (this.username == "8870029847" || this.username == "9500948808" || this.username == "9884380539") {
+      } else if (this.username == "8870029847" || this.username == "9500948808" || this.username == "9884380539"|| this.username == "6382942615") {
         if (this.pswd == this.loginData[this.username].pswd) {
           console.log("delivery boy logged");
           this.submit_btn_disable = true;

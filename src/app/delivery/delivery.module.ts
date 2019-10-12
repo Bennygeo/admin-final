@@ -11,8 +11,8 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { OrderViewComponent } from './order-view/order-view.component';
 import { MatProgressSpinnerModule, MatSnackBarModule, MatTabsModule } from '@angular/material';
 import { CommonsService } from '../services/commons.service';
-import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
+import { DateUtils } from '../utils/date-utils';
 
 @NgModule({
   declarations: [
@@ -32,7 +32,8 @@ import { HttpClientModule } from '@angular/common/http';
   ],
   providers: [
     Ng2SearchPipe,
-    CommonsService
+    CommonsService,
+    DateUtils
   ]
 })
 export class DeliveryModule { }

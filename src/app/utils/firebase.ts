@@ -106,14 +106,15 @@ export class FireBase implements OnInit {
         this.db.database.ref('/users_info/' + obj.id).update({
             name: obj.name,
             ['/address/address' + 1]: JSON.stringify(obj.address),
-            area: obj.area,
-            floor: obj.floor,
-            door: obj.door,
-            block: obj.block,
-            landmark: obj.landmark,
-            pincode: obj.pincode,
-            aprtment: obj.apartment,
-            inst: obj.inst
+            // area: obj.area,
+            // floor: obj.floor,
+            // door: obj.door,
+            // block: obj.block,
+            // landmark: obj.landmark,
+            // pincode: obj.pincode,
+            // aprtment: obj.address.apartment,
+            // inst: obj.inst
+            active: "no"
         }, (error) => {
             if (error) callback("Write Failed.");
             else callback("Success");

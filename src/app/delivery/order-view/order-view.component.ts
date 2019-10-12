@@ -4,6 +4,7 @@ import { Location } from '@angular/common';
 import { FireBase } from 'src/app/utils/firebase';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { CommonsService } from 'src/app/services/commons.service';
+import { DateUtils } from 'src/app/utils/date-utils';
 
 @Component({
   selector: 'order-view',
@@ -18,10 +19,14 @@ export class OrderViewComponent implements OnInit, OnDestroy {
   priceVal: number = 0;
   firebase: FireBase
   historyLength: any;
+  dates: any;
   packageData: any = {
     'no_of_days': 0
   };
   readOrders: any;
+  start_delivery_date: any;
+  last_delivery_date: any;
+  remaining_days: number = 0;
 
   constructor(
     private _ngZone: NgZone,
@@ -30,7 +35,8 @@ export class OrderViewComponent implements OnInit, OnDestroy {
     private _activatedRoute: ActivatedRoute,
     private _changeDet: ChangeDetectorRef,
     private _db: AngularFireDatabase,
-    private _service: CommonsService
+    private _service: CommonsService,
+    private date_utils: DateUtils
   ) {
     console.log("order view constructor.");
     this.sub = this._router.events.subscribe((data: any) => {
@@ -56,6 +62,7 @@ export class OrderViewComponent implements OnInit, OnDestroy {
 
   readPackageInfo() {
     console.log("readPackageInfo");
+    let sort_date_ary = [];
     this.readOrders = this.firebase.readOrders(this.data.m_no).subscribe((data: any) => {
       try {
         this.historyLength = Object.keys(data).length || 0;
@@ -63,6 +70,29 @@ export class OrderViewComponent implements OnInit, OnDestroy {
         this.historyLength = 0;
       }
       this.packageData = data[this.historyLength].details;
+      // debugger;
+
+      this.dates = data[this.historyLength].dates;
+      let order_length = Object.keys(this.dates).length - 1;
+
+      sort_date_ary = [];
+      let tmp = Object.keys(this.dates);
+      for (let j = 0; j <= order_length; j++) {
+        sort_date_ary.push(new Date(this.date_utils.stdDateFormater(this.date_utils.dateFormater(tmp[j], "-"), "/")));
+      }
+
+      // /* Do sort the dates array */
+      sort_date_ary.sort(function (a, b) {
+        // Turn your strings into dates, and then subtract them
+        // to get a value that is either negative, positive, or zero.
+        return a.getTime() - b.getTime();
+      });
+
+      this.start_delivery_date = sort_date_ary[0].toDateString();
+      this.last_delivery_date = sort_date_ary[order_length].toDateString();
+
+      this.remaining_days = this.date_utils.dateDiff(new Date(), sort_date_ary[order_length]);
+
       this._changeDet.detectChanges();
     });
     // debugger;

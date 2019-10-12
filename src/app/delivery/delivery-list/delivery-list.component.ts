@@ -94,7 +94,9 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
           let _data = JSON.parse(data[key].tender);
           let deliveryFlg = (_data.delivery_status == "Delivered") ? true : false;
           this.deliveredStatus = (deliveryFlg) ? "Done" : "Delivered";
-          
+
+          // if (key == "9500755568") debugger;
+          // debugger;
           if (_data.assigned_to == this.name) {
             this.total_deliveries += _data.per_day;
             let history_len = Object.keys(user_data[_data.m_no].history).length;
@@ -118,18 +120,23 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
               }
             }
 
+            let addr = JSON.parse(user_data[key].address.address1);
+            // debugger;
+            let updated_address = addr.street;
+
             // console.log("--- :: " + user_data[key].history[history_len].details.remaining_to_pay);
             if (!deliveryFlg) {
               this.total_undelivered += _data.per_day;
+
               this.undelivered_list.push({
                 'no': key,
                 'delivery_status': deliveryFlg,
                 'delivery_string': this.deliveredStatus,
                 'data': _data,
-                'apartment': user_data[key].aprtment,
-                'address': user_data[key].address.address1,
+                'apartment': addr.apartment,
+                'address': updated_address,
                 'rtp': user_data[key].history[history_len].details.remaining_to_pay,
-                'instructions': user_data[key].history[history_len].details.instructions
+                'instructions': addr.inst
               });
               // debugger;
             } else {
@@ -139,7 +146,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
                 'delivery_status': deliveryFlg,
                 'delivery_string': this.deliveredStatus,
                 'data': _data,
-                'apartment': user_data[key].aprtment,
+                'apartment': addr.apartment,
                 'address': user_data[key].address.address1,
                 'rtp': user_data[key].history[history_len].details.remaining_to_pay,
                 'instructions': user_data[key].history[history_len].details.instructions

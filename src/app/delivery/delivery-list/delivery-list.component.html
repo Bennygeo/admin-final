@@ -6,7 +6,7 @@
 
 
     <mat-tab-group #tabGroup (selectedTabChange)="tabChanged($event)">
-        <mat-tab label="Undelivered :: {{total_undelivered}}">
+        <mat-tab label="Orders :: {{total_undelivered}}">
             <div disabled>
                 <div class="row box" *ngFor="let item of undelivered_list; let i = index;" id="{{'list_' + i}}">
                     <div class="col-7">

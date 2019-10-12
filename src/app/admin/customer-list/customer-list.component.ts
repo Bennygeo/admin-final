@@ -107,6 +107,9 @@ export class CustomerListComponent implements OnInit, OnDestroy {
         sort_date_ary = [];
         try {
 
+          // debugger;
+          data[key].apartment = JSON.parse(data[key].address.address1).apartment;
+
           data[key].start_date = new Date();
           data[key].end_date = new Date();
 
@@ -147,7 +150,6 @@ export class CustomerListComponent implements OnInit, OnDestroy {
           let diff_start_current = this.date_utils.dateDiff(new Date(), startDate);
           // debugger;
 
-
           // data[key].history[len].dates.sort();
           for (let date in data[key].history[len].dates) {
             if (data[key].history[len].dates[date].index == "postponed") {
@@ -155,7 +157,7 @@ export class CustomerListComponent implements OnInit, OnDestroy {
             }
           }
 
-          console.log(key + " : " + _diff);
+          // console.log(key + " : " + _diff);
           // if (key == "6382009070") debugger;
           // trace("postpooned cnt :: " + postponedCnt);
           if (_diff > -1) {
@@ -174,6 +176,7 @@ export class CustomerListComponent implements OnInit, OnDestroy {
           }
 
         } catch (e) { }
+
         this.userList.push(data[key]);
       }
       this.searchAry = this.userList;
@@ -188,9 +191,7 @@ export class CustomerListComponent implements OnInit, OnDestroy {
     // trace("**************");
     if (this._service.sendCustomerMsg.observers.length == 0) {
       this._service.sendCustomerMsg.subscribe(() => {
-        console.log("message btn clicked.");
         (this.overlay) ? this.overlay = false : this.overlay = true;
-        console.log("this.overlay :: " + this.overlay);
       });
     }
   }
