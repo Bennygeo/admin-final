@@ -754,6 +754,8 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       ordersToPostpone[i] = JSON.parse(JSON.stringify(this.orders[index]));
     }
 
+    debugger;
+
     //update the orders object
     for (let i = 0; i < remainingDays; i++) {
       let index1 = (this.selectedDateIndex - 1) * 1 + this.noOfDaysToPostpone * 1 + i - pastPostponeCount;

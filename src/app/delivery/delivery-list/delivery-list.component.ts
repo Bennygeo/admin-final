@@ -75,7 +75,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
     });
 
     let todayTime = new Date().getHours();
-    if (todayTime <= 23) {
+    if (todayTime <= 14) {
       this.todaysDate = new Date();
       this.todaysDate = this.dateUtils.getDateString(this.todaysDate, "");
     } else {
@@ -107,7 +107,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
           let deliveryFlg = (_data.delivery_status == "Delivered") ? true : false;
           this.deliveredStatus = (deliveryFlg) ? "Done" : "Delivered";
 
-          // if (key == "9500755568") debugger;
+          // if (key == "9789429547") debugger;
           // debugger;
           if (_data.assigned_to == this.name) {
             this.total_deliveries += _data.per_day;
@@ -260,7 +260,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
   }
 
   sortChange(evt) {
-    this.trace("evt :: " + evt);
+    // this.trace("evt :: " + evt);
     this.target_ary.sort(compare);
     function compare(a, b) {
       if (a.block < b.block) {

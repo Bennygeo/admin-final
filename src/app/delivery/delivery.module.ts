@@ -35,7 +35,6 @@ import { DateUtils } from '../utils/date-utils';
     Ng2SearchPipe,
     CommonsService,
     DateUtils,
-    Storage
   ]
 })
 export class DeliveryModule { }
