@@ -171,6 +171,7 @@ export class CustomerListComponent implements OnInit, OnDestroy {
             data[key].active = "expired";
           }
 
+          // trace("diff :: " + _diff);
           if (_diff == 0) {
             data[key].active = "done";
           }

@@ -9,7 +9,7 @@ import { Ng2SearchPipe } from 'ng2-search-filter';
 
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { OrderViewComponent } from './order-view/order-view.component';
-import { MatProgressSpinnerModule, MatSnackBarModule, MatTabsModule } from '@angular/material';
+import { MatProgressSpinnerModule, MatSnackBarModule, MatTabsModule, MatFormFieldModule, MatInputModule, MatOptionModule, MatSelectModule } from '@angular/material';
 import { CommonsService } from '../services/commons.service';
 import { HttpClientModule } from '@angular/common/http';
 import { DateUtils } from '../utils/date-utils';
@@ -28,12 +28,14 @@ import { DateUtils } from '../utils/date-utils';
     DragDropModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
-    MatTabsModule
+    MatTabsModule, MatSelectModule,
+    MatFormFieldModule, FormsModule, MatInputModule
   ],
   providers: [
     Ng2SearchPipe,
     CommonsService,
-    DateUtils
+    DateUtils,
+    Storage
   ]
 })
 export class DeliveryModule { }

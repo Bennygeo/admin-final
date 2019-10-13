@@ -5,6 +5,8 @@ import { FireBase } from 'src/app/utils/firebase';
 import { DateUtils } from 'src/app/utils/date-utils';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { CommonsService } from 'src/app/services/commons.service';
+import { StorageService } from 'src/app/utils/storage.service';
+import { Ng2SearchPipe } from 'ng2-search-filter';
 
 @Component({
   selector: 'delivery-list',
@@ -39,23 +41,33 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
   total_deliveries: number = 0;
   total_undelivered: number = 0;
   total_delivered: number = 0;
-  tab_index: number = 0;
+  tab_index: any = 0;
 
   collected_amt: number = 0;
   paid_customers_list: Array<Object> = [];
+  search_ary: Array<any> = [];
+  target_ary: Array<any> = [];
+
+  sortVals: Array<any> = ["Apartment", "Block"];
 
   constructor(
     private _activatedRoute: ActivatedRoute,
     private db: AngularFireDatabase,
     private changeDet: ChangeDetectorRef,
     private _router: Router,
-    private _service: CommonsService
+    private _service: CommonsService,
+    private _storage: StorageService,
+    private ng2: Ng2SearchPipe,
   ) {
     this.firebase = new FireBase(this.db);
     this.dateUtils = new DateUtils();
   }
 
   ngOnInit() {
+
+    if (this._storage.readData("tabindex"))
+      this.tab_index = this._storage.readData("tabindex") * 1;
+    // this.trace("this.tab_index :: " + this.tab_index);
 
     this.sub = this._activatedRoute.paramMap.subscribe(params => {
       this.mobile = params.get('mobile');
@@ -120,34 +132,38 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
               }
             }
 
-            let addr = JSON.parse(user_data[key].address.address1);
             // debugger;
-            let updated_address = addr.street;
-
+            let addr = JSON.parse(user_data[key].address.address1);
+            // let updated_address = addr.street;
+            let updated_address = addr.block + ", " + addr.floor + ", " + addr.door;
             // console.log("--- :: " + user_data[key].history[history_len].details.remaining_to_pay);
             if (!deliveryFlg) {
               this.total_undelivered += _data.per_day;
-
               this.undelivered_list.push({
                 'no': key,
+                'apartment': addr.apartment,
+                'block': addr.block,
+                'floor': addr.floor,
+                'door': addr.door,
                 'delivery_status': deliveryFlg,
                 'delivery_string': this.deliveredStatus,
                 'data': _data,
-                'apartment': addr.apartment,
                 'address': updated_address,
                 'rtp': user_data[key].history[history_len].details.remaining_to_pay,
                 'instructions': addr.inst
               });
-              // debugger;
             } else {
               this.total_delivered += _data.per_day;
               this.delivered_list.push({
                 'no': key,
+                'apartment': addr.apartment,
+                'block': addr.block,
+                'floor': addr.floor,
+                'door': addr.door,
                 'delivery_status': deliveryFlg,
                 'delivery_string': this.deliveredStatus,
                 'data': _data,
-                'apartment': addr.apartment,
-                'address': user_data[key].address.address1,
+                'address': updated_address,
                 'rtp': user_data[key].history[history_len].details.remaining_to_pay,
                 'instructions': user_data[key].history[history_len].details.instructions
               });
@@ -155,6 +171,21 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
           }
         }
         // debugger;
+
+        this.target_ary = [];
+        if (this.tab_index == 0) this.target_ary = this.undelivered_list;
+        if (this.tab_index == 1) this.target_ary = this.delivered_list;
+
+        this.target_ary.sort(compare);
+        function compare(a, b) {
+          if (a.apartment < b.apartment) {
+            return -1;
+          }
+          if (a.apartment > b.apartment) {
+            return 1;
+          }
+          return 0;
+        }
         this.userListUpdateObservable.unsubscribe();
         this.changeDet.detectChanges();
       });
@@ -215,6 +246,31 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
 
   tabChanged(evt) {
     this.tab_index = evt.index;
+    this._storage.writeData("tabindex", this.tab_index);
+    if (this.tab_index == 0) this.target_ary = this.undelivered_list;
+    if (this.tab_index == 1) this.target_ary = this.delivered_list;
+    // this.trace("this.tab_index  :: " + this.tab_index);
+  }
+
+  inputTxtChanged(evt) {
+    if (this.tab_index == 0) this.target_ary = this.undelivered_list;
+    if (this.tab_index == 1) this.target_ary = this.delivered_list;
+    this.target_ary = this.ng2.transform(this.target_ary, evt);
+    console.log(evt);
+  }
+
+  sortChange(evt) {
+    this.trace("evt :: " + evt);
+    this.target_ary.sort(compare);
+    function compare(a, b) {
+      if (a.block < b.block) {
+        return -1;
+      }
+      if (a.block > b.block) {
+        return 1;
+      }
+      return 0;
+    }
   }
 
   ngOnDestroy(): void {

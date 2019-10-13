@@ -120,7 +120,7 @@ export class OrderViewComponent implements OnInit, OnDestroy {
     console.log("modalSaveAction");
     (this.overlay) ? this.overlay = false : this.overlay = true;
 
-    let remaining = Math.abs(this.priceVal - this.packageData.remaining_to_pay);//this.packageData.remaining_to_pay - this.packageData.paid_amt;
+    let remaining = this.packageData.remaining_to_pay - this.priceVal;//this.packageData.remaining_to_pay - this.packageData.paid_amt;
     let paid = Math.abs(remaining - this.packageData.total_price);
     let status = "";
     // debugger;

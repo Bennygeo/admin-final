@@ -1,14 +1,33 @@
 <div class="container">
     <p style="padding: 12px; background-color: #333; color:#fff; text-align: center; margin-bottom: 0px;">Hi {{name}}!
     </p>
-    <p style="padding: 6px;text-align: left; font-size: 14px; border-bottom:1px dotted #ccc;">Orders on
+    <p style="padding: 6px;text-align: left; font-size: 14px; border-bottom:1px dotted #ccc; margin: 0;">Orders on
         <span style="font-weight: 500;">{{todaysDateFormatted}}</span></p>
 
+    <div class="row">
+        <div class="col-6">
+            <mat-form-field>
+                <mat-label>Sort By</mat-label>
+                <mat-select (selectionChange)="sortChange($event.value)">
+                    <mat-option *ngFor="let sort of sortVals" [value]="sort">
+                        {{sort}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div class="col-6">
+            <form class="input-form" style="padding: 0; margin:0;">
+                <mat-form-field class="input-full-width" style="margin-top:0px; width:100%">
+                    <input matInput placeholder="Search" value="" (input)="inputTxtChanged($event.target.value)">
+                </mat-form-field>
+            </form>
+        </div>
+    </div>
 
-    <mat-tab-group #tabGroup (selectedTabChange)="tabChanged($event)">
-        <mat-tab label="Orders :: {{total_undelivered}}">
+    <mat-tab-group #tabGroup (selectedTabChange)="tabChanged($event)" [selectedIndex]="this.tab_index">
+        <mat-tab label="Orders :: {{total_undelivered}}" mat-align-tabs="center">
             <div disabled>
-                <div class="row box" *ngFor="let item of undelivered_list; let i = index;" id="{{'list_' + i}}">
+                <div class="row box" *ngFor="let item of target_ary; let i = index;" id="{{'list_' + i}}">
                     <div class="col-7">
                         <div class="customer_name">{{item.data.c_name||'unknown'}}</div>
                         <div class="customer_m_no"><span
@@ -47,7 +66,7 @@
         </mat-tab>
         <mat-tab label="Delivered :: {{total_delivered}}" style="max-height: 300px;">
             <div disabled>
-                <div class="row box" *ngFor="let item of delivered_list; let i = index;" id="{{'list_' + i}}"
+                <div class="row box" *ngFor="let item of target_ary; let i = index;" id="{{'list_' + i}}"
                     style="max-height: 500px; overflow: scroll;">
                     <div class="col-7">
                         <div class="customer_name">{{item.data.c_name||'unknown'}}</div>
@@ -69,11 +88,14 @@
                     <div class="col-12">
                         <span class="delivery_count">{{item.data.per_day}}</span>&nbsp;
                         <span class="apartment">{{item.apartment}}</span>&nbsp;
-
+                        <span class="rtp">Rs. {{item.rtp}}</span>&nbsp;
                         <!-- <span class="nut_type">{{item.data.nut_type}}</span>&nbsp; -->
                         <!-- <span class="nut_type">Open</span>&nbsp; -->
                         <!-- <span class="nut_type">DND</span>&nbsp; -->
                         <!-- <span class="paid">Paid</span> -->
+                    </div>
+                    <div class="col-12 addr">
+                        {{item.address}}
                     </div>
                 </div>
             </div>

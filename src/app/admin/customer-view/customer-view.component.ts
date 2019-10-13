@@ -217,17 +217,25 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       this.end_d = params.get('end');
       // this._route_index = params.get('index');
 
+
       // console.log("this.mobile :: " + this.mobile);
       this.orders_subscriber = this.firebase.readOrders(this.mobile).subscribe((data: any) => {
         // debugger;
         // console.log("this.orders_subscriber.unsubscribe();");
+
+        //todays time in hours(24 hr format)
+        let todayTime = new Date().getHours();
+
         try {
           this._service.historyLength = Object.keys(data).length || 0;
         } catch (e) {
           this._service.historyLength = 0;
         }
 
-        if (!data || this.status != 'active') {
+        this.trace("todayTime :: " + todayTime);
+        // debugger;
+        
+        if (!data || this.status != 'active' && (this.status == 'done' && todayTime >16)) {
           this.msg = "No active ordres.";
           this.ordersExist = false;
           return;
@@ -250,8 +258,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
         // debugger;
         let cnt = -1;
 
-        //todays time in hours(24 hr format)
-        let todayTime = new Date().getHours();
+
 
         this.total_nut_cnt = 0;
         let todayFlg = false;
