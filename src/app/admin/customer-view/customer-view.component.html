@@ -65,7 +65,13 @@
     </tr>
   </table>
 
-  <div *ngIf="ordersExist"> <button class="btn btn-danger" (click)="deleteOrderAction()">Delete Order</button></div>
+  <div *ngIf="ordersExist">
+    <button class="btn btn-danger" (click)="deleteOrderAction()">Delete Order</button> &nbsp;
+    <div style="border:1px solid #aaa; padding: 12px;">
+      <p style="margin-bottom: 0; font-size: 12px;">{{warn_msg_to_pay}}</p>
+      <button class="btn btn-dark" (click)="SendMsgAction()">Notify</button>
+    </div>
+  </div>
 
   <div class="row" style="margin-top:12px;">
     <div class="col-3" *ngFor="let item of orders; let i = index;" (click)="onUserDatesClick($event, item)"
@@ -99,8 +105,6 @@
       </div>
     </div>
   </div>
-
-
 
   <!-- Edit options -->
   <div class="row" *ngIf="editEnabled">
@@ -219,6 +223,13 @@
             </mat-option>
           </mat-select>
         </mat-form-field>
+      </div>
+
+      <div style="margin-top:6px; margin-bottom:12px; padding-right:12px; padding-bottom: 3px;">
+        <mat-checkbox class="noselect" color="primary" [(ngModel)]="customerMsgFlag" (change)="onCustomerMsgChange()">
+          <!-- add bio-degradable straw to package(2Rs/-) -->
+          send message
+        </mat-checkbox>
       </div>
 
       <button mat-button class="addToBagBtn" (click)="addToCart()" [disabled]="addToCartBtnDisabled">

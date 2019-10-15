@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
 import * as $ from 'jquery';
 import { environment } from 'src/environments/environment';
 import { Options } from 'selenium-webdriver';
+import { callbackify } from 'util';
 
 @Injectable({
   providedIn: 'root'
@@ -86,7 +87,7 @@ export class CommonsService {
     // });
   }
 
-  send_bulk_sms(data) {
+  send_bulk_sms(data, callBack) {
     // console.log(data);
 
 
@@ -133,6 +134,7 @@ export class CommonsService {
     request.done(function (response, textStatus, jqXHR) {
       // Log a message to the console
       console.log("bulk sms, it worked!");
+      callBack();
       // debugger;
     });
 

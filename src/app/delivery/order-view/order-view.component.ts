@@ -147,6 +147,22 @@ export class OrderViewComponent implements OnInit, OnDestroy {
     this.firebase.packagePaidHistoryUpdate(this.data.m_no, this.historyLength, this.priceVal, () => {
       this._changeDet.detectChanges();
     });
+
+    let content = "";
+    if (remaining == 0) {
+      content = "Your payment of Rs." + paid + " is recieved by our delivery agent. Thank you!\nwww.thinkspot.in\n7200015551";
+    } else if (remaining < 0) {
+      content = "Your payment of Rs." + paid + " is recieved by our delivery agent and you have Rs." + remaining + " in your account. Thank you!\nwww.thinkspot.in\n7200015551";
+    } else if (remaining > 0) {
+      content = "Your payment of Rs." + paid + " is recieved by our delivery agent and you have Rs." + remaining + " remaining to pay. Thank you!\nwww.thinkspot.in\n7200015551";
+    }
+
+    // console.log("this.mobile  :: " + this.data.m_no);
+    this._service.send_bulk_sms({
+      'mobile_nos': [this.data.m_no],
+      'fName': "",
+      'content': content
+    }, () => { });
   }
 
   modalCancelAction() {

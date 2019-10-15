@@ -106,7 +106,6 @@ export class CustomerListComponent implements OnInit, OnDestroy {
 
         sort_date_ary = [];
         try {
-
           // debugger;
           data[key].apartment = JSON.parse(data[key].address.address1).apartment;
 
@@ -384,9 +383,9 @@ export class CustomerListComponent implements OnInit, OnDestroy {
     // trace("**********");
     this._service.send_bulk_sms({
       'mobile_nos': selected,
-      'fName': 'Benny',
+      'fName': '',
       'content': val.value
-    });
+    }, () => { });
     (this.overlay) ? this.overlay = false : this.overlay = true;
   }
 

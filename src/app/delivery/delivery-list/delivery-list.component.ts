@@ -75,7 +75,8 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
     });
 
     let todayTime = new Date().getHours();
-    if (todayTime <= 14) {
+    // debugger;
+    if (todayTime <= 20) {
       this.todaysDate = new Date();
       this.todaysDate = this.dateUtils.getDateString(this.todaysDate, "");
     } else {
@@ -107,7 +108,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
           let deliveryFlg = (_data.delivery_status == "Delivered") ? true : false;
           this.deliveredStatus = (deliveryFlg) ? "Done" : "Delivered";
 
-          // if (key == "9789429547") debugger;
+          if (key == "7795747843") debugger;
           // debugger;
           if (_data.assigned_to == this.name) {
             this.total_deliveries += _data.per_day;
@@ -136,6 +137,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
             let addr = JSON.parse(user_data[key].address.address1);
             // let updated_address = addr.street;
             let updated_address = addr.block + ", " + addr.floor + ", " + addr.door;
+            // console.log("key :: " + key);
             // console.log("--- :: " + user_data[key].history[history_len].details.remaining_to_pay);
             if (!deliveryFlg) {
               this.total_undelivered += _data.per_day;
@@ -170,8 +172,6 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
             }
           }
         }
-        // debugger;
-
         this.target_ary = [];
         if (this.tab_index == 0) this.target_ary = this.undelivered_list;
         if (this.tab_index == 1) this.target_ary = this.delivered_list;
@@ -203,8 +203,9 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
     if (this.tab_index == 0) this.list = this.undelivered_list;
     if (this.tab_index == 1) this.list = this.delivered_list;
 
-    this.selectedTarget = this.list[this.selectedIndex].data;
+    this.selectedTarget = this.target_ary[this.selectedIndex].data;
     this.selectedTarget.date = this.todaysDate;
+    
     // debugger;
     this._router.navigate(['/delivery/view-order/', { data: JSON.stringify(this.selectedTarget) }]);
     // this.ngZone.run(() => console.log("view route."));
@@ -227,7 +228,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
       calbackFlg1 = true;
       if (calbackFlg1 && calbackFlg2) {
         this.changeDet.detectChanges();
-        this.trace("render change1s");
+        // this.trace("render change1s");
       }
     });
     // //update user history
@@ -239,7 +240,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
       calbackFlg2 = true;
       if (calbackFlg1 && calbackFlg2) {
         this.changeDet.detectChanges();
-        this.trace("render changes2");
+        // this.trace("render changes2");
       }
     });
   }

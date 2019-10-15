@@ -42,7 +42,6 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   subsBtnVisibility: boolean = true;
   customSubsBtnVisibility: boolean = true;
 
-
   /*
   * Straw price and flags
   */
@@ -153,6 +152,10 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   };
   public rangepicker_data: any = {};
 
+  //customer msg
+  customerMsgFlag: boolean = true;
+  warn_msg_to_pay: string = "";
+
   constructor(
     private _service: CommonsService,
 
@@ -232,17 +235,24 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
           this._service.historyLength = 0;
         }
 
-        this.trace("todayTime :: " + todayTime);
+        // this.trace("todayTime :: " + todayTime);
         // debugger;
-        
-        if (!data || this.status != 'active' && (this.status == 'done' && todayTime >16)) {
+        // if(this.mobile == "9841014473") debugger;
+
+        if (!data || this.status != 'active' && (this.status == 'done' && todayTime > 16)) {
           this.msg = "No active ordres.";
           this.ordersExist = false;
           return;
         };
 
+        if (this.status == "expired") {
+          this.ordersExist = false;
+          return;
+        }
+
         this.ordersExist = true;
         // debugger;
+        console.log("this._service.historyLength :: " + this._service.historyLength);
         let _data = data[this._service.historyLength];
 
         // debugger;
@@ -297,7 +307,11 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
         // this.order_start_date = this.orders[0].date;
         // this.order_end_date = this.orders[this.orders.length - 1].date;
         // debugger;
-
+        if (this.historyObj['details']['remaining_to_pay'] > 0) {
+          this.warn_msg_to_pay = "Hello " + this.c_name + "!\nYou have only " + this.date_utils.dateDiff(new Date(), new Date(this.end_d)) + " day(s) left. Please pay the amount Rs." + this.historyObj['details']['remaining_to_pay'] + " asap. Thank you!\nwww.thinkspot.in\n7200015551";
+        } else if (this.historyObj['details']['remaining_to_pay'] <= 0) {
+          this.warn_msg_to_pay = "Hello " + this.c_name + "!\nYou have only " + this.date_utils.dateDiff(new Date(), new Date(this.end_d)) + " day(s) left. Please confirm your renewal to avoid the break. Thank you!\nwww.thinkspot.in\n7200015551";
+        }
         this._changeDet.detectChanges();
       });
     });
@@ -556,7 +570,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     for (var key in this.selectedDays) {
       index++;
       if (this.selectedDays[key] == 1) {
-        debugger;
+        // debugger;
         let _date = this.date_utils.addDays(new Date(), key);
         this.firebase.write_tc_orders(this.date_utils.getDateString(_date, ""), this.mobile, this.tenderDetails);
 
@@ -754,15 +768,12 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       ordersToPostpone[i] = JSON.parse(JSON.stringify(this.orders[index]));
     }
 
-    debugger;
-
     //update the orders object
     for (let i = 0; i < remainingDays; i++) {
       let index1 = (this.selectedDateIndex - 1) * 1 + this.noOfDaysToPostpone * 1 + i - pastPostponeCount;
+      // trace("index1 :: " + index1);
       // let actualIndex = (this.selectedDateIndex) * 1 + this.noOfDaysToPostpone * 1 + i;
-
       // trace("index 1 :: " + index1 + " actualIndex :: " + actualIndex);
-
       //default date format
       let targetDate = new Date(this.date_utils.stdDateFormater(ordersToPostpone[i].date, "/"));
 
@@ -808,13 +819,20 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     for (let i = 0; i < this.noOfDaysToPostpone; i++) {
       // console.log("postpone :: " + i);
       let target = (this.selectedDateIndex + i) - 1;
+      let start_target = (this.selectedDateIndex + 0) - 1;
+      let _targetDate = new Date(this.date_utils.stdDateFormater(this.orders[start_target].date, "/"));
+      let _updateDate = this.date_utils.addDays(_targetDate, i);
 
+      // trace("_updateDate :: " + _updateDate);
+      // debugger;
+      this.orders[target] = {};
+      this.orders[target].date = this.date_utils.getDateString(_updateDate, "-");
       this.orders[target].count = 0;
       this.orders[target].postpone = true;
       this.orders[target].index = "postponed";
       this.orders[target].delivered = false;
       // debugger;
-      let history_date = this.date_utils.dateFormater(this.orders[target].date, "");
+      let history_date = this.date_utils.getDateString(_updateDate, "");
       this.historyObj['dates'][history_date] = {
         index: "postponed",
         'delivered': false,
@@ -866,7 +884,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   }
 
   stopUpdateAction() {
-    console.log("stopUpdateAction");
+    // console.log("stopUpdateAction");
     let remainingDays = (this.orders.length - this.selectedDateIndex + 1);
     let trace = console.log;
     let targetDate = new Date(this.date_utils.stdDateFormater(this.orders[this.selectedDateIndex - 2].date, "/"));
@@ -875,16 +893,35 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       this.orders[i].index = "Stopped";
       this.orders[i].count = 0;
     }
-
+    let _nut_price = this.historyObj['details']['nut_price'] * 1;
+    let _nut_count = 0;
     for (let i = 0; i < remainingDays; i++) {
       let updateDate = this.date_utils.addDays(targetDate, 1);
       let _date = this.date_utils.getDateString(updateDate, "");
+      if (this.historyObj['dates'][_date].index != "Stopped" || this.historyObj['dates'][_date].index != "postponed")
+        _nut_count += this.historyObj['dates'][_date].count * 1;
 
-      this.historyObj['dates'][_date].index = "Stopped";
-      this.historyObj['dates'][_date].count = 0;
-      this.historyObj['dates'][_date].expired = true;
+      // this.historyObj['dates'][_date].index = "Stopped";
+      // this.historyObj['dates'][_date].count = 0;
+      // this.historyObj['dates'][_date].expired = true;
+      delete this.historyObj['dates'][_date];
+
+      this.delete_orders_subscriber = this.firebase.deleteUserOrder(this.mobile, this.date_utils.dateFormater(_date, "-"), () => {
+        if (i == remainingDays - 1) {
+
+          console.log("remove order subscriber.");
+          this.delete_orders_subscriber.unsubscribe();
+        }
+      })
+
     }
-    this.firebase.user_history(this.mobile, this.historyObj, "yes", this._service.historyLength, () => { });
+    console.log("final amout :: " + (_nut_count * _nut_price));
+    let _after_total = (_nut_count * _nut_price);
+    // debugger;
+    this.historyObj['details']['remaining_to_pay'] = this.historyObj['details']['remaining_to_pay'] * 1 - _after_total;
+    this.historyObj['details']['total_price'] = this.historyObj['details']['total_price'] * 1 - _after_total;
+    // debugger;
+    this.firebase.user_history(this.mobile, this.historyObj, "yes", this._service.historyLength, () => { this._changeDet.detectChanges(); });
   }
 
   stopCancelAction() {
@@ -999,6 +1036,14 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       // this._changeDet.detectChanges();
     });
 
+    if (this.customerMsgFlag) {
+      this._service.send_bulk_sms({
+        'mobile_nos': [this.mobile],
+        'fName': this.c_name,
+        'content': "Confirmed: Order for " + this.tenderDetails['per_day'] + " tender coconuts for " + this.historyObj['details']['no_of_days'] + " day(s) is successfully placed & will be delivered from/on " + this.start_d + ". Thank you!\nwww.thinkspot.in\n7200015551"
+      }, () => { });
+    }
+
   }
 
   paySaveAction(val: any) {
@@ -1035,6 +1080,23 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       });
     }
 
+
+    // let content = "";
+    // if (remaining == 0) {
+    //   content = "Your payment of Rs." + paid + " is recieved by our delivery agent. Thank you!\nwww.thinkspot.in\n7200015551";
+    // } else if (remaining < 0) {
+    //   content = "Your payment of Rs." + paid + " is recieved by our delivery agent and you have Rs." + remaining + " in your account. Thank you!\nwww.thinkspot.in\n7200015551";
+    // } else if (remaining > 0) {
+    //   content = "Your payment of Rs." + paid + " is recieved by our delivery agent and you have Rs." + remaining + " remaining to pay. Thank you!\nwww.thinkspot.in\n7200015551";
+    // }
+
+    // console.log("this.mobile  :: " + this.data.m_no);
+    // this._service.send_bulk_sms({
+    //   'mobile_nos': [this.data.m_no],
+    //   'fName': "",
+    //   'content': content
+    // });
+
     //empty the value;
     val.value = 0;
   }
@@ -1048,6 +1110,8 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     this.delete_subscriber = this.firebase.deleteUserHistory(this.mobile, this._service.historyLength, () => {
       // this._router.navigate(["admin/customer_list"]);
       this.ordersExist = false;
+      // this._service.historyLength -= 1;
+      console.log("History lenght after delete :: " + this._service.historyLength);
       this.orders = [];
       this._changeDet.detectChanges();
       this.delete_subscriber.unsubscribe();
@@ -1055,7 +1119,10 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
 
     for (let i = 0; i < this.orders.length; i++) {
       this.delete_orders_subscriber = this.firebase.deleteUserOrder(this.mobile, this.date_utils.dateFormater(this.orders[i].date, "-"), () => {
-        this.delete_orders_subscriber.unsubscribe();
+        if (i == this.orders.length - 1) {
+          console.log("remove order subscriber.");
+          this.delete_orders_subscriber.unsubscribe();
+        }
       })
     }
 
@@ -1064,6 +1131,25 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.sub.unsubscribe();
     this.orders_subscriber.unsubscribe();
+  }
+
+  onCustomerMsgChange() {
+    console.log("customerMsgFlag :: " + this.customerMsgFlag);
+  }
+
+  SendMsgAction() {
+    // console.log("SendMsgAction");
+    // this.trace("Hello " + this.c_name +"!\nYou have only " + this.date_utils.dateDiff(new Date(), new Date(this.end_d)) + " day(s) left. Please pay asap.");
+
+    // debugger;
+    this._service.send_bulk_sms({
+      'mobile_nos': [this.mobile],
+      'fName': this.c_name,
+      'content': this.warn_msg_to_pay
+    }, () => {
+
+    });
+
   }
 }
 
