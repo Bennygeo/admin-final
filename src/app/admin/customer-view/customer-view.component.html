@@ -69,7 +69,8 @@
     <button class="btn btn-danger" (click)="deleteOrderAction()">Delete Order</button> &nbsp;
     <div style="border:1px solid #aaa; padding: 12px;">
       <p style="margin-bottom: 0; font-size: 12px;">{{warn_msg_to_pay}}</p>
-      <button class="btn btn-dark" (click)="SendMsgAction()">Notify</button>
+      <button class="btn btn-dark" [disabled]="sendMsgBtnFlg" (click)="SendMsgAction()">Notify</button>
+      <p style="margin-bottom: 0; font-size: 12px;">{{warn_msg_info}}</p>
     </div>
   </div>
 

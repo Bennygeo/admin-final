@@ -76,7 +76,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
 
     let todayTime = new Date().getHours();
     // debugger;
-    if (todayTime <= 20) {
+    if (todayTime <= 18) {
       this.todaysDate = new Date();
       this.todaysDate = this.dateUtils.getDateString(this.todaysDate, "");
     } else {
@@ -108,7 +108,8 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
           let deliveryFlg = (_data.delivery_status == "Delivered") ? true : false;
           this.deliveredStatus = (deliveryFlg) ? "Done" : "Delivered";
 
-          if (key == "7795747843") debugger;
+          // this.trace("key :: " + key);
+          // if (key == "7795747843") debugger;
           // debugger;
           if (_data.assigned_to == this.name) {
             this.total_deliveries += _data.per_day;
@@ -205,7 +206,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
 
     this.selectedTarget = this.target_ary[this.selectedIndex].data;
     this.selectedTarget.date = this.todaysDate;
-    
+
     // debugger;
     this._router.navigate(['/delivery/view-order/', { data: JSON.stringify(this.selectedTarget) }]);
     // this.ngZone.run(() => console.log("view route."));

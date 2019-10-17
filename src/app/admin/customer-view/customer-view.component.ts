@@ -140,6 +140,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   orders_subscriber: any;
   delete_subscriber: any;
   delete_orders_subscriber: any;
+  sendMsgBtnFlg: boolean = false;
   trace: any;
   // save_btn_flg:boolean = true;
 
@@ -154,6 +155,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
 
   //customer msg
   customerMsgFlag: boolean = true;
+  warn_msg_info: string = "..";
   warn_msg_to_pay: string = "";
 
   constructor(
@@ -816,12 +818,22 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       }
     }
 
+    // debugger;
     for (let i = 0; i < this.noOfDaysToPostpone; i++) {
       // console.log("postpone :: " + i);
       let target = (this.selectedDateIndex + i) - 1;
       let start_target = (this.selectedDateIndex + 0) - 1;
       let _targetDate = new Date(this.date_utils.stdDateFormater(this.orders[start_target].date, "/"));
       let _updateDate = this.date_utils.addDays(_targetDate, i);
+
+
+      // debugger;
+      this.delete_orders_subscriber = this.firebase.deleteUserOrder(this.mobile, this.date_utils.getDateString(_updateDate, ""), () => {
+        if (i == this.noOfDaysToPostpone - 1) {
+          console.log("remove order subscriber.");
+          this.delete_orders_subscriber.unsubscribe();
+        }
+      })
 
       // trace("_updateDate :: " + _updateDate);
       // debugger;
@@ -858,7 +870,6 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
         this.orders[key].index = index;
       }
     }
-
 
     let actualIndex1 = 0, index1 = 0;
     Object.keys(this.historyObj['dates']).sort().map((key, index) => {
@@ -908,14 +919,13 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
 
       this.delete_orders_subscriber = this.firebase.deleteUserOrder(this.mobile, this.date_utils.dateFormater(_date, "-"), () => {
         if (i == remainingDays - 1) {
-
           console.log("remove order subscriber.");
           this.delete_orders_subscriber.unsubscribe();
         }
-      })
+      });
 
     }
-    console.log("final amout :: " + (_nut_count * _nut_price));
+    // console.log("final amout :: " + (_nut_count * _nut_price));
     let _after_total = (_nut_count * _nut_price);
     // debugger;
     this.historyObj['details']['remaining_to_pay'] = this.historyObj['details']['remaining_to_pay'] * 1 - _after_total;
@@ -1140,14 +1150,18 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   SendMsgAction() {
     // console.log("SendMsgAction");
     // this.trace("Hello " + this.c_name +"!\nYou have only " + this.date_utils.dateDiff(new Date(), new Date(this.end_d)) + " day(s) left. Please pay asap.");
-
-    // debugger;
+    this.warn_msg_info = "sending...";
+    this.sendMsgBtnFlg = true;
     this._service.send_bulk_sms({
       'mobile_nos': [this.mobile],
       'fName': this.c_name,
       'content': this.warn_msg_to_pay
     }, () => {
-
+      this.warn_msg_info = "sent";
+      window.setTimeout(() => {
+        this.warn_msg_info = "";
+        this.sendMsgBtnFlg = false;
+      }, 5000);
     });
 
   }
