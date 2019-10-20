@@ -1,0 +1,32 @@
+.nuts {
+  border-bottom: 1px solid #ccc;
+  padding: 0px;
+  margin: 0;
+}
+
+.nutNames {
+  border-right: 1px solid #ccc;
+  // border-bottom: 1px solid #ccc;
+  text-align: center;
+  font-size: 11px;
+  // padding-top: 6px;
+  // padding-bottom: 6px;
+}
+
+.nutCounts {
+  border-right: 1px solid #ccc;
+  text-align: center;
+  // padding-top: 6px;
+  // padding-bottom: 6px;
+  font-weight: 500;
+}
+
+.example-form {
+  min-width: 150px;
+  max-width: 500px;
+  width: 100%;
+}
+
+.input-full-width {
+  width: 100%;
+}

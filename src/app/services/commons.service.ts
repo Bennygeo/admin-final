@@ -8,6 +8,7 @@ import * as $ from 'jquery';
 import { environment } from 'src/environments/environment';
 import { Options } from 'selenium-webdriver';
 import { callbackify } from 'util';
+import { NuType } from '../utils/utils';
 
 @Injectable({
   providedIn: 'root'
@@ -28,18 +29,24 @@ export class CommonsService {
   delivery_boys_observable: any;
   delivery_boys_list: Array<String> = [];
 
+  nutTypes: Array<NuType> = [
+    { value: "Large", viewValue: 1, price: 45, minCount: 2 },
+    { value: "Medium", viewValue: 2, price: 31.5, minCount: 3 },
+  ];
+
   constructor(
     private _snackBar: MatSnackBar,
     private _db: AngularFireDatabase,
     private http: HttpClient
   ) {
     this.firebase = new FireBase(this._db);
-
+    console.log("common service emit..");
     this.delivery_boys_observable = this.firebase.readDeliverBoys().subscribe((data: any) => {
+      // debugger;
       for (let key in data) {
         this.delivery_boys_list.push(data[key]);
       }
-      this.deliveryBoysUpdate.emit();
+      this.deliveryBoysUpdate.emit(this.delivery_boys_list);
     });
   }
 
@@ -71,16 +78,6 @@ export class CommonsService {
     }
   }
 
-  public readOrdersList() {
-    this.firebase.readOrders("9486140936").subscribe((val: any) => {
-      // debugger;
-      this.orders = val;
-      window.setTimeout((val) => {
-        this.userOrdersUpdate.emit(val);
-      }, 0, val);
-    });
-  }
-
   public readDeliverBoys() {
     // this._fb.readDeliverBoys().subscribe((data: any) => {
     //   this.deliveryBoysList = data;
@@ -89,8 +86,6 @@ export class CommonsService {
 
   send_bulk_sms(data, callBack) {
     // console.log(data);
-
-
     // let headerOptions = new HttpHeaders();
     // headerOptions.append('Access-Control-Allow-Origin', '*');
     // headerOptions.append('Access-Control-Allow-Origin', 'http://thinkspot.in/');

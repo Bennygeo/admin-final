@@ -1,9 +1,93 @@
 <app-home></app-home>
 <div class="container">
-
     <div class="row">
-        <div class="col-lg-4 col-md-12" *ngFor="let boys of delivery_boys">
-            {{boys}}
+        <div style="margin-bottom: 6px;">
+            <p style="padding-bottom: 0; margin-bottom:0; color:#999; font-size: 12px;">Select custom days.</p>
+            <input ScrollToTop type="text" name="daterangeInput" daterangepicker [options]="options"
+                (selected)="selectedDateRangePicker($event, daterange)" />
+        </div>
+
+        <div class="col-12"><span style="font-size: 12px;">Current date</span> :: {{todaysDate.toDateString()}}</div>
+
+        <div class="col-4 no-gutters" *ngFor="let report of reportAry"
+            style="border:1px solid #ccc; margin-bottom:6px;">
+            <div style="text-align: center; padding: 6px;  background: #fafafa; border-bottom:2px solid #ccc;"
+                class="no-gutters">
+                {{report.name}} ({{report.total}})</div>
+            <div class="row">
+
+                <div class="col-6 nuts">
+                    <div class="nutNames">Large</div>
+                </div>
+                <div class="col-6 nuts">
+                    <div class="nutCounts" style="background: #519b00; color: #fff;">{{report.largeNuts}}</div>
+                </div>
+
+                <div class="col-6 nuts">
+                    <div class="nutNames">Small</div>
+                </div>
+                <div class="col-6 nuts">
+                    <div class="nutCounts">{{report.smallNuts}}</div>
+                </div>
+
+                <div class="col-6 nuts">
+                    <div class="nutNames">Orange</div>
+                </div>
+                <div class="col-6 nuts">
+                    <div class="nutCounts">{{report.orangeNuts}}</div>
+                </div>
+
+                <div class="col-6 nuts">
+                    <div class="nutNames">Extras</div>
+                </div>
+                <div class="col-6 nuts">
+                    <div class="nutCounts">{{report.replacements}}</div>
+                </div>
+
+                <!-- <div class="col-3 nuts"></div>
+                    <div class="nutNames">L</div>
+                    <div class="nutCounts">{{report.largeNuts}}</div>
+                </div>
+                <div class="col-3 nuts">
+                    <div class="nutNames">S</div>
+                    <div class="nutCounts">{{report.smallNuts}}</div>
+                </div>
+                <div class="col-3 nuts">
+                    <div class="nutNames">O</div>
+                    <div class="nutCounts">{{report.orangeNuts}}</div>
+                </div>
+                <div class="col-3 nuts">
+                    <div class="nutNames" style="border-right: none;">R</div>
+                    <div class="nutCounts" style="border-right: none;">{{report.replacements}}</div>
+                </div> -->
+            </div>
+            <div style="padding: 6px; text-align: center; font-size: 20px;">₹{{report.collection}} </div>
+        </div>
+    </div>
+    <div class="row">
+        <h3>Stock Report</h3>
+
+        <div class="col-6">
+            <mat-form-field class="input-full-width">
+                <input matInput placeholder="No of stocks" value="" (input)="stockChangeHandler()"
+                    [(ngModel)]="noOfStocks">
+            </mat-form-field>
+        </div>
+        <div class="col-6">
+            <mat-form-field class="input-full-width">
+                <input matInput placeholder="Stock unit price" value="" (input)="stockChangeHandler()"
+                    [(ngModel)]="stockUnitPrice">
+            </mat-form-field>
+        </div>
+        <div class="col-12">
+            <mat-form-field class="input-full-width">
+                <input matInput placeholder="Orange count(Optional)" value="" [(ngModel)]="stockOrangeNuts">
+            </mat-form-field>
+
+            <button type="submit" style="width: 100%; line-height: 1.1;" class="btn btn-dark"
+                [disabled]='disable_update_btn' (click)="stockUpdateHandler()">Update({{currentStockPrice}})</button>
+
+            <div>{{stock_update_status}}</div>
         </div>
     </div>
 </div>

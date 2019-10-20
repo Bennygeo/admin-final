@@ -106,5 +106,12 @@ export class Places {
     viewValue: string;
 }
 
+export interface NuType {
+    value: string;
+    viewValue: number;
+    price: number;
+    minCount: number;
+}
+
 
 

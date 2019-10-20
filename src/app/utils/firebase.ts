@@ -366,6 +366,24 @@ export class FireBase implements OnInit {
         })
     }
 
+    /*
+    * Write stock update
+    */
+    stock_price_update(date, obj, callback) {
+        var ref = this.db.database.ref("/stock/" + date + "/").update({
+            "count": obj['count'],
+            "total_price": obj['total_price'],
+            "unit_price": obj['unit_price'],
+            "regular": obj['regular'],
+            "medium": obj['medium'],
+            "orange": obj['orange']
+        }, (error) => {
+            if (error) console.log("Stock_price_update write failed...");
+            else callback();
+        });
+    }
+
+
     public logout() {
         //logout
     }

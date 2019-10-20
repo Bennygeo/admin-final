@@ -3,7 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { CommonsService } from 'src/app/services/commons.service';
 import { FireBase } from 'src/app/utils/firebase';
 import { AngularFireDatabase } from 'angularfire2/database';
-import { Utils } from 'src/app/utils/utils';
+import { Utils, NuType } from 'src/app/utils/utils';
 import { DateUtils } from 'src/app/utils/date-utils';
 import * as moment from 'moment';
 import { DaterangepickerConfig } from 'ng2-daterangepicker';
@@ -56,10 +56,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   * Nut type
   */
   nutType: string = "Large";
-  nutTypes: Array<NuType> = [
-    { value: "Large", viewValue: 1, price: 45, minCount: 2 },
-    { value: "Medium", viewValue: 2, price: 31.5, minCount: 3 },
-  ];
+  nutTypes: Array<NuType>;
 
   nutVarieties: Array<string> = ["Water", "Hard", "Orange"];
   selectedNutVariety: string;
@@ -67,14 +64,14 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   * delivery charges
   */
   deliveryCharges: number = 10;
-  selectedNutType: string = this.nutTypes[0]["value"];
-  price: number = this.nutTypes[0]["price"];
-  minCount: number = this.nutTypes[0]["minCount"];
+  selectedNutType: string;// = this.nutTypes[0]["value"];
+  price: number;// = this.nutTypes[0]["price"];
+  minCount: number;// = this.nutTypes[0]["minCount"];
   /*
   * total number of units per day
   */
-  unitsPerDay: number = this.nutTypes[0]["minCount"];
-  editedUnitsPerDay: number = this.nutTypes[0]["minCount"];
+  unitsPerDay: number;// = this.nutTypes[0]["minCount"];
+  editedUnitsPerDay: number;// = this.nutTypes[0]["minCount"];
   /*
   * Subscribed days
   */
@@ -168,6 +165,18 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     private _changeDet: ChangeDetectorRef,
     private _router: Router
   ) {
+
+    this.nutTypes = this._service.nutTypes;
+
+    this.selectedNutType = this.nutTypes[0]["value"];
+    this.price = this.nutTypes[0]["price"];
+    this.minCount = this.nutTypes[0]["minCount"];
+    /*
+    * total number of units per day
+    */
+    this.unitsPerDay = this.nutTypes[0]["minCount"];
+    this.editedUnitsPerDay = this.nutTypes[0]["minCount"];
+
     this.type = this.types[0];
     this.weekdays = this._utils.weekdays.slice(this._utils.todayNo + 1, 7).concat(this._utils.weekdays.slice(0, this._utils.todayNo + 1));
     this.selectedDays = {
@@ -435,6 +444,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       // "paid": "No",
       // "nut_type": "sweet",
       // "DND": "No",
+      "nut_variety": this.selectedNutVariety,
       "assigned_to": this.assigned_to,
       "history_id": this._service.historyLength + 1
     }
@@ -1167,9 +1177,3 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   }
 }
 
-export interface NuType {
-  value: string;
-  viewValue: number;
-  price: number;
-  minCount: number;
-}
