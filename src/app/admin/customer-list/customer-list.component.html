@@ -14,7 +14,7 @@
         </div>
     </div>
 
-    <div class="row" style="padding: 6px;">
+    <div class="row filterArea">
         <div style="position: relative; padding-right: 0px; padding-left: 6px;">
             <mat-checkbox [checked]='checkboxSelectors.all' style="margin-right: 12px;"
                 [(ngModel)]="checkboxSelectors.all" (change)="onAllClick($event)">
@@ -34,7 +34,7 @@
     </div>
 
     <!-- <p style="margin-left: -6px">Customer's list</p> -->
-    <cdk-virtual-scroll-viewport itemSize="50" class="customerList" style="margin-left:-13px; margin-right:-15px;">
+    <cdk-virtual-scroll-viewport itemSize="50" class="customerList" [style.height.px]="listHeight">
         <div class="container">
             <div class="row box" *cdkVirtualFor="let item of searchAry; let i = index;"
                 (click)="onCustomerClick($event, i,item.mobile)" id="{{'list_' + i}}">
@@ -46,7 +46,9 @@
                         <span
                             [ngClass]="item.active == 'active' ? 'activeFlg':'inActiveFlg'">{{item.active}}</span>&nbsp;
                         <span class="rtp" *ngIf="item.rtp">₹{{item.rtp}}</span><br *ngIf="item.active == 'active'" />
-                        &nbsp;<span *ngIf="item.remainingDays > -1 && (item.active == 'active' || item.active == 'done')" class="remainingDays"
+                        &nbsp;<span
+                            *ngIf="item.remainingDays > -1 && (item.active == 'active' || item.active == 'done')"
+                            class="remainingDays"
                             [ngClass]="{'danger': item.remainingDays<3, 'normal':item.remainingDays>3 }">{{item.remainingDays}}
                             day(s) left.</span>&nbsp;
                         <span class="packageDays" *ngIf="item.package > -1">{{item.package+1}} days
@@ -73,7 +75,7 @@
 </div>
 
 
-<div style="width:100%; height:60px; position:fixed; bottom:0; background-color: #fff;">
+<div class="footerCls">
     <div style="width: 60%; position:relative; float:left; left:10px;">
         <mat-form-field>
             <mat-select placeholder="Assign delivery to" (selectionChange)="onDeliveryBoyChange($event)"

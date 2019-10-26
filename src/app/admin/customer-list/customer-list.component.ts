@@ -45,6 +45,8 @@ export class CustomerListComponent implements OnInit, OnDestroy {
   userListUpdateObservable: any;
   msgBtnSubscriber: any;
 
+  listHeight: number;// = window.innerHeight - 217;
+
   checkboxSelectors: CustomSelctors = {
     all: false,
     active: false,
@@ -70,6 +72,8 @@ export class CustomerListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.listHeight = window.innerHeight - 220;
+    // console.log("this.listHeight :: " + this.listHeight);
     // console.log("customer list class :: oninit");
     // debugger;
     let trace = console.log;
