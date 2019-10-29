@@ -36,5 +36,8 @@ export class DateUtils extends Date {
         return diffDays;
     }
 
+    daysInMonth(month, year) {
+        return new Date(year, month, 0).getDate(); 
+    }
 
 }

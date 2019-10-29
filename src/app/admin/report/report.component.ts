@@ -25,13 +25,114 @@ export class ReportComponent implements OnInit {
   listObservable: any;
   firebase: FireBase;
 
-  noOfStocks: any = "";
-  stockUnitPrice: any = "";
-  stockOrangeNuts: number = 0;
-  currentStockPrice: number = 0;
+  //decalaration for stock entry
+  stock_orange_nuts_cnt: any = 0;
+  stock_large_nuts_cnt: any = 0;
+  stock_small_nuts_cnt: any = 0;
+
+  daily_large_nuts_cnt: any = 0;
+  daily_orange_nuts_cnt: any = 0;
+  daily_small_nuts_cnt: any = 0;
+
+  large_stock_price: any = 0;
+  orange_stock_price: any = 0;
+  small_stock_price: any = 0;
+
+  total_stock_price: any = 0;
+
   disable_update_btn: boolean = false;
   stock_update_status: string = "";
   nut_types: any;
+
+  //Report generation
+  /*
+  * Count of the today
+  */
+  large_nut_cnt: number = 0;
+  small_nut_cnt: number = 0;
+  orange_nut_cnt: number = 0;
+
+  /*
+  * Stock price
+  */
+  large_nut_price: number = 0;
+  small_nut_price: number = 0;
+  orange_nut_price: number = 0;
+
+  /*
+  * Actual rate of selling price
+  */
+  large_nut_selling_price: number = 50;
+  small_nut_selling_price: number = 36.5;
+  orange_nut_selling_price: number = 50;
+
+  total_revenue: number = 0;
+  total_profit: number = 0;
+  /*
+  * Expenses
+  * Salary of a delivery boys/day
+  */
+  delivery_boys_salary: number = 200;
+  monthly_rental: number = 4150;
+  rent_per_day: number = 0;
+  no_of_delivery_boys: number = 0;
+
+  total_large_price: number = 0;
+  total_small_price: number = 0;
+  total_orange_price: number = 0;
+
+  remaining_stock: number = 0;
+  local_nut_cnt: number = 0;
+
+  /*
+  * replacements
+  * compliments
+  * Damage
+  * comes under other_nut_cnt
+  */
+  other_nut_cnt: number = 0;
+
+  //Observables
+  read_stock: any;
+  stock_report_data: any;
+
+  //firebase data array
+  stocks: Array<any> = [{
+    large_count: 0,
+    small_count: 0,
+    orange_count: 0,
+    remaining: JSON.stringify({
+      large: 0, orange: 0, small: 0
+    })
+  }, {
+    large_count: 0,
+    small_count: 0,
+    orange_count: 0,
+    remaining: JSON.stringify({
+      large: 0, orange: 0, small: 0
+    })
+  }];
+
+  stock_retry_cnt = 0;
+  remaining_stocks: any = {
+    large: 0, orange: 0, small: 0
+  }
+
+  yesterday_date: any = "";
+  yesterday_date_formatted: string = "";
+  yesterday_stock_report: any = {}
+
+  stock_price_diff: any = {
+    large: 0,
+    small: 0,
+    orange: 0
+  }
+
+  total_price: number = 0;
+
+  // stock_large_nuts_cnt: any = 0;
+  // stock_orange_nuts_cnt: any = 0;
+  // stock_small_nuts_cnt: any = 0;
 
   constructor(
     private _service: CommonsService,
@@ -44,8 +145,64 @@ export class ReportComponent implements OnInit {
 
     this.firebase = new FireBase(this.db);
     this.trace = console.log;
-    this.delilvery_boy_subscriber = this._service.deliveryBoysUpdate.subscribe((data) => {
+
+    let todayTime = new Date().getHours();
+
+    if (todayTime <= 16) {
+      this.todaysDate = new Date();
+      this.yesterday_date = this._dateUtils.addDays(this.todaysDate, -1);
+      this.yesterday_date_formatted = this._dateUtils.getDateString(this.yesterday_date, "");
+      this.todaysDateFormatted = this._dateUtils.getDateString(this.todaysDate, "");
+    } else {
+      this.todaysDate = new Date();
+      this.yesterday_date = this._dateUtils.addDays(this.todaysDate, 0);
+      this.yesterday_date_formatted = this._dateUtils.getDateString(this.yesterday_date, "");
+      this.todaysDate = this._dateUtils.addDays(this.todaysDate, 0);
+      this.todaysDateFormatted = this._dateUtils.getDateString(this._dateUtils.addDays(this.todaysDate, 1), "");
+    }
+
+    //daily rental
+    this.rent_per_day = this.monthly_rental / this._dateUtils.daysInMonth(new Date().getMonth() + 1, new Date().getFullYear());
+    // this.trace("this.rent_per_day :: " + this.rent_per_day);
+  }
+
+  ngOnInit() {
+    console.log("Report init constructor.");
+    if (Object.keys(this._service.deliveryBoysList).length != 0) {
       this.delivery_boys = this._service.delivery_boys_list;
+      deliveryBoysUpdate.call(this);
+    } else {
+      this.delilvery_boy_subscriber = this.firebase.readDeliverBoys().subscribe((data: any) => {
+        for (let key in data) {
+          this.delivery_boys.push(data[key]);
+        }
+        deliveryBoysUpdate.call(this);
+      });
+    }
+
+
+    this.readStocks(new Date().getFullYear(), new Date().getMonth() + 1, (data) => {
+      this.remaining_stocks = {
+        large: 0, orange: 0, small: 0
+      }
+
+      for (let cnt = 0; cnt < 2; cnt++) {
+        if (JSON.parse(data[cnt].remaining)) {
+          let details = JSON.parse(data[cnt].remaining);
+          this.remaining_stocks.large += details.large * 1;
+          this.remaining_stocks.small += details.small * 1;
+          this.remaining_stocks.orange += details.orange * 1;
+        }
+      }
+    });
+    // this.delilvery_boy_subscriber = this._service.deliveryBoysUpdate.subscribe((data) => {
+    //   this.trace("deliveryBoysUpdate");
+
+    // });
+
+    function deliveryBoysUpdate() {
+      this.delivery_boys = this._service.delivery_boys_list;
+      this.no_of_delivery_boys = this.delivery_boys.length;
 
       for (var i = 0; i < this.delivery_boys.length; i++) {
         this.reportAry[i] = {
@@ -59,23 +216,15 @@ export class ReportComponent implements OnInit {
           collection: 0
         }
       }
-      this.delilvery_boy_subscriber.unsubscribe();
-      this._changeDet.detectChanges();
-    });
-
-    let todayTime = new Date().getHours();
-    // debugger;
-    if (todayTime <= 16) {
-      this.todaysDate = new Date();
-      this.todaysDateFormatted = this._dateUtils.getDateString(this.todaysDate, "");
-    } else {
-      this.todaysDate = new Date();
-      this.todaysDate = this._dateUtils.addDays(this.todaysDate, 0);
-      this.todaysDateFormatted = this._dateUtils.getDateString(this._dateUtils.addDays(this.todaysDate, 1), "");
+      this.stock_update_status = "";
+      try {
+        this.delilvery_boy_subscriber.unsubscribe();
+      } catch (e) { }
+      // this._changeDet.detectChanges();
     }
 
     this.listObservable = this.firebase.readDailyOrders(this.todaysDateFormatted).subscribe((data: any) => {
-      
+      this.trace("readDailyOrders");
       for (let key in data) {
         let _data = JSON.parse(data[key].tender);
         for (let _agents = 0; _agents < this.delivery_boys.length; _agents++) {
@@ -85,10 +234,17 @@ export class ReportComponent implements OnInit {
             // debugger;
             if (_data.type == "Large") {
               this.reportAry[_index].largeNuts++;
+              this.large_nut_cnt++;
             }
 
             if (_data.type == "Medium") {
               this.reportAry[_index].smallNuts++;
+              this.small_nut_cnt++;
+            }
+
+            if (_data.type == "Orange") {
+              this.reportAry[_index].orangeNuts++;
+              this.orange_nut_cnt++;
             }
 
             this.reportAry[_index].total++;
@@ -100,21 +256,115 @@ export class ReportComponent implements OnInit {
             // if (_data.nut_variety == "Orange") {
             //   this.reportAry[_index].orangeNuts++;
             // }
-
           }
         }
       }
-      // debugger;
-      for (var key in this.reportAry) {
-
-      }
       this._changeDet.detectChanges();
     });
+
+    this.stock_report_data = this.firebase.read_stock_status_update_by_date(this.yesterday_date_formatted).subscribe((data: any) => {
+      // debugger;
+      // for()
+      this.remaining_stocks.large = this.stocks[0].large_count;
+      this.remaining_stocks.small = this.stocks[0].small_count;
+      this.remaining_stocks.orange = this.stocks[0].orange_count;
+
+      try {
+        this.yesterday_stock_report = JSON.parse(data['remaining']);
+
+        this.remaining_stocks.large = this.yesterday_stock_report.large - this.large_nut_cnt;
+        this.remaining_stocks.small = this.yesterday_stock_report.small - this.small_nut_cnt;
+        this.remaining_stocks.orange = this.yesterday_stock_report.orange - this.orange_nut_cnt;
+
+      } catch (e) {
+        this.trace("catch");
+        this.firebase.daily_stock_status_update(this.todaysDateFormatted, {
+          total: (this.large_nut_cnt + this.orange_nut_cnt + this.small_nut_cnt),
+          remaining: JSON.stringify(this.remaining_stocks),
+          large: this.large_nut_cnt,
+          small: this.small_nut_cnt,
+          orange: this.orange_nut_cnt,
+          local: this.local_nut_cnt,
+          others: this.other_nut_cnt
+        });
+      }
+
+
+      this.trace("after catch");
+      //write stock status update
+      if ((this.remaining_stocks.large - (this.stocks[1].large_count * 1)) > this.stocks[1].large_count * 1) {
+        this.large_nut_price = this.stocks[1].large_unit_price;
+      } else if ((this.remaining_stocks.large - (this.stocks[1].large_count * 1)) < this.stocks[1].large_count * 1) {
+        this.large_nut_price = this.stocks[0].large_unit_price;
+      }
+
+      if ((this.remaining_stocks.small - (this.stocks[1].small_count * 1)) > this.stocks[1].small_count * 1) {
+        this.small_nut_price = this.stocks[1].small_unit_price;
+      } else if ((this.remaining_stocks.small - (this.stocks[1].small_count * 1)) < this.stocks[1].small_count * 1) {
+        this.small_nut_price = this.stocks[0].small_unit_price;
+      }
+
+      if ((this.remaining_stocks.orange - (this.stocks[1].orange_count * 1)) > this.stocks[1].orange_count * 1) {
+        this.orange_nut_price = this.stocks[1].orange_unit_price;
+      } else if ((this.remaining_stocks.orange - (this.stocks[1].orange_count * 1)) < this.stocks[1].orange_count * 1) {
+        this.orange_nut_price = this.stocks[0].orange_unit_price;
+      }
+
+      this.stock_price_diff = {
+        large: (this.remaining_stocks.large - (this.stocks[1].large_count * 1)),
+        small: (this.remaining_stocks.small - (this.stocks[1].small_count * 1)),
+        orange: (this.remaining_stocks.orange - (this.stocks[1].orange_count * 1))
+      }
+
+      this.total_revenue = (this.large_nut_cnt * this.large_nut_selling_price) + (this.small_nut_cnt * this.small_nut_selling_price) + (this.orange_nut_cnt * this.orange_nut_selling_price);
+      this.total_price = (this.large_nut_cnt * this.large_nut_price) + (this.small_nut_cnt * this.small_nut_price) + (this.orange_nut_cnt * this.orange_nut_price);
+
+      // debugger;
+      this.total_profit = this.total_revenue - this.total_price - this.rent_per_day - this.delivery_boys_salary;
+
+      this._changeDet.detectChanges();
+      // debugger;
+      this.stock_report_data.unsubscribe();
+    })
+
   }
 
-  ngOnInit() {
-    console.log("Report init constructor.");
+  readStocks(year, month, callback) {
 
+    this.read_stock = this.firebase.read_stock(year, month).subscribe((data: any) => {
+      // this.trace("read stock");
+      // debugger;
+      for (let key in data) {
+        this.stocks.push(data[key]);
+      }
+      this.stocks.reverse();
+
+      if (this.stocks.length >= 2) {
+        // debugger;
+        callback(this.stocks);
+        // this.trace("this.stocks.length : " + this.stocks.length);
+        this.read_stock.unsubscribe();
+      }
+
+      if (this.stocks.length <= 2) {
+        // this.trace("read stock < 2");
+        this.stock_retry_cnt++;
+        if (this.stock_retry_cnt > 4) {
+          callback(this.stocks);
+          this.read_stock.unsubscribe();
+        }
+        // 
+        if ((month - 1) >= 0) {
+          this.stock_retry_cnt++;
+          this.read_stock.unsubscribe();
+          this.readStocks(new Date().getFullYear(), month - 1, callback);
+        } else if (month <= 0) {
+          this.stock_retry_cnt++;
+          this.read_stock.unsubscribe();
+          this.readStocks(new Date().getFullYear() - 1, 12, callback);
+        }
+      }
+    });
   }
 
   public selectedDateRangePicker(evt, data) {
@@ -130,26 +380,38 @@ export class ReportComponent implements OnInit {
   }
 
   stockChangeHandler() {
-    this.currentStockPrice = (this.noOfStocks * this.stockUnitPrice);
+    this.total_stock_price = (this.stock_large_nuts_cnt * this.large_stock_price) + (this.stock_small_nuts_cnt * this.small_stock_price) + (this.stock_orange_nuts_cnt * this.orange_stock_price);
     // this.trace("stockUpdateHandler :: " + this.currentStockPrice);
   }
 
   stockUpdateHandler() {
-    this.currentStockPrice = (this.noOfStocks * this.stockUnitPrice);
+    this.total_stock_price = (this.stock_large_nuts_cnt * this.large_stock_price) + (this.stock_small_nuts_cnt * this.small_stock_price) + (this.stock_orange_nuts_cnt * this.orange_stock_price);
     this.stock_update_status = "Writing...";
-    // this.trace("stockUpdateHandler :: " + this.currentStockPrice);
-    this.firebase.stock_price_update(new Date().getTime(), {
-      "count": this.noOfStocks,
-      "total_price": this.currentStockPrice,
-      "unit_price": this.stockUnitPrice,
-      "regular": "",
-      "medium": "",
-      "orange": this.stockOrangeNuts
+
+    // this.todaysDateFormatted
+    this.firebase.stock_update(new Date().getFullYear(), (new Date().getMonth() + 1), new Date().getDate(), {
+      "total_price": this.total_stock_price,
+      "large_unit_price": this.large_stock_price,
+      "small_unit_price": this.small_stock_price,
+      "orange_unit_price": this.orange_stock_price,
+      "large_count": this.stock_large_nuts_cnt,
+      "small_count": this.stock_small_nuts_cnt,
+      "orange_count": this.stock_orange_nuts_cnt,
+      "remaining": JSON.stringify({
+        large: this.stock_large_nuts_cnt,
+        small: this.stock_small_nuts_cnt,
+        orange: this.stock_orange_nuts_cnt
+      })
     }, () => {
-      this.currentStockPrice = 0;
-      this.stockUnitPrice = 0;
-      this.stockOrangeNuts = 0;
-      this.noOfStocks = 0;
+      this.total_stock_price = 0;
+      this.stock_large_nuts_cnt = 0;
+      this.stock_orange_nuts_cnt = 0;
+      this.stock_small_nuts_cnt = 0;
+
+      this.large_stock_price = 0;
+      this.small_stock_price = 0;
+      this.orange_stock_price = 0;
+
       this.stock_update_status = "Success.";
       this._changeDet.detectChanges();
     });
@@ -167,5 +429,4 @@ class Report {
   total: number = 0;
   collection: number = 0;
   constructor() { }
-
 }

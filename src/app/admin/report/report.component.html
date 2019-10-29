@@ -65,29 +65,101 @@
         </div>
     </div>
     <div class="row">
-        <h3>Stock Report</h3>
+        <h3 style="border-bottom:1px solid #666; background-color: #EEE; padding: 6px;">Stock Update</h3>
+
+        <div class="container"
+            style="background-color: #cc0303; color:#fff; padding: 12px; margin-bottom: 6px; text-align: center;">
+            Remaining Stock: <br>
+            large : {{this.remaining_stocks.large}},<br>
+            small : {{this.remaining_stocks.small}},<br>
+            orange : {{this.remaining_stocks.orange}}
+        </div>
 
         <div class="col-6">
             <mat-form-field class="input-full-width">
-                <input matInput placeholder="No of stocks" value="" (input)="stockChangeHandler()"
-                    [(ngModel)]="noOfStocks">
+                <input matInput placeholder="No of large stocks" value="" (input)="stockChangeHandler()"
+                    [(ngModel)]="stock_large_nuts_cnt">
             </mat-form-field>
         </div>
         <div class="col-6">
             <mat-form-field class="input-full-width">
-                <input matInput placeholder="Stock unit price" value="" (input)="stockChangeHandler()"
-                    [(ngModel)]="stockUnitPrice">
+                <input matInput placeholder="Unit price" value="" (input)="stockChangeHandler()"
+                    [(ngModel)]="large_stock_price">
             </mat-form-field>
         </div>
-        <div class="col-12">
-            <mat-form-field class="input-full-width">
-                <input matInput placeholder="Orange count(Optional)" value="" [(ngModel)]="stockOrangeNuts">
-            </mat-form-field>
 
+        <div class="col-6">
+            <mat-form-field class="input-full-width">
+                <input matInput placeholder="No of small stocks" value="" (input)="stockChangeHandler()"
+                    [(ngModel)]="stock_small_nuts_cnt">
+            </mat-form-field>
+        </div>
+        <div class="col-6">
+            <mat-form-field class="input-full-width">
+                <input matInput placeholder="Unit price" value="" (input)="stockChangeHandler()"
+                    [(ngModel)]="small_stock_price">
+            </mat-form-field>
+        </div>
+
+        <div class="col-6">
+            <mat-form-field class="input-full-width">
+                <input matInput placeholder="No of orange stocks" value="" (input)="stockChangeHandler()"
+                    [(ngModel)]="stock_orange_nuts_cnt">
+            </mat-form-field>
+        </div>
+        <div class="col-6">
+            <mat-form-field class="input-full-width">
+                <input matInput placeholder="Unit price" value="" (input)="stockChangeHandler()"
+                    [(ngModel)]="orange_stock_price">
+            </mat-form-field>
+        </div>
+
+
+        <div class="col-12" style="margin-bottom:12px;">
             <button type="submit" style="width: 100%; line-height: 1.1;" class="btn btn-dark"
-                [disabled]='disable_update_btn' (click)="stockUpdateHandler()">Update({{currentStockPrice}})</button>
+                [disabled]='disable_update_btn' (click)="stockUpdateHandler()">Update({{total_stock_price}})</button>
 
             <div>{{stock_update_status}}</div>
         </div>
     </div>
+
+    <div class="row">
+        <h3 style="border-bottom:1px solid #666; background-color: #EEE; padding: 6px;">Today Report</h3>
+
+        <div class="col-7 reportLabel">Total large count : </div>
+        <div class="col5 reportVals">{{large_nut_cnt}}</div>
+
+        <div class="col-7 reportLabel">Total small count : </div>
+        <div class="col5 reportVals">{{small_nut_cnt}}</div>
+
+        <div class="col-7 reportLabel">Total orange count : </div>
+        <div class="col5 reportVals">{{orange_nut_cnt}}</div>
+
+        <div class="col-7 reportLabel">Stock total price({{large_nut_price}}) : </div>
+        <div class="col5 reportVals">{{large_nut_price * large_nut_cnt}}</div>
+
+        <div class="col-7 reportLabel">Selling total price({{large_nut_selling_price}}) : </div>
+        <div class="col5 reportVals">{{large_nut_cnt * large_nut_selling_price}}</div>
+
+        <div class="col-7 reportLabel">Daily rental : </div>
+        <div class="col5 reportVals">{{rent_per_day}}</div>
+
+        <div class="col-7 reportLabel">Delivery boys salary({{delivery_boys_salary}}) : </div>
+        <div class="col5 reportVals">{{no_of_delivery_boys * delivery_boys_salary}}</div>
+        <!-- 
+        <div class="col-7 reportLabel">Daily rental : </div>
+        <div class="col5 reportVals">{{rent_per_day}}</div> -->
+
+        <div class="col-7 reportLabel">Revenue : </div>
+        <div class="col5 reportVals">{{total_revenue}}</div>
+
+        <p style="font-size: 13px; font-style: italic; padding: 12px; margin: 0;">(Profit = Revenue - stock price -
+            daily rental - delivery boys daily
+            salary)</p>
+
+        <div class="col-7 reportLabel">Profit : </div>
+        <div class="col5 reportVals">{{total_profit.toFixed(2)}}</div>
+    </div>
 </div>
+
+<!-- previous day stock count - todays stock sount -->

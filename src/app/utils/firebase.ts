@@ -369,17 +369,59 @@ export class FireBase implements OnInit {
     /*
     * Write stock update
     */
-    stock_price_update(date, obj, callback) {
-        var ref = this.db.database.ref("/stock/" + date + "/").update({
-            "count": obj['count'],
+    stock_update(year, month, date, obj, callback) {
+        var ref = this.db.database.ref("/stock/" + year + "/" + month + "/" + date + "/").update({
+            // var ref = this.db.database.ref("/stock/" + date + "/").update({
+            "large_count": obj['large_count'],
+            "large_unit_price": obj['large_unit_price'],
+            "small_count": obj['small_count'],
+            "small_unit_price": obj['small_unit_price'],
+            "orange_count": obj['orange_count'],
+            "orange_unit_price": obj['orange_unit_price'],
             "total_price": obj['total_price'],
-            "unit_price": obj['unit_price'],
-            "regular": obj['regular'],
-            "medium": obj['medium'],
-            "orange": obj['orange']
+            "remaining": obj['remaining'],
         }, (error) => {
             if (error) console.log("Stock_price_update write failed...");
             else callback();
+        });
+    }
+
+    /*
+   * read stocki
+   */
+
+    read_stock(year, month) {
+        return new Observable((observer) => {
+            var ref = this.db.database.ref("/stock/" + year + "/" + month + "/");
+            ref.on("value", function (snapshot) {
+                observer.next(snapshot.exportVal());
+            });
+        });
+    }
+
+    /*
+    * read stock status date wise
+    */
+    read_stock_status_update_by_date(date) {
+        return new Observable((observer) => {
+            var ref = this.db.database.ref("/stock_status/" + date + "/");
+            ref.on("value", function (snapshot) {
+                observer.next(snapshot.exportVal());
+            });
+        });
+    }
+
+    /*
+    * Write daily stock status
+    */
+    daily_stock_status_update(date, obj) {
+        var ref = this.db.database.ref("/stock_status/" + date + "/").update({
+            total: obj['total'],
+            remaining: obj['remaining'],
+            large: obj['large'],
+            small: obj['small'],
+            orange: obj['orange'],
+            local: obj['local']
         });
     }
 
