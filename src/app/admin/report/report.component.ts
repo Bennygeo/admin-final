@@ -3,8 +3,7 @@ import { CommonsService } from 'src/app/services/commons.service';
 import { DateUtils } from 'src/app/utils/date-utils';
 import { FireBase } from 'src/app/utils/firebase';
 import { AngularFireDatabase } from 'angularfire2/database';
-import { NuType } from 'src/app/utils/utils';
-import { AnonymousSubject } from 'rxjs/internal/Subject';
+import { FormBuilder } from '@angular/forms';
 
 @Component({
   selector: 'app-report',
@@ -12,6 +11,9 @@ import { AnonymousSubject } from 'rxjs/internal/Subject';
   styleUrls: ['./report.component.scss']
 })
 export class ReportComponent implements OnInit {
+
+  //range picker
+  options: any;
 
   delilvery_boy_subscriber: any;
   report: Report;
@@ -166,21 +168,129 @@ export class ReportComponent implements OnInit {
       });
     }
 
+    //Stocks data
     this.readStocks(new Date().getFullYear(), new Date().getMonth() + 1, (data) => {
       this.remaining_stocks = {
         large: 0, orange: 0, small: 0
       }
-      // this.trace("readStocks");
       let len = data.length;
-      if (len > 2) len = 2;
-      for (let cnt = 0; cnt < len; cnt++) {
-        if (JSON.parse(data[cnt].remaining)) {
-          let details = JSON.parse(data[cnt].remaining);
-          this.remaining_stocks.large += details.large * 1;
-          this.remaining_stocks.small += details.small * 1;
-          this.remaining_stocks.orange += details.orange * 1;
+      if (len == 0) return;
+      this.trace("readStocks");
+
+      //get the total stocks count
+      let details = JSON.parse(data[0].remaining);
+      this.remaining_stocks.large = details.large * 1;
+      this.remaining_stocks.small = details.small * 1;
+      this.remaining_stocks.orange = details.orange * 1;
+
+      /*
+      * Read yesterday stock report from firebase
+      */
+      this.stock_report_data = this.firebase.read_stock_status_update_by_date(this.yesterday_date_formatted).subscribe((data: any) => {
+        if (data) {
+          this.yesterday_stock_report = JSON.parse(data['remaining']);
+
+          //updtae the remaining stocks
+          this.remaining_stocks = {
+            large: this.yesterday_stock_report.large - this.large_nut_cnt,
+            small: this.yesterday_stock_report.small - this.small_nut_cnt,
+            orange: this.yesterday_stock_report.orange - this.orange_nut_cnt
+          }
+        } else {
+
+          this.remaining_stocks = {
+            large: this.remaining_stocks.large - this.large_nut_cnt,
+            small: this.remaining_stocks.small - this.small_nut_cnt,
+            orange: this.remaining_stocks.orange - this.orange_nut_cnt
+          }
+
+          /*
+          * Write the todays stock report
+          */
+          this.firebase.daily_stock_status_update(this.todaysDateFormatted, {
+            total: (this.large_nut_cnt + this.orange_nut_cnt + this.small_nut_cnt),
+            remaining: JSON.stringify(this.remaining_stocks),
+            large: this.large_nut_cnt,
+            small: this.small_nut_cnt,
+            orange: this.orange_nut_cnt,
+            local: this.local_nut_cnt,
+            others: this.other_nut_cnt
+          });
         }
-      }
+
+        /*
+        * write stock status update
+        * get the nut price from stock (if the stock gets empty read from next stock update it)
+        * 
+        */
+
+        if (this.stocks.length > 1) {
+          if ((this.remaining_stocks.large - (this.stocks[1].large_count * 1)) > this.stocks[1].large_count * 1) {
+            this.large_nut_price = this.stocks[1].large_unit_price;
+          } else if ((this.remaining_stocks.large - (this.stocks[1].large_count * 1)) < this.stocks[1].large_count * 1) {
+            this.large_nut_price = this.stocks[0].large_unit_price;
+          }
+
+          if ((this.remaining_stocks.small - (this.stocks[1].small_count * 1)) > this.stocks[1].small_count * 1) {
+            this.small_nut_price = this.stocks[1].small_unit_price;
+          } else if ((this.remaining_stocks.small - (this.stocks[1].small_count * 1)) < this.stocks[1].small_count * 1) {
+            this.small_nut_price = this.stocks[0].small_unit_price;
+          }
+
+          if ((this.remaining_stocks.orange - (this.stocks[1].orange_count * 1)) > this.stocks[1].orange_count * 1) {
+            this.orange_nut_price = this.stocks[1].orange_unit_price;
+          } else if ((this.remaining_stocks.orange - (this.stocks[1].orange_count * 1)) < this.stocks[1].orange_count * 1) {
+            this.orange_nut_price = this.stocks[0].orange_unit_price;
+          }
+
+          /* 
+          * Stocks will have different pricing. 
+          * When current stock got empty and while moving to next we should have the difference to move further. 
+          */
+          this.stock_price_diff = {
+            large: (this.remaining_stocks.large - (this.stocks[1].large_count * 1)),
+            small: (this.remaining_stocks.small - (this.stocks[1].small_count * 1)),
+            orange: (this.remaining_stocks.orange - (this.stocks[1].orange_count * 1))
+          }
+
+          /*
+          * When we have only one stock
+          */
+        } else if (this.stocks.length > 0) {
+
+          this.large_nut_price = this.stocks[0].large_unit_price;
+          this.small_nut_price = this.stocks[0].small_unit_price;
+          this.orange_nut_price = this.stocks[0].orange_unit_price;
+
+          this.remaining_stocks.large = this.stocks[0].large_count;
+          this.remaining_stocks.small = this.stocks[0].small_count;
+          this.remaining_stocks.orange = this.stocks[0].orange_count;
+
+          this.stock_price_diff = {
+            large: this.remaining_stocks.large,
+            small: (this.remaining_stocks.small),
+            orange: (this.remaining_stocks.orange)
+          }
+
+          /*
+          * When we have no stocks
+          */
+        } else {
+          this.trace("No stocks exist!");
+        }
+
+        //total revenue update
+        this.total_revenue = (this.large_nut_cnt * this.large_nut_selling_price) + (this.small_nut_cnt * this.small_nut_selling_price) + (this.orange_nut_cnt * this.orange_nut_selling_price);
+        //total price update
+        this.total_price = (this.large_nut_cnt * this.large_nut_price) + (this.small_nut_cnt * this.small_nut_price) + (this.orange_nut_cnt * this.orange_nut_price);
+
+        //total profit update
+        this.total_profit = this.total_revenue - this.total_price - this.rent_per_day - (this.delivery_boys_salary * this.no_of_delivery_boys);
+
+        this._changeDet.detectChanges();
+        this.stock_report_data.unsubscribe();
+      });
+
 
     });
 
@@ -188,6 +298,9 @@ export class ReportComponent implements OnInit {
     //   this.trace("deliveryBoysUpdate");
     // });
 
+    /*
+    * Read the delivery boys from firebase
+    */
     function deliveryBoysUpdate() {
       this.delivery_boys = this._service.delivery_boys_list;
       this.no_of_delivery_boys = this.delivery_boys.length;
@@ -247,110 +360,88 @@ export class ReportComponent implements OnInit {
           }
         }
       }
+      for (let i = this.stocks.length - 1; i >= 0; i--) {
+        // debugger;
+        let details = JSON.parse(this.stocks[i].remaining);
+        if (details.large > 0) {
+
+          var diff = details.large - this.large_nut_cnt;
+          if (diff >= 0) {
+            console.log("Not exceeded.");
+            details.large -= this.large_nut_cnt;
+
+            for (var j = i; j >= 0; j--) {
+              if (this.stocks[j]) {
+                details = JSON.parse(this.stocks[j].remaining);
+                details.large -= this.large_nut_cnt;
+              }
+            }
+            // if (this.stocks[i - 2]) {
+            //   details = JSON.parse(this.stocks[i - 2].remaining);
+            //   details.large -= this.large_nut_cnt;
+            // }
+
+          } else {
+            this.trace("Exceeded");
+            details.large = 0;
+            if (this.stocks[i - 1]) {
+              details = JSON.parse(this.stocks[i - 1].remaining);
+              details.large -= diff;
+              details.large -= this.large_nut_cnt;
+            }
+
+            if (this.stocks[i - 2]) {
+              details = JSON.parse(this.stocks[i - 2].remaining);
+              details.large -= this.large_nut_cnt;
+            }
+          }
+          break;
+        }
+
+        if (details.orange > 0) {
+          details.orange -= this.orange_nut_cnt;
+        }
+
+        if (details.small > 0) {
+          details.small -= this.small_nut_cnt;
+        }
+        // console.log();
+      }
+      // debugger;
       this._changeDet.detectChanges();
     });
 
-    this.stock_report_data = this.firebase.read_stock_status_update_by_date(this.yesterday_date_formatted).subscribe((data: any) => {
-      if (data) {
-        this.yesterday_stock_report = JSON.parse(data['remaining']);
 
-        // this.remaining_stocks.large = this.yesterday_stock_report.large - this.large_nut_cnt;
-        // this.remaining_stocks.small = this.yesterday_stock_report.small - this.small_nut_cnt;
-        // this.remaining_stocks.orange = this.yesterday_stock_report.orange - this.orange_nut_cnt;
-
-        this.remaining_stocks.large -= this.large_nut_cnt;
-        this.remaining_stocks.small -= this.small_nut_cnt;
-        this.remaining_stocks.orange -= this.orange_nut_cnt;
-
-
-      } else {
-        this.remaining_stocks.large = this.stocks[0].large_count;
-        this.remaining_stocks.small = this.stocks[0].small_count;
-        this.remaining_stocks.orange = this.stocks[0].orange_count;
-      }
-
-      // } catch (e) {
-      // this.trace("catch :: " + this.todaysDateFormatted);
-      this.firebase.daily_stock_status_update(this.todaysDateFormatted, {
-        total: (this.large_nut_cnt + this.orange_nut_cnt + this.small_nut_cnt),
-        remaining: JSON.stringify(this.remaining_stocks),
-        large: this.large_nut_cnt,
-        small: this.small_nut_cnt,
-        orange: this.orange_nut_cnt,
-        local: this.local_nut_cnt,
-        others: this.other_nut_cnt
-      });
-      // }
-
-      //write stock status update
-      if (this.stocks.length > 1) {
-        if ((this.remaining_stocks.large - (this.stocks[1].large_count * 1)) > this.stocks[1].large_count * 1) {
-          this.large_nut_price = this.stocks[1].large_unit_price;
-        } else if ((this.remaining_stocks.large - (this.stocks[1].large_count * 1)) < this.stocks[1].large_count * 1) {
-          this.large_nut_price = this.stocks[0].large_unit_price;
-        }
-
-        if ((this.remaining_stocks.small - (this.stocks[1].small_count * 1)) > this.stocks[1].small_count * 1) {
-          this.small_nut_price = this.stocks[1].small_unit_price;
-        } else if ((this.remaining_stocks.small - (this.stocks[1].small_count * 1)) < this.stocks[1].small_count * 1) {
-          this.small_nut_price = this.stocks[0].small_unit_price;
-        }
-
-        if ((this.remaining_stocks.orange - (this.stocks[1].orange_count * 1)) > this.stocks[1].orange_count * 1) {
-          this.orange_nut_price = this.stocks[1].orange_unit_price;
-        } else if ((this.remaining_stocks.orange - (this.stocks[1].orange_count * 1)) < this.stocks[1].orange_count * 1) {
-          this.orange_nut_price = this.stocks[0].orange_unit_price;
-        }
-
-        this.stock_price_diff = {
-          large: (this.remaining_stocks.large - (this.stocks[1].large_count * 1)),
-          small: (this.remaining_stocks.small - (this.stocks[1].small_count * 1)),
-          orange: (this.remaining_stocks.orange - (this.stocks[1].orange_count * 1))
-        }
-      } else {
-        this.large_nut_price = this.stocks[0].large_unit_price;
-        this.small_nut_price = this.stocks[0].small_unit_price;
-        this.orange_nut_price = this.stocks[0].orange_unit_price;
-
-        this.stock_price_diff = {
-          large: this.remaining_stocks.large,
-          small: (this.remaining_stocks.small),
-          orange: (this.remaining_stocks.orange)
-        }
-      }
-
-      this.total_revenue = (this.large_nut_cnt * this.large_nut_selling_price) + (this.small_nut_cnt * this.small_nut_selling_price) + (this.orange_nut_cnt * this.orange_nut_selling_price);
-
-      this.total_price = (this.large_nut_cnt * this.large_nut_price) + (this.small_nut_cnt * this.small_nut_price) + (this.orange_nut_cnt * this.orange_nut_price);
-
-      this.total_profit = this.total_revenue - this.total_price - this.rent_per_day - (this.delivery_boys_salary * this.no_of_delivery_boys);
-
-      this._changeDet.detectChanges();
-      // debugger;
-      this.stock_report_data.unsubscribe();
-    })
 
   }
 
   readStocks(year, month, callback) {
 
+    /*
+    * Read stock entry from firebase
+    */
     this.read_stock = this.firebase.read_stock(year, month).subscribe((data: any) => {
       // this.trace("read stock");
-      // debugger;
+      if (!data) {
+        this.trace("No stocks exist!");
+        // window.alert("No stocks exist!");
+        callback([]);
+        this.read_stock.unsubscribe();
+      }
+
       for (let key in data) {
         this.stocks.push(data[key]);
       }
       this.stocks.reverse();
 
       if (this.stocks.length >= 2) {
-        // debugger;
         callback(this.stocks);
-        // this.trace("this.stocks.length : " + this.stocks.length);
         this.read_stock.unsubscribe();
       }
 
       if (this.stocks.length < 2) {
         // this.trace("read stock < 2");
+        this.trace("this.stock_retry_cnt :: " + this.stock_retry_cnt);
         this.stock_retry_cnt++;
         if (this.stock_retry_cnt > 4) {
           callback(this.stocks);
@@ -360,18 +451,19 @@ export class ReportComponent implements OnInit {
         if ((month - 1) >= 0) {
           this.stock_retry_cnt++;
           this.read_stock.unsubscribe();
-          this.readStocks(new Date().getFullYear(), month - 1, () => { });
+          this.readStocks(new Date().getFullYear(), month - 1, callback);
         } else if (month <= 0) {
           this.stock_retry_cnt++;
           this.read_stock.unsubscribe();
-          this.readStocks(new Date().getFullYear() - 1, 12, () => { });
+          this.readStocks(new Date().getFullYear() - 1, 12, callback);
         }
       }
+      this._changeDet.detectChanges();
     });
   }
 
-  public selectedDateRangePicker(evt, data) {
-    console.log(evt, data);
+  public selectedDateRangePicker(evt) {
+    console.log(evt);
     // debugger;
     this.rangepicker_data = {
       evt: evt,
@@ -391,7 +483,7 @@ export class ReportComponent implements OnInit {
     this.total_stock_price = (this.stock_large_nuts_cnt * this.large_stock_price) + (this.stock_small_nuts_cnt * this.small_stock_price) + (this.stock_orange_nuts_cnt * this.orange_stock_price);
     this.stock_update_status = "Writing...";
 
-    debugger;
+    // debugger;
     // this.todaysDateFormatted
     this.firebase.stock_update(new Date().getFullYear(), (new Date().getMonth() + 1), new Date().getDate(), {
       "total_price": this.total_stock_price,
@@ -402,9 +494,9 @@ export class ReportComponent implements OnInit {
       "small_count": this.stock_small_nuts_cnt,
       "orange_count": this.stock_orange_nuts_cnt,
       "remaining": JSON.stringify({
-        large: this.stock_large_nuts_cnt,
-        small: this.stock_small_nuts_cnt,
-        orange: this.stock_orange_nuts_cnt
+        large: this.stock_large_nuts_cnt * 1 + (this.remaining_stocks.large * 1),
+        small: this.stock_small_nuts_cnt * 1 + (this.remaining_stocks.small * 1),
+        orange: this.stock_orange_nuts_cnt * 1 + (this.remaining_stocks.orange * 1)
       })
     }, () => {
       this.total_stock_price = 0;
