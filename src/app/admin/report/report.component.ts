@@ -136,7 +136,7 @@ export class ReportComponent implements OnInit {
 
     let todayTime = new Date().getHours();
 
-    if (todayTime <= 16) {
+    if (todayTime <= 12) {
       this.todaysDate = new Date();
       this.yesterday_date = this._dateUtils.addDays(this.todaysDate, -1);
       this.yesterday_date_formatted = this._dateUtils.getDateString(this.yesterday_date, "");
@@ -189,6 +189,7 @@ export class ReportComponent implements OnInit {
       this.stock_report_data = this.firebase.read_stock_status_update_by_date(this.yesterday_date_formatted).subscribe((data: any) => {
         if (data) {
           this.yesterday_stock_report = JSON.parse(data['remaining']);
+          // debugger;
 
           //updtae the remaining stocks
           this.remaining_stocks = {
@@ -203,20 +204,20 @@ export class ReportComponent implements OnInit {
             small: this.remaining_stocks.small - this.small_nut_cnt,
             orange: this.remaining_stocks.orange - this.orange_nut_cnt
           }
+        }
 
-          /*
+        /*
           * Write the todays stock report
           */
-          this.firebase.daily_stock_status_update(this.todaysDateFormatted, {
-            total: (this.large_nut_cnt + this.orange_nut_cnt + this.small_nut_cnt),
-            remaining: JSON.stringify(this.remaining_stocks),
-            large: this.large_nut_cnt,
-            small: this.small_nut_cnt,
-            orange: this.orange_nut_cnt,
-            local: this.local_nut_cnt,
-            others: this.other_nut_cnt
-          });
-        }
+        this.firebase.daily_stock_status_update(this.todaysDateFormatted, {
+          total: (this.large_nut_cnt + this.orange_nut_cnt + this.small_nut_cnt),
+          remaining: JSON.stringify(this.remaining_stocks),
+          large: this.large_nut_cnt,
+          small: this.small_nut_cnt,
+          orange: this.orange_nut_cnt,
+          local: this.local_nut_cnt,
+          others: this.other_nut_cnt
+        });
 
         /*
         * write stock status update
@@ -253,11 +254,54 @@ export class ReportComponent implements OnInit {
             orange: (this.remaining_stocks.orange - (this.stocks[1].orange_count * 1))
           }
 
+          let stocks_copy = this.stocks.splice(0).reverse();
+
+          /*
+          * If difference in stock
+          */
+          let updateStock = (data1, data2, diff) => {
+            let stock_1 = JSON.parse(stocks_copy[data1].remaining);
+            let stock_2 = JSON.parse(stocks_copy[data2].remaining);
+
+            stock_1.large = 0;
+            stock_2.large = stock_2.large - diff - this.large_nut_cnt;
+          }
+
+          for (let i = 0; i <= stocks_copy.length; i++) {
+            let data = JSON.parse(stocks_copy[i].remaining);
+            if (data.large != 0) {
+              let diff = data.large - this.large_nut_cnt;
+              if (Math.sign(diff) == -1) {
+                updateStock(stocks_copy[i], stocks_copy[i + 1], diff);
+              } else {
+                data.large = data.large - this.large_nut_cnt;
+              }
+            }
+
+            if (data.small! = 0) {
+              let diff = data.small - this.small_nut_cnt;
+              if (Math.sign(diff) == -1) {
+                updateStock(stocks_copy[i], stocks_copy[i + 1], diff);
+              } else {
+                data.small = data.small - this.small_nut_cnt;
+              }
+            }
+
+            if (data.orange! = 0) {
+              let diff = data.orange - this.orange_nut_cnt;
+              if (Math.sign(diff) == -1) {
+                updateStock(stocks_copy[i], stocks_copy[i + 1], diff);
+              } else {
+                data.orange = data.orange - this.orange_nut_cnt;
+              }
+            }
+          }
+
+
+        } else if (this.stocks.length == 1) {
           /*
           * When we have only one stock
           */
-        } else if (this.stocks.length > 0) {
-
           this.large_nut_price = this.stocks[0].large_unit_price;
           this.small_nut_price = this.stocks[0].small_unit_price;
           this.orange_nut_price = this.stocks[0].orange_unit_price;
@@ -290,8 +334,6 @@ export class ReportComponent implements OnInit {
         this._changeDet.detectChanges();
         this.stock_report_data.unsubscribe();
       });
-
-
     });
 
     // this.delilvery_boy_subscriber = this._service.deliveryBoysUpdate.subscribe((data) => {
@@ -299,7 +341,7 @@ export class ReportComponent implements OnInit {
     // });
 
     /*
-    * Read the delivery boys from firebase
+    * Read the delivery boys from firebase  
     */
     function deliveryBoysUpdate() {
       this.delivery_boys = this._service.delivery_boys_list;
@@ -441,7 +483,7 @@ export class ReportComponent implements OnInit {
 
       if (this.stocks.length < 2) {
         // this.trace("read stock < 2");
-        this.trace("this.stock_retry_cnt :: " + this.stock_retry_cnt);
+        // this.trace("this.stock_retry_cnt :: " + this.stock_retry_cnt);
         this.stock_retry_cnt++;
         if (this.stock_retry_cnt > 4) {
           callback(this.stocks);
