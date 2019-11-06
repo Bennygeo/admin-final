@@ -100,6 +100,8 @@ export class ReportComponent implements OnInit {
 
   //firebase data array
   stocks: Array<any> = [];
+  stocks_copy: Array<any> = [];
+  stocks_data: Object = {};
 
   stock_retry_cnt = 0;
   remaining_stocks: any = {
@@ -170,10 +172,12 @@ export class ReportComponent implements OnInit {
 
     //Stocks data
     this.readStocks(new Date().getFullYear(), new Date().getMonth() + 1, (data) => {
+      // debugger;
       this.remaining_stocks = {
         large: 0, orange: 0, small: 0
       }
       let len = data.length;
+      // debugger;
       if (len == 0) return;
       this.trace("readStocks");
 
@@ -187,6 +191,7 @@ export class ReportComponent implements OnInit {
       * Read yesterday stock report from firebase
       */
       this.stock_report_data = this.firebase.read_stock_status_update_by_date(this.yesterday_date_formatted).subscribe((data: any) => {
+        this.trace("stock_report_data");
         if (data) {
           this.yesterday_stock_report = JSON.parse(data['remaining']);
           // debugger;
@@ -198,7 +203,6 @@ export class ReportComponent implements OnInit {
             orange: this.yesterday_stock_report.orange - this.orange_nut_cnt
           }
         } else {
-
           this.remaining_stocks = {
             large: this.remaining_stocks.large - this.large_nut_cnt,
             small: this.remaining_stocks.small - this.small_nut_cnt,
@@ -224,7 +228,6 @@ export class ReportComponent implements OnInit {
         * get the nut price from stock (if the stock gets empty read from next stock update it)
         * 
         */
-
         if (this.stocks.length > 1) {
           if ((this.remaining_stocks.large - (this.stocks[1].large_count * 1)) > this.stocks[1].large_count * 1) {
             this.large_nut_price = this.stocks[1].large_unit_price;
@@ -255,7 +258,6 @@ export class ReportComponent implements OnInit {
           }
 
           let stocks_copy = this.stocks.splice(0).reverse();
-
           /*
           * If difference in stock
           */
@@ -267,11 +269,14 @@ export class ReportComponent implements OnInit {
             stock_2.large = stock_2.large - diff - this.large_nut_cnt;
           }
 
-          for (let i = 0; i <= stocks_copy.length; i++) {
+
+          //update stock entry          
+          for (let i = 0; i < stocks_copy.length; i++) {
+            // debugger;
             let data = JSON.parse(stocks_copy[i].remaining);
             if (data.large != 0) {
               let diff = data.large - this.large_nut_cnt;
-              if (Math.sign(diff) == -1) {
+              if (Math.sign(diff) == -1 && i != 0) {
                 updateStock(stocks_copy[i], stocks_copy[i + 1], diff);
               } else {
                 data.large = data.large - this.large_nut_cnt;
@@ -280,7 +285,7 @@ export class ReportComponent implements OnInit {
 
             if (data.small! = 0) {
               let diff = data.small - this.small_nut_cnt;
-              if (Math.sign(diff) == -1) {
+              if (Math.sign(diff) == -1 && i != 0) {
                 updateStock(stocks_copy[i], stocks_copy[i + 1], diff);
               } else {
                 data.small = data.small - this.small_nut_cnt;
@@ -289,14 +294,13 @@ export class ReportComponent implements OnInit {
 
             if (data.orange! = 0) {
               let diff = data.orange - this.orange_nut_cnt;
-              if (Math.sign(diff) == -1) {
+              if (Math.sign(diff) == -1 && i != 0) {
                 updateStock(stocks_copy[i], stocks_copy[i + 1], diff);
               } else {
                 data.orange = data.orange - this.orange_nut_cnt;
               }
             }
           }
-
 
         } else if (this.stocks.length == 1) {
           /*
@@ -334,6 +338,111 @@ export class ReportComponent implements OnInit {
         this._changeDet.detectChanges();
         this.stock_report_data.unsubscribe();
       });
+
+
+      this.listObservable = this.firebase.readDailyOrders(this.todaysDateFormatted).subscribe((data: any) => {
+        this.listObservable.unsubscribe();
+        this.trace("readDailyOrders");
+        for (let key in data) {
+          let _data = JSON.parse(data[key].tender);
+          for (let _agents = 0; _agents < this.delivery_boys.length; _agents++) {
+            if (_data.assigned_to == this.delivery_boys[_agents]) {
+              let _index = this.delivery_boys.indexOf(_data.assigned_to);
+              // this.trace("_index :: " + _index);
+              // debugger;
+              if (_data.type == "Large") {
+                this.reportAry[_index].largeNuts++;
+                this.large_nut_cnt++;
+              }
+
+              if (_data.type == "Medium") {
+                this.reportAry[_index].smallNuts++;
+                this.small_nut_cnt++;
+              }
+
+              if (_data.type == "Orange") {
+                this.reportAry[_index].orangeNuts++;
+                this.orange_nut_cnt++;
+              }
+
+              this.reportAry[_index].total++;
+
+              // if (_data.nut_variety == "Orange") {
+              //   this.reportAry[_index].orangeNuts++;
+              // }
+
+              // if (_data.nut_variety == "Orange") {
+              //   this.reportAry[_index].orangeNuts++;
+              // }
+            }
+          }
+        }
+
+        // debugger;
+        this.trace("Line 381 :: " + this.stocks.length);
+        this.trace("Line 381 :: " + this.stocks_copy.length);
+
+        for (let i = this.stocks_copy.length - 1; i >= 0; i--) {
+          this.stocks_copy[i].remaining = JSON.parse(this.stocks_copy[i].remaining);
+        }
+
+        for (let i = this.stocks_copy.length - 1; i >= 0; i--) {
+          // debugger;
+          let details = (this.stocks_copy[i].remaining);
+          if (details.large > 0) {
+            var diff = details.large - this.large_nut_cnt;
+            if (diff >= 0) {
+              console.log("Not exceeded.");
+              for (var j = i; j >= 0; j--) {
+                if (this.stocks_copy[j]) {
+                  details = (this.stocks_copy[j].remaining);
+                  details.large -= this.large_nut_cnt;
+                  this.stocks_copy[j].remaining = {
+                    'large': details.large,
+                  };
+                }
+              }
+            } else {
+              this.trace("Exceeded");
+              details.large = 0;
+
+              if (this.stocks_copy[i]) {
+                this.stocks_copy[i].remaining = {
+                  'large': 0,
+                };
+              }
+
+              for (var j = i - 1; j >= 0; j--) {
+                if (this.stocks_copy[j]) {
+                  details = (this.stocks_copy[j].remaining);
+                  //diff should be applied only once and it must be reset to 0.
+                  details.large -= Math.abs(diff);                  
+                  diff = 0;
+                  details.large -= this.large_nut_cnt;
+                  this.stocks_copy[j].remaining = {
+                    'large': details.large,
+                  };
+                }
+              }
+            }
+
+            if (i == 0) {
+              this.trace("caught");
+            }
+            break;
+          }
+
+          if (details.orange > 0) {
+            details.orange -= this.orange_nut_cnt;
+          }
+
+          if (details.small > 0) {
+            details.small -= this.small_nut_cnt;
+          }
+          // console.log();
+        }
+        this._changeDet.detectChanges();
+      });
     });
 
     // this.delilvery_boy_subscriber = this._service.deliveryBoysUpdate.subscribe((data) => {
@@ -366,99 +475,11 @@ export class ReportComponent implements OnInit {
       // this._changeDet.detectChanges();
     }
 
-    this.listObservable = this.firebase.readDailyOrders(this.todaysDateFormatted).subscribe((data: any) => {
-      this.trace("readDailyOrders");
-      for (let key in data) {
-        let _data = JSON.parse(data[key].tender);
-        for (let _agents = 0; _agents < this.delivery_boys.length; _agents++) {
-          if (_data.assigned_to == this.delivery_boys[_agents]) {
-            let _index = this.delivery_boys.indexOf(_data.assigned_to);
-            // this.trace("_index :: " + _index);
-            // debugger;
-            if (_data.type == "Large") {
-              this.reportAry[_index].largeNuts++;
-              this.large_nut_cnt++;
-            }
-
-            if (_data.type == "Medium") {
-              this.reportAry[_index].smallNuts++;
-              this.small_nut_cnt++;
-            }
-
-            if (_data.type == "Orange") {
-              this.reportAry[_index].orangeNuts++;
-              this.orange_nut_cnt++;
-            }
-
-            this.reportAry[_index].total++;
-
-            // if (_data.nut_variety == "Orange") {
-            //   this.reportAry[_index].orangeNuts++;
-            // }
-
-            // if (_data.nut_variety == "Orange") {
-            //   this.reportAry[_index].orangeNuts++;
-            // }
-          }
-        }
-      }
-      for (let i = this.stocks.length - 1; i >= 0; i--) {
-        // debugger;
-        let details = JSON.parse(this.stocks[i].remaining);
-        if (details.large > 0) {
-
-          var diff = details.large - this.large_nut_cnt;
-          if (diff >= 0) {
-            console.log("Not exceeded.");
-            details.large -= this.large_nut_cnt;
-
-            for (var j = i; j >= 0; j--) {
-              if (this.stocks[j]) {
-                details = JSON.parse(this.stocks[j].remaining);
-                details.large -= this.large_nut_cnt;
-              }
-            }
-            // if (this.stocks[i - 2]) {
-            //   details = JSON.parse(this.stocks[i - 2].remaining);
-            //   details.large -= this.large_nut_cnt;
-            // }
-
-          } else {
-            this.trace("Exceeded");
-            details.large = 0;
-            if (this.stocks[i - 1]) {
-              details = JSON.parse(this.stocks[i - 1].remaining);
-              details.large -= diff;
-              details.large -= this.large_nut_cnt;
-            }
-
-            if (this.stocks[i - 2]) {
-              details = JSON.parse(this.stocks[i - 2].remaining);
-              details.large -= this.large_nut_cnt;
-            }
-          }
-          break;
-        }
-
-        if (details.orange > 0) {
-          details.orange -= this.orange_nut_cnt;
-        }
-
-        if (details.small > 0) {
-          details.small -= this.small_nut_cnt;
-        }
-        // console.log();
-      }
-      // debugger;
-      this._changeDet.detectChanges();
-    });
-
 
 
   }
 
   readStocks(year, month, callback) {
-
     /*
     * Read stock entry from firebase
     */
@@ -469,13 +490,23 @@ export class ReportComponent implements OnInit {
         // window.alert("No stocks exist!");
         callback([]);
         this.read_stock.unsubscribe();
+        // return;
       }
+
+      this.stocks_data[year] = {};
+      this.stocks_data[year][month] = {};
 
       for (let key in data) {
+        //write in an object
+        this.stocks_data[year][month][key] = data[key];
         this.stocks.push(data[key]);
+        this.stocks_copy.push(data[key]);
       }
+      // debugger;
+      this.stocks_copy.reverse();
       this.stocks.reverse();
 
+      this.trace("Line 503 :: " + this.stocks.length);
       if (this.stocks.length >= 2) {
         callback(this.stocks);
         this.read_stock.unsubscribe();
