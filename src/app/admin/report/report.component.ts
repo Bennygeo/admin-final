@@ -379,68 +379,152 @@ export class ReportComponent implements OnInit {
         }
 
         // debugger;
-        this.trace("Line 381 :: " + this.stocks.length);
-        this.trace("Line 381 :: " + this.stocks_copy.length);
+        // this.trace("Line 381 :: " + this.stocks.length);
+        // this.trace("Line 381 :: " + this.stocks_copy.length);
+        // debugger;
 
         for (let i = this.stocks_copy.length - 1; i >= 0; i--) {
           this.stocks_copy[i].remaining = JSON.parse(this.stocks_copy[i].remaining);
         }
 
-        for (let i = this.stocks_copy.length - 1; i >= 0; i--) {
+        /*
+          * Orange nuts stock validation
+          */
+        // for (let i = this.stocks_copy.length - 1; i >= 0; i--) {
+        //   if (details.orange > 0) {
+        //     var diff = details.orange - this.orange_nut_cnt;
+        //     if (diff >= 0) {
+        //       console.log("Not exceeded.");
+        //       for (var j = i; j >= 0; j--) {
+        //         if (this.stocks_copy[j]) {
+        //           details = (this.stocks_copy[j].remaining);
+        //           details.orange -= this.orange_nut_cnt;
+        //           this.stocks_copy[j].remaining['orange'] = details.orange;
+        //         }
+        //       }
+        //     } else {
+        //       this.trace("Exceeded");
+        //       details.orange = 0;
+
+        //       if (this.stocks_copy[i]) {
+        //         this.stocks_copy[j].remaining['orange'] = 0;
+        //       }
+
+        //       for (var j = i - 1; j >= 0; j--) {
+        //         if (this.stocks_copy[j]) {
+        //           details = (this.stocks_copy[j].remaining);
+        //           //diff should be applied only once and it must be reset to 0.
+        //           details.orange -= Math.abs(diff);
+        //           diff = 0;
+        //           details.orange -= this.orange_nut_cnt;
+        //           this.stocks_copy[j].remaining['orange'] = details.orange;
+        //         }
+        //       }
+        //     }
+        //   }
+        // }
+
+        // for (let i = this.stocks_copy.length - 1; i >= 0; i--) {
+        //   /*
+        //   * Small nuts stock validation
+        //   */
+        //   if (details.small > 0) {
+        //     var diff = details.small - this.small_nut_cnt;
+        //     if (diff >= 0) {
+        //       console.log("Not exceeded.");
+        //       for (var j = i; j >= 0; j--) {
+        //         if (this.stocks_copy[j]) {
+        //           details = (this.stocks_copy[j].remaining);
+        //           details.small -= this.small_nut_cnt;
+        //           this.stocks_copy[j].remaining['small'] = details.small;
+        //         }
+        //       }
+        //     } else {
+        //       this.trace("Exceeded");
+        //       details.small = 0;
+
+        //       if (this.stocks_copy[i]) {
+        //         this.stocks_copy[j].remaining['small'] = 0;
+        //       }
+
+        //       for (var j = i - 1; j >= 0; j--) {
+        //         if (this.stocks_copy[j]) {
+        //           details = (this.stocks_copy[j].remaining);
+        //           //diff should be applied only once and it must be reset to 0.
+        //           details.small -= Math.abs(diff);
+        //           diff = 0;
+        //           details.small -= this.small_nut_cnt;
+        //           this.stocks_copy[j].remaining['small'] = details.small;
+        //         }
+        //       }
+        //     }
+        //   }
+        // }
+
+        var nuts = ["large", "orange", "small"];
+        var cnt = 0;
+        for (var key in nuts) {
+          cnt++;
           // debugger;
-          let details = (this.stocks_copy[i].remaining);
-          if (details.large > 0) {
-            var diff = details.large - this.large_nut_cnt;
-            if (diff >= 0) {
-              console.log("Not exceeded.");
-              for (var j = i; j >= 0; j--) {
-                if (this.stocks_copy[j]) {
-                  details = (this.stocks_copy[j].remaining);
-                  details.large -= this.large_nut_cnt;
-                  this.stocks_copy[j].remaining = {
-                    'large': details.large,
-                  };
+          for (let i = this.stocks_copy.length - 1; i >= 0; i--) {
+            // debugger;
+            let details = (this.stocks_copy[i].remaining);
+            if (details[nuts[key]] > 0) {
+              var diff = details[nuts[key]] - this[nuts[key] + "_nut_cnt"];
+              if (diff >= 0) {
+                console.log("Not exceeded.");
+                for (var j = i - 1; j >= 0; j--) {
+                  if (this.stocks_copy[j]) {
+                    details = (this.stocks_copy[j].remaining);
+                    details[nuts[key]] -= this[nuts[key] + "_nut_cnt"];
+                    // this.stocks_copy[j].remaining = {
+                    //   'large': details.large,
+                    // };
+                    this.stocks_copy[j].remaining[nuts[key]] = details[nuts[key]];
+                  }
                 }
-              }
-            } else {
-              this.trace("Exceeded");
-              details.large = 0;
+              } else {
+                this.trace("Exceeded");
+                details[nuts[key]] = 0;
+                // debugger;
+                if (this.stocks_copy[i]) {
+                  this.stocks_copy[i].remaining[nuts[key]] = 0;
 
-              if (this.stocks_copy[i]) {
-                this.stocks_copy[i].remaining = {
-                  'large': 0,
-                };
+                  for (var j = i - 1; j >= 0; j--) {
+                    if (this.stocks_copy[j]) {
+                      details = (this.stocks_copy[j].remaining);
+                      //diff should be applied only once and it must be reset to 0.
+                      if (diff < 0) details[nuts[key]] -= Math.abs(diff);
+                      else details[nuts[key]] -= this[nuts[key] + "_nut_cnt"];
+                      diff = 0;
+                      this.stocks_copy[j].remaining[nuts[key]] = details[nuts[key]];
+                    }
+                  }
+                }
+                break;
               }
-
-              for (var j = i - 1; j >= 0; j--) {
-                if (this.stocks_copy[j]) {
-                  details = (this.stocks_copy[j].remaining);
-                  //diff should be applied only once and it must be reset to 0.
-                  details.large -= Math.abs(diff);                  
-                  diff = 0;
-                  details.large -= this.large_nut_cnt;
-                  this.stocks_copy[j].remaining = {
-                    'large': details.large,
-                  };
+            }
+          }
+          if (cnt == 3) {
+            debugger;
+            this.stocks_copy.reverse();
+            var cnt = 0;
+            //write the array data into the object
+            for (var yr in this.stocks_data) {
+              for (var mnth in this.stocks_data[yr]) {
+                for (var day in this.stocks_data[yr][mnth]) {
+                  this.stocks_data[yr][mnth][day] = this.stocks_copy[cnt];
+                  cnt++;
                 }
               }
             }
-
-            if (i == 0) {
-              this.trace("caught");
-            }
-            break;
           }
-
-          if (details.orange > 0) {
-            details.orange -= this.orange_nut_cnt;
-          }
-
-          if (details.small > 0) {
-            details.small -= this.small_nut_cnt;
-          }
-          // console.log();
         }
+
+        /*
+                  * Large nuts stock validation
+                  */
+
         this._changeDet.detectChanges();
       });
     });
