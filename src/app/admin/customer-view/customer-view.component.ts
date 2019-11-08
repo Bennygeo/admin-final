@@ -293,7 +293,6 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
           todayFlg = (Math.sign(this.date_utils.dateDiff(new Date(), new Date(this.date_utils.stdDateFormater(__date, "/"))))) == 0 ? true : false;
           if (todayFlg && todayTime <= 10) todayFlg = false;
 
-
           this.orders[cnt] = {
             index: _data["dates"][key].index,
             date: this.date_utils.dateFormater(key, "-"),

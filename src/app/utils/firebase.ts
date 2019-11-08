@@ -386,6 +386,17 @@ export class FireBase implements OnInit {
         });
     }
 
+    stock_remaining_update(year, month, date, formatedDate, obj, callback) {
+        // debugger;
+        var ref = this.db.database.ref("/stock/" + year + "/" + month + "/" + date + "/remaining").update({
+            // var ref = this.db.database.ref("/stock/" + date + "/").update({
+            [formatedDate]: obj,
+        }, (error) => {
+            if (error) console.log("stock_remaining_update write failed...");
+            else callback();
+        });
+    }
+
     /*
    * read stocki
    */
