@@ -386,6 +386,35 @@ export class FireBase implements OnInit {
         });
     }
 
+
+    local_sale_update(date, date_id, obj, callback) {
+        var ref = this.db.database.ref("/local_sales/" + date + "/").update({
+            [date_id]: {
+                "large": obj.large,
+                "small": obj.small,
+                "orange": obj.orange,
+                "price": obj.price
+            }
+        }, (error) => {
+            if (error) console.log("local_sale_update write failed...");
+            else callback();
+        });
+    }
+
+    /*
+   * Read local sales
+   */
+
+    read_local_sales(date) {
+        return new Observable((observer) => {
+            var ref = this.db.database.ref("/local_sales/" + date + "/");
+            ref.on("value", function (snapshot) {
+                observer.next(snapshot.exportVal());
+            });
+        });
+    }
+
+
     stock_remaining_update(year, month, date, formatedDate, obj, callback) {
         // debugger;
         var ref = this.db.database.ref("/stock/" + year + "/" + month + "/" + date + "/remaining").update({
@@ -397,10 +426,11 @@ export class FireBase implements OnInit {
         });
     }
 
+
+
     /*
    * read stocki
    */
-
     read_stock(year, month) {
         return new Observable((observer) => {
             var ref = this.db.database.ref("/stock/" + year + "/" + month + "/");
