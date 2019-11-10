@@ -166,7 +166,9 @@
 
         <div class="col-7 reportLabel">Total local large count : </div>
         <div class="col5 reportVals">{{local_sales['large']}}</div>
-        
+
+        <div class="col-7 reportLabel">Total local orange count : </div>
+        <div class="col5 reportVals">{{local_sales['orange']}}</div>
 
         <div class="col-7 reportLabel">Total small count : </div>
         <div class="col5 reportVals">{{small_nut_cnt}}</div>
@@ -177,8 +179,12 @@
         <div class="col-7 reportLabel">Stock total price : </div>
         <div class="col5 reportVals">{{this.total_nut_price.large}}</div>
 
-        <div class="col-7 reportLabel">Selling total price : </div>
-        <div class="col5 reportVals">{{large_nut_cnt * large_nut_selling_price}}</div>
+        <div class="col-7 reportLabel">total local sale price : </div>
+        <div class="col5 reportVals" style="background-color: chartreuse;">{{local_revenue}}</div>
+
+        <div class="col-7 reportLabel">Total sale price : </div>
+        <div class="col5 reportVals" style="background-color: chartreuse;">{{large_nut_cnt * large_nut_selling_price}}
+        </div>
 
         <div class="col-7 reportLabel">Daily rental : </div>
         <div class="col5 reportVals">{{rent_per_day}}</div>
@@ -192,7 +198,7 @@
         <div class="col-7 reportLabel">Revenue : </div>
         <div class="col5 reportVals">{{total_revenue}}</div>
 
-        <p style="font-size: 13px; font-style: italic; padding: 12px; margin: 0;">(Profit = Revenue - stock price -
+        <p style="font-size: 13px; font-style: italic; padding: 12px; margin: 0;">(Profit = (Revenue + local_revenue) - stock price -
             daily rental - delivery boys daily
             salary)</p>
 

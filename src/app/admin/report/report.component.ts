@@ -152,6 +152,8 @@ export class ReportComponent implements OnInit, OnDestroy {
   local_firebase_data: any;
   local_stocks: Array<any> = [];
 
+  local_revenue: number = 0;
+
   constructor(
     private _service: CommonsService,
     private _dateUtils: DateUtils,
@@ -277,9 +279,12 @@ export class ReportComponent implements OnInit, OnDestroy {
             'large': this.local_sales['large'],
             'small': this.local_sales['small'],
             'orange': this.local_sales['orange'],
-            'large_price': (this.local_firebase_data[key]['price'] * 1) / this.local_sales['large'],
-            'small_price': (this.local_sales['small'] > 0) ? (this.local_firebase_data[key]['price'] * 1) / this.local_sales['small'] : 0,
-            'orange_price': (this.local_sales['orange'] > 0) ? (this.local_firebase_data[key]['price'] * 1) / this.local_sales['orange'] : 0,
+            // 'large_price': (this.local_firebase_data[key]['price'] * 1) / this.local_sales['large'],
+            // 'small_price': (this.local_sales['small'] > 0) ? (this.local_firebase_data[key]['price'] * 1) / this.local_sales['small'] : 0,
+            // 'orange_price': (this.local_sales['orange'] > 0) ? (this.local_firebase_data[key]['price'] * 1) / this.local_sales['orange'] : 0,
+            'large_price': (this.local_firebase_data[key]['price'] * 1),
+            'small_price': (this.local_sales['small'] > 0) ? (this.local_firebase_data[key]['price'] * 1) : 0,
+            'orange_price': (this.local_sales['orange'] > 0) ? (this.local_firebase_data[key]['price'] * 1) : 0
           });
 
           //reset local_sales
@@ -311,7 +316,6 @@ export class ReportComponent implements OnInit, OnDestroy {
           }
         }
 
-
         // debugger;
         var nuts = ["large", "orange", "small"];
         var cnt = 0;
@@ -322,22 +326,23 @@ export class ReportComponent implements OnInit, OnDestroy {
             let details = (this.stocks_copy[i]);
             if (details[nuts[key]] > 0) {
               var diff = details[nuts[key]] - (this[nuts[key] + "_nut_cnt"] + this.local_sales[nuts[key]]);
+
               if (diff >= 0) {
                 console.log("Not exceeded.");
                 // for (var j = i; j > 0; j--) {
                 if (this.stocks_copy[i]) {
                   details = (this.stocks_copy[i]);
                   details[nuts[key]] -= (this[nuts[key] + "_nut_cnt"] + this.local_sales[nuts[key]]);
-                  this.total_nut_price[nuts[key]] += this[nuts[key] + "_nut_cnt"] * (details[nuts[key] + '_price'] * 1);
-
+                  this.total_nut_price[nuts[key]] += (this[nuts[key] + "_nut_cnt"] + this.local_sales[nuts[key]]) * (details[nuts[key] + '_price'] * 1);
                   this.stocks_copy[i][nuts[key]] = details[nuts[key]];
                 }
                 break;
                 // }
               } else {
                 this.trace("Exceeded");
-                this.total_nut_price[nuts[key]] += (this[nuts[key] + "_nut_cnt"] + diff) * (this.stocks_copy[i][nuts[key] + '_price'] * 1);
+                this.total_nut_price[nuts[key]] += ((this[nuts[key] + "_nut_cnt"] + this.local_sales[nuts[key]]) + diff) * (this.stocks_copy[i][nuts[key] + '_price'] * 1);
                 details[nuts[key]] = 0;
+
                 if (this.stocks_copy[i]) {
 
                   this.stocks_copy[i][nuts[key]] = 0;
@@ -349,14 +354,9 @@ export class ReportComponent implements OnInit, OnDestroy {
                       if (diff < 0) {
                         details[nuts[key]] -= Math.abs(diff);
                         this.stock_price_diff[nuts[key]] = Math.abs(diff);
-                                                
                         this.total_nut_price[nuts[key]] += Math.abs(diff) * (details[nuts[key] + '_price'] * 1);
-                        // this.trace("this.stock_price_diff[nuts[key]] :: " + this.stock_price_diff[nuts[key]]);
                       } else {
-                        // debugger;
-                        // this.total[nuts[key]] = this[nuts[key] + "_nut_cnt"] *  
-                        this.total_nut_price[nuts[key]] += this[nuts[key] + "_nut_cnt"] * (details[nuts[key] + '_price'] * 1);
-                        // details[nuts[key]] = details[nuts[key]];
+                        this.total_nut_price[nuts[key]] += (this[nuts[key] + "_nut_cnt"] + this.local_sales[nuts[key]]) * (details[nuts[key] + '_price'] * 1);
                       }
                       diff = 0;
                       this.stocks_copy[j][nuts[key]] = details[nuts[key]];
@@ -367,7 +367,6 @@ export class ReportComponent implements OnInit, OnDestroy {
               }
             }
           }
-
 
           if (cnt == 3) {
             this.stocks_copy.reverse();
@@ -401,13 +400,16 @@ export class ReportComponent implements OnInit, OnDestroy {
               others: this.other_nut_cnt
             });
 
+            for (var key in this.local_stocks)
+              this.local_revenue += (this.local_stocks[key]['large_price'] * 1);
+
             //total revenue update
             this.total_revenue = (this.large_nut_cnt * this.large_nut_selling_price) + (this.small_nut_cnt * this.small_nut_selling_price) + (this.orange_nut_cnt * this.orange_nut_selling_price);
             //total price update
             this.total_price = (this.total_nut_price.large) + (this.total_nut_price.small) + (this.total_nut_price.orange);
 
             //total profit update
-            this.total_profit = this.total_revenue - this.total_price - this.rent_per_day - (this.delivery_boys_salary * this.no_of_delivery_boys);
+            this.total_profit = (this.total_revenue + this.local_revenue) - this.total_price - this.rent_per_day - (this.delivery_boys_salary * this.no_of_delivery_boys);
             this._changeDet.detectChanges();
 
           }
@@ -415,8 +417,6 @@ export class ReportComponent implements OnInit, OnDestroy {
         this._changeDet.detectChanges();
       });
     });
-
-
   }
 
   readStocks(year, month, callback) {
