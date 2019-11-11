@@ -457,12 +457,17 @@ export class FireBase implements OnInit {
     */
     daily_stock_status_update(date, obj) {
         var ref = this.db.database.ref("/stock_status/" + date + "/").update({
-            total: obj['total'],
-            remaining: obj['remaining'],
-            large: obj['large'],
-            small: obj['small'],
-            orange: obj['orange'],
-            local: obj['local']
+            'total': obj['total'],
+            'remaining': obj['remaining'],
+            'large': obj['large'],
+            'small': obj['small'],
+            'orange': obj['orange'],
+            'local': obj['local'],
+            'stock_total': obj['stock_total'],
+            'total_local': obj['total_local'],
+            'profit': obj['profit'],
+            'rent': obj['rent'],
+            'salary': obj['salary'],
         });
     }
 

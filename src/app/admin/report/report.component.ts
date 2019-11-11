@@ -387,19 +387,6 @@ export class ReportComponent implements OnInit, OnDestroy {
               }
             }
 
-            /*
-          * Write the todays stock report
-          */
-            this.firebase.daily_stock_status_update(this.todaysDateFormatted, {
-              total: (this.large_nut_cnt + this.orange_nut_cnt + this.small_nut_cnt),
-              remaining: JSON.stringify(this.remaining_stocks),
-              large: this.large_nut_cnt,
-              small: this.small_nut_cnt,
-              orange: this.orange_nut_cnt,
-              local: this.local_nut_cnt,
-              others: this.other_nut_cnt
-            });
-
             for (var key in this.local_stocks)
               this.local_revenue += (this.local_stocks[key]['large_price'] * 1);
 
@@ -410,6 +397,25 @@ export class ReportComponent implements OnInit, OnDestroy {
 
             //total profit update
             this.total_profit = (this.total_revenue + this.local_revenue) - this.total_price - this.rent_per_day - (this.delivery_boys_salary * this.no_of_delivery_boys);
+
+            /*
+          * Write the todays stock report
+          */
+            this.firebase.daily_stock_status_update(this.todaysDateFormatted, {
+              total: (this.large_nut_cnt + this.orange_nut_cnt + this.small_nut_cnt),
+              remaining: JSON.stringify(this.remaining_stocks),
+              large: this.large_nut_cnt,
+              small: this.small_nut_cnt,
+              orange: this.orange_nut_cnt,
+              local: JSON.stringify(this.local_stocks),
+              stock_total: this.total_nut_price.large,
+              total_local: this.local_revenue,
+              profit: this.total_profit,
+              rent: this.rent_per_day,
+              salary: (this.delivery_boys_salary * this.no_of_delivery_boys),
+              others: this.other_nut_cnt
+            });
+
             this._changeDet.detectChanges();
 
           }
@@ -652,7 +658,6 @@ export class ReportComponent implements OnInit, OnDestroy {
     }
   }
 
-
   deliveryBoysUpdate() {
     this.delivery_boys = this._service.delivery_boys_list;
     this.no_of_delivery_boys = this.delivery_boys.length;
@@ -677,10 +682,6 @@ export class ReportComponent implements OnInit, OnDestroy {
   }
 
   localSaleHandler() {
-    this.trace("this.local_selling_nuts :: " + this.local_selling_large_nuts);
-    this.trace("this.local_selling_small_nuts :: " + this.local_selling_small_nuts);
-    this.trace("this.local_selling_orange_nuts :: " + this.local_selling_orange_nuts);
-    this.trace("this.local_selling_price :: " + this.local_selling_price);
     this.local_sale_update_status = "...";
   }
 
