@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FireBase } from '../utils/firebase';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { Router } from '@angular/router';
+import { LoginService } from '../login.service';
+import { StorageService } from '../utils/storage.service';
 
 @Component({
   selector: 'app-login',
@@ -22,7 +24,9 @@ export class LoginComponent implements OnInit {
 
   constructor(
     private _db: AngularFireDatabase,
-    private _router: Router
+    private _router: Router,
+    private _loginSerice: LoginService,
+    private _storageService: StorageService
   ) {
     this.fb = new FireBase(this._db);
   }
@@ -50,27 +54,37 @@ export class LoginComponent implements OnInit {
     }
 
     if (flg) {
-      console.log("this.pswd :: " + this.pswd);
+      // console.log("this.pswd :: " + this.pswd);
       if (this.username == "9486140936" || this.username == "8072129358") {
         if (this.pswd == this.loginData[this.username].pswd) {
-          console.log("Good");
+          // console.log("Good");
           this.submit_btn_disable = true;
           this._router.navigate(["admin/customer_list"]);
+          this._loginSerice.setLoginStatus('admin', true);
+          this._storageService.writeData("thinkspot_login", { who: 'admin', isLogged: true, target: this.username });
         } else if (this.pswd == undefined || this.pswd == "") {
-          console.log("Empty");
+          // console.log("Empty");
+          this._loginSerice.setLoginStatus('admin', false);
+          this._storageService.writeData("thinkspot_login", { who: 'admin', isLogged: false, target: this.username });
           this.pswdErr = false;
         } else {
-          console.log("Bad");
+          // console.log("Bad");
           this.pswdErr = true;
+          this._loginSerice.setLoginStatus('admin', false);
+          this._storageService.writeData("thinkspot_login", { who: 'admin', isLogged: false, target: this.username });
         }
-      } else if (this.username == "8870029847" || this.username == "9500948808" || this.username == "9884380539"|| this.username == "6382942615") {
+      } else if (this.username == "8870029847" || this.username == "9500948808" || this.username == "9884380539" || this.username == "6382942615") {
         if (this.pswd == this.loginData[this.username].pswd) {
-          console.log("delivery boy logged");
+          // console.log("delivery boy logged");
           this.submit_btn_disable = true;
+          this._loginSerice.setLoginStatus('agent', true);
+          this._storageService.writeData("thinkspot_login", { who: 'agent', isLogged: true, target: this.username });
           this._router.navigate(["delivery", { name: this.loginData[this.username].name, mno: this.username }]);
         } else {
-          console.log("delivery boy logged :: error");
+          // console.log("delivery boy logged :: error");
           this.pswdErr = true;
+          this._loginSerice.setLoginStatus('agent', false);
+          this._storageService.writeData("thinkspot_login", { who: 'agent', isLogged: false, target: this.username });
         }
       }
     }
@@ -79,11 +93,11 @@ export class LoginComponent implements OnInit {
 
   onFocusAction() {
     // console.log("focus");
-    this.credentialOwner = "";
+    // this.credentialOwner = "";
     // this.username = "8870029847";
     // this.username = "9486140936";
     // this.username = "9884380539";
-    this.username = "";
+    // this.username = "";
     this.pswdErr = false;
   }
 

@@ -471,7 +471,6 @@ export class FireBase implements OnInit {
         });
     }
 
-
     public logout() {
         //logout
     }

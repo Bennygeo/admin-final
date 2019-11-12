@@ -15,6 +15,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NoAccessComponent } from './others/no-access/no-access.component';
 import { PageNotFoundComponent } from './others/page-not-found/page-not-found.component';
 import { ScrollToTopDirective } from './others/scroll-to-top.directive';
+import { CanActivateTeamService } from './services/can-activate-team.service';
 
 @NgModule({
   declarations: [
@@ -42,6 +43,7 @@ import { ScrollToTopDirective } from './others/scroll-to-top.directive';
   ],
   providers: [
     // AuthService,
+    CanActivateTeamService,
     CommonsService,
     AngularFireDatabase,
     { provide: LocationStrategy, useClass: HashLocationStrategy }

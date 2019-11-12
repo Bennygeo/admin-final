@@ -3,22 +3,24 @@ import { Routes, RouterModule } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { NoAccessComponent } from './others/no-access/no-access.component';
 import { PageNotFoundComponent } from './others/page-not-found/page-not-found.component';
+import { CanActivateTeamService } from './services/can-activate-team.service';
 
 const routes: Routes = [
   {
     path: '',
     redirectTo: 'login',
-    pathMatch: 'full'
+    pathMatch: 'full',
+
   },
   {
     path: 'login',
-    component: LoginComponent
+    component: LoginComponent,
+    canActivate: [CanActivateTeamService]
   },
   {
     path: 'admin',
     loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule),
   },
-
 
   // {
   //   path: 'admin',
@@ -37,3 +39,4 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
+
