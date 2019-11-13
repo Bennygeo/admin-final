@@ -60,30 +60,30 @@ export class LoginComponent implements OnInit {
           // console.log("Good");
           this.submit_btn_disable = true;
           this._router.navigate(["admin/customer_list"]);
-          this._loginSerice.setLoginStatus('admin', true);
+          this._loginSerice.setLoginStatus('admin', false);
           this._storageService.writeData("thinkspot_login", { who: 'admin', isLogged: true, target: this.username });
         } else if (this.pswd == undefined || this.pswd == "") {
           // console.log("Empty");
-          this._loginSerice.setLoginStatus('admin', false);
+          this._loginSerice.setLoginStatus('admin', true);
           this._storageService.writeData("thinkspot_login", { who: 'admin', isLogged: false, target: this.username });
           this.pswdErr = false;
         } else {
           // console.log("Bad");
           this.pswdErr = true;
-          this._loginSerice.setLoginStatus('admin', false);
+          this._loginSerice.setLoginStatus('admin', true);
           this._storageService.writeData("thinkspot_login", { who: 'admin', isLogged: false, target: this.username });
         }
       } else if (this.username == "8870029847" || this.username == "9500948808" || this.username == "9884380539" || this.username == "6382942615") {
         if (this.pswd == this.loginData[this.username].pswd) {
           // console.log("delivery boy logged");
           this.submit_btn_disable = true;
-          this._loginSerice.setLoginStatus('agent', true);
+          this._loginSerice.setLoginStatus('agent', false);
           this._storageService.writeData("thinkspot_login", { who: 'agent', isLogged: true, target: this.username });
           this._router.navigate(["delivery", { name: this.loginData[this.username].name, mno: this.username }]);
         } else {
           // console.log("delivery boy logged :: error");
           this.pswdErr = true;
-          this._loginSerice.setLoginStatus('agent', false);
+          this._loginSerice.setLoginStatus('agent', true);
           this._storageService.writeData("thinkspot_login", { who: 'agent', isLogged: false, target: this.username });
         }
       }

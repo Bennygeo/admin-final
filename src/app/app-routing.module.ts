@@ -14,12 +14,13 @@ const routes: Routes = [
   },
   {
     path: 'login',
-    component: LoginComponent,
-    canActivate: [CanActivateTeamService]
+    component: LoginComponent,  
+    canActivate: [CanActivateTeamService]  
   },
   {
     path: 'admin',
     loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule),
+    
   },
 
   // {

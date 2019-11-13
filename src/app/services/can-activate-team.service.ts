@@ -10,6 +10,7 @@ export class CanActivateTeamService implements CanActivate {
   constructor(private authService: LoginService) { }
 
   canActivate() {
+    console.log("can activate :: " + this.authService.isLoggedin());
     return this.authService.isLoggedin();
   }
 }

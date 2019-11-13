@@ -10,7 +10,7 @@ export class LoginService {
 
   constructor() { }
 
-  setLoginStatus(logged, who): void {
+  setLoginStatus(who, logged): void {
     this.who = who;
     this.logged = logged;
   }
