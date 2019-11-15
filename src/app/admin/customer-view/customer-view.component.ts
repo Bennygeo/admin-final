@@ -909,10 +909,16 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     let trace = console.log;
     let targetDate = new Date(this.date_utils.stdDateFormater(this.orders[this.selectedDateIndex - 2].date, "/"));
 
-    for (let i = this.selectedDateIndex - 1; i < this.orders.length; i++) {
-      this.orders[i].index = "Stopped";
-      this.orders[i].count = 0;
-    }
+    // for (let i = this.selectedDateIndex - 1; i < this.orders.length; i++) {
+    //   this.orders[i].index = "Stopped";
+    //   this.orders[i].count = 0;
+    // }
+    // debugger;
+
+    // its like a double M.A. job. Kind of diverting the context.
+
+    this.orders.splice(this.selectedDateIndex - 1, this.orders.length);
+
     let _nut_price = this.historyObj['details']['nut_price'] * 1;
     let _nut_count = 0;
     for (let i = 0; i < remainingDays; i++) {
@@ -926,9 +932,10 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       // this.historyObj['dates'][_date].expired = true;
       delete this.historyObj['dates'][_date];
 
+
       this.delete_orders_subscriber = this.firebase.deleteUserOrder(this.mobile, this.date_utils.dateFormater(_date, "-"), () => {
         if (i == remainingDays - 1) {
-          console.log("remove order subscriber.");
+          console.log("remove order subscriber.");          
           this.delete_orders_subscriber.unsubscribe();
         }
       });
@@ -980,7 +987,6 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   }
 
   public addToCustomSubscriptionBag() {
-
     this.packageOptions = {
       "custom_pack": this.price - this.discount + this.deliveryCharges + ((this.strawFlag) ? 2 : 0)
     }
@@ -1066,7 +1072,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   }
 
   paySaveAction(val: any) {
-    console.log("Save action :: " + val.value);
+    // console.log("Save action :: " + val.value);
 
     let inpVal = val.value;
     let remaining = Math.abs(val.value - this.orderInfo['remaining_to_pay']);//this.packageData.remaining_to_pay - this.packageData.paid_amt;

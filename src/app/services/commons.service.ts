@@ -40,7 +40,7 @@ export class CommonsService {
     private http: HttpClient
   ) {
     this.firebase = new FireBase(this._db);
-    console.log("common service emit..");
+    // console.log("common service emit..");
     this.delivery_boys_observable = this.firebase.readDeliverBoys().subscribe((data: any) => {
       // debugger;
       for (let key in data) {

@@ -190,14 +190,13 @@ export class CustomerListComponent implements OnInit, OnDestroy {
 
     });
 
-    // debugger;
-    // console.log(this._service.sendCustomerMsg.observers.length);
-    // trace("**************");
-    if (this._service.sendCustomerMsg.observers.length == 0) {
-      this._service.sendCustomerMsg.subscribe(() => {
-        (this.overlay) ? this.overlay = false : this.overlay = true;
-      });
-    }
+    // if (this._service.sendCustomerMsg.observers.length == 0) {
+    this._service.sendCustomerMsg.observers = [];
+    this._service.sendCustomerMsg.subscribe(() => {
+      console.log("sendCustomerMsg");
+      (this.overlay) ? this.overlay = false : this.overlay = true;
+    });
+    // }
   }
 
   onCustomerClick(evt, index, mobile) {
@@ -389,8 +388,11 @@ export class CustomerListComponent implements OnInit, OnDestroy {
       'mobile_nos': selected,
       'fName': '',
       'content': val.value
-    }, () => { });
+    }, () => {
+
+    });
     (this.overlay) ? this.overlay = false : this.overlay = true;
+    this._service.sendCustomerMsg.unsubscribe();
   }
 
   ngOnDestroy(): void {

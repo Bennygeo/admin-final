@@ -62,8 +62,13 @@ export class HomeComponent implements OnInit, OnDestroy {
     this._service.readCustomerList(false);
   }
 
+  restore() {
+    this._router.navigate(["admin/unpaid"]);
+  }
+
   sendMessage() {
-    console.log("Send Message to customers.");
+    // console.log("Send Message to customers.");
+    //Recieved by admin customer-list component
     this._service.sendCustomerMsg.emit();
   }
 

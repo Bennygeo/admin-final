@@ -20,6 +20,7 @@ import { ScrollDispatchModule } from '@angular/cdk/scrolling';
 import { HttpClientModule } from '@angular/common/http';
 import { Daterangepicker } from 'ng2-daterangepicker';
 import { ReportComponent } from './report/report.component';
+import { UnpaidComponent } from './unpaid/unpaid.component';
 
 
 @NgModule({
@@ -33,6 +34,7 @@ import { ReportComponent } from './report/report.component';
     PlusMinusComponent,
     MatDialogComponent,
     ReportComponent,
+    UnpaidComponent,
   ],
   imports: [
     CommonModule,

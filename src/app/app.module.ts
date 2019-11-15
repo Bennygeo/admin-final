@@ -23,7 +23,7 @@ import { CanActivateTeamService } from './services/can-activate-team.service';
     LoginComponent,
     NoAccessComponent,
     PageNotFoundComponent,
-    ScrollToTopDirective
+    ScrollToTopDirective,
   ],
   imports: [
     BrowserModule,

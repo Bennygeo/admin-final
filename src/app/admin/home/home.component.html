@@ -1,7 +1,7 @@
 <div class="container">
     <div class="row" style="border-bottom: 1px solid #ccc;">
-        <div class="col-4" style="border-left: 1px solid #ccc;" (click)="clickToHome()"></div>
-        <div class="col-8" style="padding-right: 0;">
+        <div class="col-3" style="border-left: 1px solid #ccc;" (click)="clickToHome()"></div>
+        <div class="col-9" style="padding-right: 0;">
             <div style="position: relative; float: right;  border-right: 1px solid #ccc;" (click)="add_person()">
                 <i class="material-icons">person_add</i>
             </div>
@@ -14,6 +14,12 @@
                 (click)="report()">
                 <i class="material-icons">
                     show_chart
+                </i>
+            </div>
+            <div style="position: relative; float: right; border-right: 1px solid #ccc;  border-left: 1px solid #ccc;"
+                (click)="restore()">
+                <i class="material-icons">
+                    restore
                 </i>
             </div>
         </div>

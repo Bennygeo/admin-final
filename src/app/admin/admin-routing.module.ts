@@ -7,6 +7,7 @@ import { AddressComponent } from './address/address.component';
 import { NoAccessComponent } from '../others/no-access/no-access.component';
 import { PageNotFoundComponent } from '../others/page-not-found/page-not-found.component';
 import { ReportComponent } from './report/report.component';
+import { UnpaidComponent } from './unpaid/unpaid.component';
 
 const routes: Routes = [
   {
@@ -26,6 +27,10 @@ const routes: Routes = [
   {
     path: 'report',
     component: ReportComponent,
+  },
+  {
+    path: 'unpaid',
+    component: UnpaidComponent,
   },
   {
     path: 'address',
