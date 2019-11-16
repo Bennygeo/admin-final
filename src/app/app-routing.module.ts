@@ -10,26 +10,24 @@ const routes: Routes = [
     path: '',
     redirectTo: 'login',
     pathMatch: 'full',
-
   },
   {
     path: 'login',
-    component: LoginComponent,  
-    canActivate: [CanActivateTeamService]  
+    component: LoginComponent
   },
   {
     path: 'admin',
     loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule),
-    
+    canActivate: [CanActivateTeamService]
   },
-
   // {
   //   path: 'admin',
   //   loadChildren: './admin/admin.module#AdminModule'
   // },
   {
     path: 'delivery',
-    loadChildren: './delivery/delivery.module#DeliveryModule'
+    loadChildren: './delivery/delivery.module#DeliveryModule',
+    canActivate: [CanActivateTeamService]
   },
   { path: 'no-access', component: NoAccessComponent },
   { path: '**', component: PageNotFoundComponent }

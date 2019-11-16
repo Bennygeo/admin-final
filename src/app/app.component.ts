@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { StorageService } from './utils/storage.service';
 import { LoginService } from './login.service';
@@ -8,7 +8,8 @@ import { LoginService } from './login.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
+
   title = 'Thinkspot admin';
   localStorage: any;
 
@@ -17,18 +18,21 @@ export class AppComponent {
     private _loginService: LoginService
   ) {
     this.localStorage = this._storageService.readData('thinkspot_login');
+  }
+
+  ngOnInit() {
     if (this.localStorage) {
       this.localStorage = JSON.parse(this.localStorage);
 
       if (this.localStorage.who == 'admin') {
+        this._loginService.setLoginStatus('admin', true);
         this._router.navigate(["admin/customer_list"]);
-        this._loginService.setLoginStatus('admin', !true);
       } else if (this.localStorage.who == 'agent') {
-        this._loginService.setLoginStatus('agent', !true);
+        this._loginService.setLoginStatus('agent', true);
+        this._router.navigate(["delivery", { name: this.localStorage.name, mno: this.localStorage.target }]);
       } else {
-        this._loginService.setLoginStatus('agent', !false);
+        this._loginService.setLoginStatus('agent', false);
       }
     }
-    this._loginService.setLoginStatus('agent', !false);
   }
 }

@@ -1,2 +1,13 @@
 <app-home></app-home>
-<p>unpaid works!</p>
+
+<div class="container">
+    <div class="row" *ngFor="let item of balance_list"
+        style="font-size: 14px; padding-top: 6px; padding-bottom: 6px; border-bottom: 1px dashed #ccc !important;">
+        <div class="col-8">
+            <div><b style="font-weight: 500;">{{item.name}}</b></div>
+        </div>
+        <div class="col-4">
+            <div style="color: #c00; float: right; font-size: 16px; font-weight: 500;"> <span style="color: #999; font-size: 15px; font-weight: 300;">₹</span>{{item.remaining}}</div>
+        </div>
+    </div>
+</div>

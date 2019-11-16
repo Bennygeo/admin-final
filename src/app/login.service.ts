@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class LoginService {
 
-  logged: boolean = true;
+  logged: boolean = false;
   who: string = "";
 
   constructor() { }
@@ -17,6 +17,7 @@ export class LoginService {
 
   isLoggedin(): boolean {
     return this.logged;
+    // return true;
   }
 
 }
