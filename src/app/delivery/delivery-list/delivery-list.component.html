@@ -30,25 +30,23 @@
                 <div class="row box" *ngFor="let item of target_ary; let i = index;" id="{{'list_' + i}}">
                     <div class="col-7">
                         <div class="customer_name">{{item.data.c_name||'unknown'}}</div>
-                        <div class="customer_m_no"><span
-                                style="font-size: 12px; color:#aaa; font-weight: 300;">+91</span>
-                            <a href="tel:{{item.no}}"> {{item.no}}</a></div>
                     </div>
                     <div class="col-5 d-flex flex-row-reverse"
                         style="text-align: right; margin-left: -6px; margin-right: -6px; padding-right: 0;">
                         <!-- <button style="margin:3px;" class="right">Call</button> -->
                         <!-- <a style="margin:3px;" href={{item.mobile}}>Call</a> -->
 
+                        <!-- <button style="margin:3px; height: 36px; width:100%" class="btn btn-primary btns"
+                            id="{{'call_'+i}}">Call</button> -->
+
                         <button style="margin:3px; height: 36px;" class="btn btn-primary btns"
                             (click)="viewAction($event)" id="{{'view_'+i}}">View</button>
 
-                        <button style="margin:3px; height: 36px;" class="btn btn-primary btns"
-                            (click)="deliveredAction($event)" id="{{'deliver_'+i}}"
-                            [ngClass]="[item.delivery_status ? 'delivered' : 'notDelivered']"
-                            [disabled]=item.delivery_status>{{item.delivery_string}}</button>
+                        <a style="border: 0px solid #666; width: 55px; margin: 0; padding: 0; height: 36px; margin-top: 3px; text-align: center; line-height: 36px; background-color: #04a55f; color:#fff;"
+                            href="tel:{{item.no}}">Call</a>
+
                     </div>
                     <div class="col-12">
-                        <span class="delivery_count">{{item.data.per_day}}</span>&nbsp;
                         <span class="apartment">{{item.apartment}}</span>&nbsp;
                         <!-- <span class="nut_type">{{item.data.nut_type}}</span>&nbsp; -->
                         <span class="rtp">Rs. {{item.rtp}}</span>&nbsp;
@@ -61,6 +59,15 @@
                     <div class="col-12 addr">
                         {{item.address}}
                     </div>
+
+                    <div class="col-12">
+                        <mat-checkbox>TC x {{item.data.per_day}}</mat-checkbox>
+                    </div>
+
+                    <button style="margin:3px; height: 36px; width:100%" class="btn btn-primary btns"
+                        (click)="deliveredAction($event)" id="{{'deliver_'+i}}"
+                        [ngClass]="[item.delivery_status ? 'delivered' : 'notDelivered']"
+                        [disabled]=item.delivery_status>{{item.delivery_string}}</button>
                 </div>
             </div>
         </mat-tab>

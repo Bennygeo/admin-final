@@ -10,7 +10,8 @@ export class StorageService {
 
   constructor() {
     (typeof localStorage != undefined) ? this.flag = true : this.flag = false;
-    if (!this.flag) throw new Error("Please enable local storage.");
+    (localStorage != null) ? this.flag = true : this.flag = false;
+    if (!this.flag) alert("Please enable local storage.");
   }
 
   writeData(key, data) {

@@ -94,6 +94,8 @@ export class CustomerListComponent implements OnInit, OnDestroy {
     //   }
     // });
 
+
+
     this._service.deliveryBoysUpdate.subscribe(() => {
       this.delivery_boys_list = this._service.delivery_boys_list;
     });
@@ -110,7 +112,13 @@ export class CustomerListComponent implements OnInit, OnDestroy {
 
         sort_date_ary = [];
         try {
-          // debugger;
+          /*
+          ****************************
+          * To remove all user history.
+          * ****************************
+          * this.firebase.remove_all_users_history(key);
+          */
+
           data[key].apartment = JSON.parse(data[key].address.address1).apartment;
 
           data[key].start_date = new Date();
