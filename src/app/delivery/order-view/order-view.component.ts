@@ -138,8 +138,7 @@ export class OrderViewComponent implements OnInit, OnDestroy {
         "paid_amt": paid,
         "remaining_to_pay": remaining,
         "paid_status": status
-      },
-      this.data.date, () => {
+      }, () => {
         // debugger;
         this._changeDet.detectChanges();
       });

@@ -1,4 +1,4 @@
-import { Injectable, EventEmitter, OnDestroy } from '@angular/core';
+import { Injectable, EventEmitter, OnDestroy, ChangeDetectorRef, NgZone } from '@angular/core';
 import { FireBase } from '../utils/firebase';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { MatSnackBar } from '@angular/material';
@@ -37,7 +37,7 @@ export class CommonsService {
   constructor(
     private _snackBar: MatSnackBar,
     private _db: AngularFireDatabase,
-    private http: HttpClient
+    private _change_det: NgZone
   ) {
     this.firebase = new FireBase(this._db);
     // console.log("common service emit..");
@@ -51,27 +51,29 @@ export class CommonsService {
   }
 
   public openSnackBar(message: string, action: string) {
+    // this._snackBar.dismiss();
     this._snackBar.open(message, action, {
       duration: 1000,
     });
+    this._change_det.run(() => { });
   }
 
   public readCustomerList(flg) {
     //if flg is false and length is 0 read from firebase 
     //else return the local object
     // debugger;
-    console.log("readCustomerList " + flg);
+    // console.log("readCustomerList " + flg);
     if (!flg && Object.keys(this.userList).length != 0) {
       window.setTimeout((val) => {
         this.onUserListUpdate.emit(val);
-        console.log("user list emit 1");
+        // console.log("user list emit 1");
       }, 0, this.userList);
     } else {
       this.firebase.readUsers().subscribe((val: any) => {
         this.userList = val;
         window.setTimeout((val) => {
           this.onUserListUpdate.emit(val);
-          console.log("user list emit 1");
+          // console.log("user list emit 1");
         }, 0, val);
         // this.onUserListUpdate.emit(val);
       });

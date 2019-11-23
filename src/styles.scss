@@ -216,3 +216,19 @@ label {
   top: -47px;
   right: -99px;
 } /* You can add global styles to this file, and also import other style files */
+
+
+::ng-deep .mat-checkbox .mat-checkbox-frame {
+  border-color: #333;
+}
+
+::ng-deep .mat-checkbox-checked.mat-accent .mat-checkbox-ripple .mat-ripple-element {
+  background-color: #3f51b5 !important;
+  border-color: #333;
+}
+
+::ng-deep .mat-checkbox-checked.mat-accent .mat-checkbox-background,
+.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
+  background-color: #3f51b5;
+  border-color: #333;
+}

@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, OnDestroy, NgZone } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { FireBase } from 'src/app/utils/firebase';
@@ -48,6 +48,15 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
   search_ary: Array<any> = [];
   target_ary: Array<any> = [];
 
+  overlay: boolean = false;
+  priceVal: number = 0;
+
+  user_data: any;
+
+  tc_selection: boolean = false;
+  rtp: number = 0;
+  packageData: any;
+
   sortVals: Array<any> = ["Apartment", "Block"];
 
   constructor(
@@ -58,6 +67,9 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
     private _service: CommonsService,
     private _storage: StorageService,
     private ng2: Ng2SearchPipe,
+    private _ngZone: NgZone,
+    private _commons: CommonsService,
+    private _changeDet: ChangeDetectorRef
   ) {
     this.firebase = new FireBase(this.db);
     this.dateUtils = new DateUtils();
@@ -83,11 +95,15 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
       this.todaysDate = new Date();
       this.todaysDate = this.dateUtils.getDateString(this.dateUtils.addDays(this.todaysDate, 1), "");
     }
+    this.renderList();
+  }
 
+  renderList() {
+    this.trace("renderList");
     this._service.readCustomerList(false);
     this.userListUpdateObservable = this._service.onUserListUpdate.subscribe((user_data) => {
       this.trace("list updfate observavle");
-
+      this.user_data = user_data;
       this.todaysDateFormatted = this.dateUtils.dateFormater(this.todaysDate, "-");
 
       this.listObservable = this.firebase.readDailyOrders(this.todaysDate).subscribe((data: any) => {
@@ -141,7 +157,8 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
             // console.log("key :: " + key);
             // console.log("--- :: " + user_data[key].history[history_len].details.remaining_to_pay);
             if (!deliveryFlg) {
-              this.total_undelivered += _data.per_day;
+
+              this.total_undelivered += (_data.per_day + (_data.replacement * 1 || 0));
               this.undelivered_list.push({
                 'no': key,
                 'apartment': addr.apartment,
@@ -153,10 +170,11 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
                 'data': _data,
                 'address': updated_address,
                 'rtp': user_data[key].history[history_len].details.remaining_to_pay,
+                'paid': user_data[key].history[history_len].details.paid_amt,
                 'instructions': addr.inst
               });
             } else {
-              this.total_delivered += _data.per_day;
+              this.total_delivered += (_data.per_day + (_data.replacement * 1 || 0));
               this.delivered_list.push({
                 'no': key,
                 'apartment': addr.apartment,
@@ -168,6 +186,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
                 'data': _data,
                 'address': updated_address,
                 'rtp': user_data[key].history[history_len].details.remaining_to_pay,
+                'paid': user_data[key].history[history_len].details.paid_amt,
                 'instructions': user_data[key].history[history_len].details.instructions
               });
             }
@@ -213,37 +232,41 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
   }
 
   deliveredAction(e) {
-    // console.log("deliverd");
-    if (this.tab_index == 0) this.list = this.undelivered_list;
-    if (this.tab_index == 1) this.list = this.delivered_list;
 
-    this.selectedIndex = e.currentTarget.id.split("_")[1] * 1;
-    this.selectedTarget = this.list[this.selectedIndex].data;
+    if (!this.tc_selection) {
+      this._commons.openSnackBar("Tick the number of nuts.", "");
+    } else {
+      if (this.tab_index == 0) this.list = this.undelivered_list;
+      if (this.tab_index == 1) this.list = this.delivered_list;
 
-    let calbackFlg1 = false;
-    let calbackFlg2 = false;
-    // debugger;
-    this.selectedTarget.delivery_status = "Delivered";
-    // update order history
-    this.firebase.update_delivery_status_order(this.selectedTarget.m_no, this.selectedTarget, this.todaysDate, () => {
-      calbackFlg1 = true;
-      if (calbackFlg1 && calbackFlg2) {
-        this.changeDet.detectChanges();
-        // this.trace("render change1s");
-      }
-    });
-    // //update user history
-    // // console.log("this.todaysDate :: " + this.todaysDate);
-    this.firebase.update_delivery_status_user_history(this.selectedTarget.m_no, this.selectedTarget.history_id, this.todaysDate, {
-      delivered: true,
-      delivered_by: this.selectedTarget.assigned_to
-    }, () => {
-      calbackFlg2 = true;
-      if (calbackFlg1 && calbackFlg2) {
-        this.changeDet.detectChanges();
-        // this.trace("render changes2");
-      }
-    });
+      this.selectedIndex = e.currentTarget.id.split("_")[1] * 1;
+      this.selectedTarget = this.list[this.selectedIndex].data;
+
+      let calbackFlg1 = false;
+      let calbackFlg2 = false;
+      // debugger;
+      this.selectedTarget.delivery_status = "Delivered";
+      // update order history
+      this.firebase.update_delivery_status_order(this.selectedTarget.m_no, this.selectedTarget, this.todaysDate, () => {
+        calbackFlg1 = true;
+        if (calbackFlg1 && calbackFlg2) {
+          this.changeDet.detectChanges();
+          // this.trace("render change1s");
+        }
+      });
+      // //update user history
+      // // console.log("this.todaysDate :: " + this.todaysDate);
+      this.firebase.update_delivery_status_user_history(this.selectedTarget.m_no, this.selectedTarget.history_id, this.todaysDate, {
+        delivered: true,
+        delivered_by: this.selectedTarget.assigned_to
+      }, () => {
+        calbackFlg2 = true;
+        if (calbackFlg1 && calbackFlg2) {
+          this.changeDet.detectChanges();
+          // this.trace("render changes2");
+        }
+      });
+    }
   }
 
   tabChanged(evt) {
@@ -273,6 +296,90 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
       }
       return 0;
     }
+  }
+
+  payAction(e): void {
+
+    if (this.tab_index == 0) this.list = this.undelivered_list;
+    if (this.tab_index == 1) this.list = this.delivered_list;
+
+    this.selectedIndex = e.currentTarget.id.split("_")[1] * 1;
+    this.selectedTarget = this.list[this.selectedIndex].data;
+
+    debugger;
+    this.packageData = this.user_data[this.selectedTarget.m_no].history[this.selectedTarget.history_id].details;
+    debugger;
+    this.priceVal = this.packageData.remaining_to_pay;
+
+    (this.overlay) ? this.overlay = false : this.overlay = true;
+    this._ngZone.run(() => { });
+  }
+
+  overlayClickHandler(): void {
+    console.log("overlayClickHandler");
+    (this.overlay) ? this.overlay = false : this.overlay = true;
+  }
+
+  tc_selection_change_handler(evt): void {
+    // debugger;
+    this.trace("checked :: " + evt.checked);
+    this.tc_selection = evt.checked;
+    // this._ngZone.run(() => { });
+    this.changeDet.detectChanges();
+  }
+
+  modalSaveAction() {
+    console.log("modalSaveAction");
+    (this.overlay) ? this.overlay = false : this.overlay = true;
+
+    let remaining = this.packageData.remaining_to_pay - this.priceVal;//this.packageData.remaining_to_pay - this.packageData.paid_amt;
+    let paid = Math.abs(remaining - this.packageData.total_price);
+    let status = "";
+    // debugger;
+    if (paid == this.packageData.total_price) {
+      status = "Paid";
+    } else if (paid != 0 && paid < this.packageData.total_price) {
+      status = "Partially paid";
+    } else {
+      status = "Not paid";
+    }
+
+    this.firebase.packageInfoUpdate(this.selectedTarget.m_no, this.selectedTarget.history_id,
+      {
+        "total_price": this.packageData.total_price,
+        "paid_amt": paid,
+        "remaining_to_pay": remaining,
+        "paid_status": status
+      }, () => {
+        // debugger;
+        this._changeDet.detectChanges();
+        this.renderList();
+      });
+
+    this.firebase.packagePaidHistoryUpdate(this.selectedTarget.m_no, this.selectedTarget.history_id, this.priceVal, () => {
+      this._changeDet.detectChanges();
+
+    });
+
+    let content = "";
+    if (remaining == 0) {
+      content = "Your payment of Rs." + paid + " is recieved by our delivery agent. Thank you!\nwww.thinkspot.in\n7200015551";
+    } else if (remaining < 0) {
+      content = "Your payment of Rs." + paid + " is recieved by our delivery agent and you have Rs." + remaining + " in your account. Thank you!\nwww.thinkspot.in\n7200015551";
+    } else if (remaining > 0) {
+      content = "Your payment of Rs." + paid + " is recieved by our delivery agent and you have Rs." + remaining + " remaining to pay. Thank you!\nwww.thinkspot.in\n7200015551";
+    }
+
+    // console.log("this.mobile  :: " + this.data.m_no);
+    // this._service.send_bulk_sms({
+    //   'mobile_nos': [this.selectedTarget.m_no],
+    //   'fName': "",
+    //   'content': content
+    // }, () => { });
+  }
+
+  modalCancelAction() {
+    (this.overlay) ? this.overlay = false : this.overlay = true;
   }
 
   ngOnDestroy(): void {

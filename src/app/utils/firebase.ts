@@ -248,7 +248,7 @@ export class FireBase implements OnInit {
     }
 
     //write from order view component
-    public packageInfoUpdate(id, cnt, obj, date, callback) {
+    public packageInfoUpdate(id, cnt, obj, callback) {
         this.db.database.ref("/users_info/" + id + "/history/" + cnt + "/details").update({
             "total_price": obj.total_price,
             "remaining_to_pay": obj.remaining_to_pay,

@@ -602,7 +602,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     }
     // let start = this.date_utils.stdDateFormater(this.historyObj['start_date']);
     // console.log("this._service.historyLength + 1 :: " + (this._service.historyLength * 1 + 1));
-    this.firebase.user_history(this.mobile, this.historyObj, "yes", (this._service.historyLength * 1 + 1), () => {
+    this.firebase.user_history(this.mobile, this.historyObj, "yes", (this._service.historyLength * 1), () => {
       // console.log("added to the history.");
       this.subsBtnVisibility = true;
       this.ordersExist = true;
@@ -935,7 +935,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
 
       this.delete_orders_subscriber = this.firebase.deleteUserOrder(this.mobile, this.date_utils.dateFormater(_date, "-"), () => {
         if (i == remainingDays - 1) {
-          console.log("remove order subscriber.");          
+          console.log("remove order subscriber.");
           this.delete_orders_subscriber.unsubscribe();
         }
       });
@@ -1094,11 +1094,9 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
         "paid_amt": paid,
         "remaining_to_pay": remaining,
         "paid_status": status
-      },
-        this.data.date, () => {
-          this._changeDet.detectChanges();
-        });
-
+      }, () => {
+        this._changeDet.detectChanges();
+      });
 
       this.firebase.packagePaidHistoryUpdate(this.mobile, this._service.historyLength, inpVal, () => {
         // this._changeDet.detectChanges();
@@ -1136,7 +1134,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       // this._router.navigate(["admin/customer_list"]);
       this.ordersExist = false;
       // this._service.historyLength -= 1;
-      console.log("History lenght after delete :: " + this._service.historyLength);
+      // console.log("History lenght after delete :: " + this._service.historyLength);
       this.orders = [];
       this._changeDet.detectChanges();
       this.delete_subscriber.unsubscribe();

@@ -29,7 +29,7 @@
             <div disabled>
                 <div class="row box" *ngFor="let item of target_ary; let i = index;" id="{{'list_' + i}}">
                     <div class="col-7">
-                        <div class="customer_name">{{item.data.c_name||'unknown'}}</div>
+                        <div class="customer_name">{{item.data.c_name||'unknown'|titlecase}}</div>
                     </div>
                     <div class="col-5 d-flex flex-row-reverse"
                         style="text-align: right; margin-left: -6px; margin-right: -6px; padding-right: 0;">
@@ -42,32 +42,54 @@
                         <button style="margin:3px; height: 36px;" class="btn btn-primary btns"
                             (click)="viewAction($event)" id="{{'view_'+i}}">View</button>
 
-                        <a style="border: 0px solid #666; width: 55px; margin: 0; padding: 0; height: 36px; margin-top: 3px; text-align: center; line-height: 36px; background-color: #04a55f; color:#fff;"
+                        <a style="border: 1px solid #ccc; width: 55px; margin: 0; padding: 0; height: 36px; margin-top: 3px; text-align: center; line-height: 36px; background-color: #eee; color:#000;"
                             href="tel:{{item.no}}">Call</a>
 
+
+
                     </div>
-                    <div class="col-12">
-                        <span class="apartment">{{item.apartment}}</span>&nbsp;
-                        <!-- <span class="nut_type">{{item.data.nut_type}}</span>&nbsp; -->
-                        <span class="rtp">Rs. {{item.rtp}}</span>&nbsp;
-                        <!-- <span class="nut_type">DND</span>&nbsp; -->
-                        <!-- <span class="paid">Paid</span> -->
+
+                    <!-- <div class="col-12"> -->
+                    <!-- <span class="apartment">{{item.apartment}}</span>&nbsp; -->
+                    <!-- <span class="nut_type">{{item.data.nut_type}}</span>&nbsp; -->
+                    <!-- <span class="rtp">Rs. {{item.rtp}}</span>&nbsp; -->
+                    <!-- <span class="nut_type">DND</span>&nbsp; -->
+                    <!-- <span class="paid">Paid</span> -->
+                    <!-- </div> -->
+
+
+                    <div class="col-12 addr">
+                        <b>{{item.apartment}}</b> {{item.address}}
                     </div>
+
                     <div class="col-12 inst">
                         {{item.instructions}}
                     </div>
-                    <div class="col-12 addr">
-                        {{item.address}}
+
+                    <div class="col-12" style="margin-bottom: 12px; font-size: 24px;">
+                        <mat-checkbox (change)="tc_selection_change_handler($event)"><span style="color: #999;">TC
+                                x</span> {{item.data.per_day + (item.data.replacement*1)}}
+                        </mat-checkbox>
                     </div>
 
-                    <div class="col-12">
-                        <mat-checkbox>TC x {{item.data.per_day}}</mat-checkbox>
+                    <div class="col-6" style="margin-bottom: 12px;">
+                        Paid : <span style="color: green;  font-weight: bold;">₹{{item.paid}}</span>
                     </div>
 
-                    <button style="margin:3px; height: 36px; width:100%" class="btn btn-primary btns"
-                        (click)="deliveredAction($event)" id="{{'deliver_'+i}}"
-                        [ngClass]="[item.delivery_status ? 'delivered' : 'notDelivered']"
-                        [disabled]=item.delivery_status>{{item.delivery_string}}</button>
+                    <div class="col-6" style="margin-bottom: 12px;">
+                        Balance : <span style="color: red; font-weight: bold;">₹{{item.rtp}}</span>
+                    </div>
+
+                    <div class="col-6">
+                        <button class="orderPage-btns btn btn-outline-secondary" id="{{'pay_'+i}}"
+                            (click)="payAction($event)">Collect</button>
+                    </div>
+                    <div class="col-6">
+                        <button style="margin:0px; height: 38px; width:100%" class="btn btn-primary btns"
+                            (click)="deliveredAction($event)" id="{{'deliver_'+i}}"
+                            [ngClass]="[item.delivery_status ? 'delivered' : 'notDelivered']"
+                            [disabled]=item.delivery_status>{{item.delivery_string}}</button>
+                    </div>
                 </div>
             </div>
         </mat-tab>
@@ -76,10 +98,9 @@
                 <div class="row box" *ngFor="let item of target_ary; let i = index;" id="{{'list_' + i}}"
                     style="max-height: 500px; overflow: scroll;">
                     <div class="col-7">
-                        <div class="customer_name">{{item.data.c_name||'unknown'}}</div>
-                        <div class="customer_m_no"><span
-                                style="font-size: 12px; color:#aaa; font-weight: 300;">+91</span>
-                            <a href="tel:{{item.no}}"> {{item.no}}</a></div>
+                        <a href="tel:{{item.no}}">
+                            <div class="customer_name">{{item.data.c_name||'unknown'|titlecase}}</div>
+                        </a>
                     </div>
                     <div class="col-5 d-flex flex-row-reverse"
                         style="text-align: right; margin-left: -6px; margin-right: -6px; padding-right: 0;">
@@ -90,12 +111,15 @@
                         <button style="margin:3px; height: 36px;" class="btn btn-primary btns"
                             (click)="deliveredAction($event)" id="{{'deliver_'+i}}"
                             [ngClass]="[item.delivery_status ? 'delivered' : 'notDelivered']"
-                            [disabled]=item.delivery_status>{{item.delivery_string}}</button>
+                            [disabled]=item.delivery_status><i class="material-icons" style="font-size: 24px;">
+                                done
+                            </i></button>
+
                     </div>
                     <div class="col-12">
                         <span class="delivery_count">{{item.data.per_day}}</span>&nbsp;
                         <span class="apartment">{{item.apartment}}</span>&nbsp;
-                        <span class="rtp">Rs. {{item.rtp}}</span>&nbsp;
+                        <!-- <span class="rtp">Rs. {{item.rtp}}</span>&nbsp; -->
                         <!-- <span class="nut_type">{{item.data.nut_type}}</span>&nbsp; -->
                         <!-- <span class="nut_type">Open</span>&nbsp; -->
                         <!-- <span class="nut_type">DND</span>&nbsp; -->
@@ -103,6 +127,10 @@
                     </div>
                     <div class="col-12 addr">
                         {{item.address}}
+                    </div>
+
+                    <div class="col-12 inst">
+                        {{item.instructions}}
                     </div>
                 </div>
             </div>
@@ -124,4 +152,22 @@
         </mat-tab>
     </mat-tab-group>
     <mat-spinner *ngIf="listFlg" style="margin:0 auto;"></mat-spinner>
+
+    <div class="myModal center" style="z-index: 100;" *ngIf="overlay">
+        <div style="background-color: #fff; padding:24px; border-radius:2px;">
+            <input [(ngModel)]="priceVal"
+                style="text-align: center; display: block; border:none; border-bottom: 1px dotted #999;">
+            <p style="text-align: center; font-size: 11px; color: #999; margin:12px;">Remaining to pay</p>
+            <div style="display: flex; justify-content:center;">
+                <button class="btn btn-outline-secondary" style="margin-left: 0 !important; margin-right:6px;"
+                    (click)="modalSaveAction()">Save</button>
+                <button class="btn btn-outline-secondary" (click)="modalCancelAction()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="overlay" (click)="overlayClickHandler()" *ngIf="overlay">
+
+    </div>
+
 </div>

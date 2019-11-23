@@ -3,16 +3,20 @@
   margin: -9px;
   //   background-color: #f3f9fd;
   border-bottom: 1px dashed #ccc;
-  margin-bottom: 2px;
+  margin-bottom: 12px;
   margin-top: 2px;
   padding-top: 6px;
   padding-bottom: 6px;
+  width: 100%;
 }
 .customer_name {
-  font-size: 16px;
+  font-size: 24px;
   color: #111;
   font-style: normal;
   font-weight: 500;
+  line-height: 40px;
+  color: #999;
+
 }
 .customer_m_no {
   font-size: 14px;
@@ -172,7 +176,7 @@
   margin-top: 6x;
   margin-bottom: 6px;
   font-size: 14px;
-  background-color: #f5f5f5;
+  // background-color: #f5f5f5;
 }
 
 .mat-tab-group {
@@ -181,8 +185,26 @@
 
 .inst {
   margin-top: 6px;
+  margin-bottom: 6px;
   margin-bottom: 0px !important;
-  border: 1px solid #eee;
+  // border: 1px solid #eee;
   color: #dc6504;
   font-size: 15px;
+}
+
+.orderPage-btns {
+  width: 100%;
+  border-radius: 1px;
+  background-color: #008000;
+  color: #fff;
+}
+
+#overlay {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.2);
+  top: 0;
+  left: 0;
+  z-index: 1;
 }
