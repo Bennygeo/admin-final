@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, Input, Output, EventEmitter, HostListener, OnDestroy } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, Input, Output, EventEmitter, HostListener, OnDestroy, NgZone } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CommonsService } from 'src/app/services/commons.service';
 import { FireBase } from 'src/app/utils/firebase';
@@ -163,6 +163,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     private db: AngularFireDatabase,
     private _activatedRoute: ActivatedRoute,
     private _changeDet: ChangeDetectorRef,
+    private _ngZone: NgZone,
     private _router: Router
   ) {
 
@@ -223,14 +224,13 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     });
 
     this.sub = this._activatedRoute.paramMap.subscribe(params => {
-      this.trace("params subscriber");
+      // this.trace("params subscriber");
       this.mobile = params.get('mobile');
       this.status = params.get('status');
       this.c_name = params.get('name');
       this.start_d = params.get('start');
       this.end_d = params.get('end');
       // this._route_index = params.get('index');
-
 
       // console.log("this.mobile :: " + this.mobile);
       this.orders_subscriber = this.firebase.readOrders(this.mobile).subscribe((data: any) => {
@@ -263,7 +263,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
 
         this.ordersExist = true;
         // debugger;
-        console.log("this._service.historyLength :: " + this._service.historyLength);
+        // console.log("this._service.historyLength :: " + this._service.historyLength);
         let _data = data[this._service.historyLength];
 
         // debugger;
@@ -278,8 +278,6 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
         }
         // debugger;
         let cnt = -1;
-
-
 
         this.total_nut_cnt = 0;
         let todayFlg = false;
@@ -314,22 +312,47 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
           return a.actualIndex - b.actualIndex
         });
 
-        // this.order_start_date = this.orders[0].date;
-        // this.order_end_date = this.orders[this.orders.length - 1].date;
-        // debugger;
-        if (this.historyObj['details']['remaining_to_pay'] > 0) {
-          this.warn_msg_to_pay = "Hello " + this.c_name + "!\nYou have only " + this.date_utils.dateDiff(new Date(), new Date(this.end_d)) + " day(s) left. Please pay the amount Rs." + this.historyObj['details']['remaining_to_pay'] + " asap. Thank you!\nwww.thinkspot.in\n7200015551";
-        } else if (this.historyObj['details']['remaining_to_pay'] <= 0) {
-          this.warn_msg_to_pay = "Hello " + this.c_name + "!\nYou have only " + this.date_utils.dateDiff(new Date(), new Date(this.end_d)) + " day(s) left. Please confirm your renewal to avoid the break. Thank you!\nwww.thinkspot.in\n7200015551";
+        /*
+        * For notifying customer
+        * Get the grammatical strings
+        */
+        let remaining_days = this.date_utils.dateDiff(new Date(), new Date(this.end_d));
+        let grammer_rule = {};
+        if (remaining_days == 1) {
+          grammer_rule['first'] = "is";
+          grammer_rule['second'] = "day";
+        } else {
+          grammer_rule['first'] = "are";
+          grammer_rule['second'] = "days";
         }
-        this._changeDet.detectChanges();
+
+        //render month and day from the toDateString method.
+        let start_date_g = null;
+        let last_date;
+        if (this.start_d) {
+          start_date_g = this.start_d.split(" ");
+          start_date_g = start_date_g[1] + " " + start_date_g[2];
+
+          last_date = this.end_d.split(" ");
+          last_date = last_date[1] + " " + last_date[2];
+        }
+
+        if (this.historyObj['details']['remaining_to_pay'] > 0) {
+          this.warn_msg_to_pay = `Dear Customer,\nThere ${grammer_rule['first']} only ${remaining_days} ${grammer_rule['second']} left in your ${this.unitsPerDay} x ${_data.details.no_of_days} days of ${_data.details.name} subscription pack. Your current subscription ends on ${last_date}. Kindly renew your subscription.\nStay Healthy!\nwww.thinkspot.in`;
+        } else if (this.historyObj['details']['remaining_to_pay'] <= 0) {
+          this.warn_msg_to_pay = `Dear Customer,\nThe amount of Rs. ${this.historyObj['details']['remaining_to_pay']} for your ${this.unitsPerDay}x${_data.details.no_of_days} days of ${_data.details.name} subscription pack starting ${start_date_g} to ${last_date} is due. Kindly pay it before ${last_date}.\nStay Healthy!\nwww.thinkspot.in`
+        }
+        // this._changeDet.detectChanges();
+        this._ngZone.run(() => { });
+
       });
     });
   }
 
   @Input() data: any = {
-    p_name: "Tender"
+    p_name: "Tender Coconut"
   };
+
   @Output() stockValueChange = new EventEmitter();
 
   plusMinusValue(val) {
@@ -548,7 +571,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
 
   addToSubscriptionBag() {
     this.subsBtnVisibility = true;
-    let index = 0;
+    let index = 0, actualIndex = 0;
     // debugger;
 
     this.historyObj = {
@@ -573,6 +596,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
         "instructions": "hole and open",
         "special_notes": "",
         "assigned_to": this.assigned_to,
+        "name": this.data["p_name"],
       },
       "dates": {}
     }
@@ -580,8 +604,12 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     // console.log("addToSubscriptionBag");
     for (var key in this.selectedDays) {
       index++;
+
       if (this.selectedDays[key] == 1) {
         // debugger;
+        actualIndex++;
+        this.trace("index :: " + index);
+        this.trace("key :: " + key);
         let _date = this.date_utils.addDays(new Date(), key);
         this.firebase.write_tc_orders(this.date_utils.getDateString(_date, ""), this.mobile, this.tenderDetails);
 
@@ -589,7 +617,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
         // this.trace("this.assigned_to :: " + this.assigned_to);
         // this.trace("*****************");
         this.historyObj['dates'][this.date_utils.getDateString(_date, "")] = {
-          index: index,
+          index: actualIndex,
           actualIndex: index,
           'delivered': false,
           'missed': false,
@@ -602,7 +630,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     }
     // let start = this.date_utils.stdDateFormater(this.historyObj['start_date']);
     // console.log("this._service.historyLength + 1 :: " + (this._service.historyLength * 1 + 1));
-    this.firebase.user_history(this.mobile, this.historyObj, "yes", (this._service.historyLength * 1), () => {
+    this.firebase.user_history(this.mobile, this.historyObj, "yes", (this._service.historyLength * 1 + 1), () => {
       // console.log("added to the history.");
       this.subsBtnVisibility = true;
       this.ordersExist = true;
@@ -622,7 +650,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
 
   onUserDatesClick(evt, data) {
     this.infoEnabled = false;
-    this.selectedDateIndex = data.actualIndex;
+    this.selectedDateIndex = data.index;
     this.selectedDateItem = data;
     this.dayExpired = data.expired;
 
@@ -766,30 +794,34 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
 
   postponeUpdateAction() {
     let trace = console.log;
-    // let target = this.orders[this.selectedDateIndex];
     let pastPostponeCount = 0;
 
     let remainingDays = (this.orders.length - this.selectedDateIndex + 1);
     // trace("remainingDays :: " + remainingDays);
     let ordersToPostpone = [];
 
+    // debugger;
     //copy the days from postpone date
     for (let i = 0; i < remainingDays; i++) {
       let index = (this.selectedDateIndex + i) - 1;
       ordersToPostpone[i] = JSON.parse(JSON.stringify(this.orders[index]));
     }
 
+    // debugger;
+
+    let tmp;
     //update the orders object
     for (let i = 0; i < remainingDays; i++) {
-      let index1 = (this.selectedDateIndex - 1) * 1 + this.noOfDaysToPostpone * 1 + i - pastPostponeCount;
-      // trace("index1 :: " + index1);
+      let index1 = (this.selectedDateIndex - 1) * 1 + (this.noOfDaysToPostpone * 1) + i - pastPostponeCount;
       // let actualIndex = (this.selectedDateIndex) * 1 + this.noOfDaysToPostpone * 1 + i;
       // trace("index 1 :: " + index1 + " actualIndex :: " + actualIndex);
       //default date format
       let targetDate = new Date(this.date_utils.stdDateFormater(ordersToPostpone[i].date, "/"));
 
       // trace("ordersToPostpone[i].index :: " + ordersToPostpone[i].index);
-      //update the orders object from the copied object      
+      //update the orders object from the copied object     
+
+      tmp = ordersToPostpone.slice() || undefined;
       if (ordersToPostpone[i].index != 'postponed') {
         ordersToPostpone[i].index = (index1 - this.noOfDaysToPostpone * 1) + 1 - pastPostponeCount;
         ordersToPostpone[i].actualIndex = (index1 + this.noOfDaysToPostpone * 1);
@@ -825,9 +857,17 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
           'count': 0
         }
       }
+
+      // if the subscription type other than regular days
+
+      if (ordersToPostpone[i + 1] && ordersToPostpone[i].actualIndex != "postponed" && ordersToPostpone[i + 1].actualIndex != "postponed") {
+        if ((ordersToPostpone[i + 1].actualIndex - ordersToPostpone[i].actualIndex) > 1) {
+          trace("loop breaked 1");
+          break;
+        }
+      }
     }
 
-    // debugger;
     for (let i = 0; i < this.noOfDaysToPostpone; i++) {
       // console.log("postpone :: " + i);
       let target = (this.selectedDateIndex + i) - 1;
@@ -844,8 +884,6 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
         }
       })
 
-      // trace("_updateDate :: " + _updateDate);
-      // debugger;
       this.orders[target] = {};
       this.orders[target].date = this.date_utils.getDateString(_updateDate, "-");
       this.orders[target].count = 0;
@@ -863,11 +901,20 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
         'delivered_by': 'nil',
         'count': 0,
       }
+
+      // if the subscription type other than regular days
+      if (ordersToPostpone[i + 1] && ordersToPostpone[i].actualIndex != "postponed" && ordersToPostpone[i + 1].actualIndex != "postponed") {
+        if ((ordersToPostpone[i + 1].actualIndex - ordersToPostpone[i].actualIndex) > 1) {
+          trace("loop breaked");
+          this.orders.splice(i + 2, 0, tmp[i + 1]);
+          break;
+        }
+      }
     }
 
-    //index update fro both local and firebase object.
+    // debugger;
+    //index update for both local and firebase object.
     let actualIndex = 0, index = 0;
-
     for (let key in this.orders) {
       actualIndex++;
       // trace("actualIndex :: " + actualIndex);
@@ -890,6 +937,8 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       }
     });
     this.firebase.user_history(this.mobile, this.historyObj, "yes", this._service.historyLength, () => { });
+
+    // debugger;
   }
 
   postponeCancelAction() {
@@ -931,7 +980,6 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       // this.historyObj['dates'][_date].count = 0;
       // this.historyObj['dates'][_date].expired = true;
       delete this.historyObj['dates'][_date];
-
 
       this.delete_orders_subscriber = this.firebase.deleteUserOrder(this.mobile, this.date_utils.dateFormater(_date, "-"), () => {
         if (i == remainingDays - 1) {
@@ -1004,13 +1052,14 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       "per_day": this.unitsPerDay,
       "delivery_status": "Not delivered",
       "assigned_to": this.assigned_to,
-      "history_id": this._service.historyLength + 1
+      "history_id": (this._service.historyLength * 1) + 1
     }
     // this.subsBtnVisibility = true;
     this.customSubsBtnVisibility = true;
 
     this.historyObj = {
       "details": {
+        "name": this.data["p_name"],
         "total_price": this.totalPrice,
         "remaining_to_pay": this.totalPrice,
         "straw": this.strawFlag,
@@ -1052,7 +1101,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     }
     // let start = this.date_utils.stdDateFormater(this.historyObj['start_date']);
     // console.log("this._service.historyLength + 1 :: " + (this._service.historyLength * 1 + 1));
-    this.firebase.user_history(this.mobile, this.historyObj, "yes", (this._service.historyLength * 1 + 1), () => {
+    this.firebase.user_history(this.mobile, this.historyObj, "yes", ((this._service.historyLength * 1) + 1), () => {
       // console.log("added to the history.");
       this.subsBtnVisibility = true;
       this.ordersExist = true;
@@ -1065,7 +1114,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       this._service.send_bulk_sms({
         'mobile_nos': [this.mobile],
         'fName': this.c_name,
-        'content': "Confirmed: Order for " + this.tenderDetails['per_day'] + " tender coconuts for " + this.historyObj['details']['no_of_days'] + " day(s) is successfully placed & will be delivered from/on " + this.start_d + ". Thank you!\nwww.thinkspot.in\n7200015551"
+        'content': `Confirmed: Order for ${this.tenderDetails['per_day']} tender coconuts for ${this.historyObj['details']['no_of_days']} day(s) is successfully placed & will be delivered from/on ${this.start_d}.Thank you!\nwww.thinkspot.in\n7200015551`
       }, () => { });
     }
 
