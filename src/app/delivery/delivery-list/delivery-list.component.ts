@@ -102,7 +102,6 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
     this.trace("renderList");
     this._service.readCustomerList(false);
     this.userListUpdateObservable = this._service.onUserListUpdate.subscribe((user_data) => {
-      this.trace("list updfate observavle");
       this.user_data = user_data;
       this.todaysDateFormatted = this.dateUtils.dateFormater(this.todaysDate, "-");
 
@@ -110,7 +109,6 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
         this.listFlg = false;
         let index = 0;
 
-        this.trace("listObservable");
         //reset both arrays
         this.undelivered_list = [];
         this.delivered_list = [];
@@ -227,6 +225,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
     this.selectedTarget = this.target_ary[this.selectedIndex].data;
     this.selectedTarget.date = this.todaysDate;
 
+    // this.trace(this.selectedTarget);
     // debugger;
     this._router.navigate(['/delivery/view-order/', { data: JSON.stringify(this.selectedTarget) }]);
     // this.ngZone.run(() => console.log("view route."));
@@ -307,9 +306,9 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
     this.selectedIndex = e.currentTarget.id.split("_")[1] * 1;
     this.selectedTarget = this.list[this.selectedIndex].data;
 
-   
+
     this.packageData = this.user_data[this.selectedTarget.m_no].history[this.selectedTarget.history_id].details;
-   
+
     this.priceVal = this.packageData.remaining_to_pay;
 
     (this.overlay) ? this.overlay = false : this.overlay = true;
@@ -317,13 +316,13 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
   }
 
   overlayClickHandler(): void {
-    console.log("overlayClickHandler");
+    // console.log("overlayClickHandler");
     (this.overlay) ? this.overlay = false : this.overlay = true;
   }
 
   tc_selection_change_handler(evt): void {
     // debugger;
-    this.trace("checked :: " + evt.checked);
+    // this.trace("checked :: " + evt.checked);
     this.tc_selection = evt.checked;
     // this._ngZone.run(() => { });
     this.changeDet.detectChanges();
@@ -345,31 +344,47 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
       status = "Not paid";
     }
 
-    this.firebase.packageInfoUpdate(this.selectedTarget.m_no, this.selectedTarget.history_id,
-      {
-        "total_price": this.packageData.total_price,
-        "paid_amt": paid,
-        "remaining_to_pay": remaining,
-        "paid_status": status
-      }, () => {
-        // debugger;
-        this._changeDet.detectChanges();
-        this.renderList();
-      });
+    // let item = this._utils.sortDateObject(data[this.historyLength], this.date_utils);
 
-    this.firebase.packagePaidHistoryUpdate(this.selectedTarget.m_no, this.selectedTarget.history_id, this.priceVal, () => {
-      this._changeDet.detectChanges();
+    // this.firebase.packageInfoUpdate(this.selectedTarget.m_no, this.selectedTarget.history_id,
+    //   {
+    //     "total_price": this.packageData.total_price,
+    //     "paid_amt": paid,
+    //     "remaining_to_pay": remaining,
+    //     "paid_status": status
+    //   }, () => {
+    //     // debugger;
+    //     this._changeDet.detectChanges();
+    //     this.renderList();
+    //   });
 
-    });
+    // this.firebase.packagePaidHistoryUpdate(this.selectedTarget.m_no, this.selectedTarget.history_id, this.priceVal, () => {
+    //   this._changeDet.detectChanges();
 
-    let content = "";
-    if (remaining == 0) {
-      content = "Your payment of Rs." + paid + " is recieved by our delivery agent. Thank you!\nwww.thinkspot.in\n7200015551";
-    } else if (remaining < 0) {
-      content = "Your payment of Rs." + paid + " is recieved by our delivery agent and you have Rs." + remaining + " in your account. Thank you!\nwww.thinkspot.in\n7200015551";
-    } else if (remaining > 0) {
-      content = "Your payment of Rs." + paid + " is recieved by our delivery agent and you have Rs." + remaining + " remaining to pay. Thank you!\nwww.thinkspot.in\n7200015551";
-    }
+    // });
+
+    // let content = "";
+    // if (remaining == 0) {
+    //   content = "Your payment of Rs." + paid + " is recieved by our delivery agent. Thank you!\nwww.thinkspot.in\n7200015551";
+    // } else if (remaining < 0) {
+    //   content = "Your payment of Rs." + paid + " is recieved by our delivery agent and you have Rs." + remaining + " in your account. Thank you!\nwww.thinkspot.in\n7200015551";
+    // } else if (remaining > 0) {
+    //   content = "Your payment of Rs." + paid + " is recieved by our delivery agent and you have Rs." + remaining + " remaining to pay. Thank you!\nwww.thinkspot.in\n7200015551";
+    // }
+
+
+    this.trace(this.selectedTarget);
+    // this.trace(this.list[this.selectedIndex]);
+    debugger;
+
+    // let content = "";
+    // if (remaining == 0) {
+    //   content = `Dear Customer!\nThank you for your payment of Rs.${this.priceVal} towards your ${this.packageData.count}x${this.packageData.total_days} days of ${this.packageData.product_name} subscription from ${this.packageData.start_date} to ${this.packageData.end_date}.\nStay Healthy!\nwww.thinkspot.in`;
+    // } else if (remaining < 0) {
+    //   content = `Dear Customer!\nThank you for you payment of Rs.${this.priceVal} towards your order total of Rs.${this.packageData.balance} for ${this.packageData.count}x${this.packageData.total_days} days of ${this.packageData.product_name} subscription from ${this.packageData.start_date} to ${this.packageData.end_date}. Kindly collect the balance of Rs.${Math.abs(remaining)} on your next delivery. Thank you.\nStay Healthy!\nwww.thinkspot.in`;
+    // } else if (remaining > 0) {
+    //   content = `Dear Customer!\nThank you for you payment of Rs.${this.priceVal} towards your order total of Rs.${this.packageData.balance} for ${this.packageData.count}x${this.packageData.total_days} days of ${this.packageData.product_name} subscription from ${this.packageData.start_date} to ${this.packageData.end_date}. Kindly pay the balance of Rs.${remaining} on your next delivery. Thank you.\nStay Healthy!\nwww.thinkspot.in`;
+    // }
 
     // console.log("this.mobile  :: " + this.data.m_no);
     // this._service.send_bulk_sms({

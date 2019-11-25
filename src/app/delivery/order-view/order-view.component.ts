@@ -5,6 +5,7 @@ import { FireBase } from 'src/app/utils/firebase';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { CommonsService } from 'src/app/services/commons.service';
 import { DateUtils } from 'src/app/utils/date-utils';
+import { Utils } from 'src/app/utils/utils';
 
 @Component({
   selector: 'order-view',
@@ -36,7 +37,9 @@ export class OrderViewComponent implements OnInit, OnDestroy {
     private _changeDet: ChangeDetectorRef,
     private _db: AngularFireDatabase,
     private _service: CommonsService,
-    private date_utils: DateUtils
+    private date_utils: DateUtils,
+    private _utils: Utils,
+
   ) {
     console.log("order view constructor.");
     this.sub = this._router.events.subscribe((data: any) => {
@@ -72,30 +75,16 @@ export class OrderViewComponent implements OnInit, OnDestroy {
       this.packageData = data[this.historyLength].details;
       // debugger;
 
-      this.dates = data[this.historyLength].dates;
-      let order_length = Object.keys(this.dates).length - 1;
+      //sort the object and returns the start and end day of the package
+      let item = this._utils.sortDateObject(data[this.historyLength], this.date_utils);
 
-      sort_date_ary = [];
-      let tmp = Object.keys(this.dates);
-      for (let j = 0; j <= order_length; j++) {
-        sort_date_ary.push(new Date(this.date_utils.stdDateFormater(this.date_utils.dateFormater(tmp[j], "-"), "/")));
-      }
+      this.start_delivery_date = item.start_date.toDateString();//sort_date_ary[0].toDateString();
+      this.last_delivery_date = item.end_date.toDateString();//sort_date_ary[order_length].toDateString();
 
-      // /* Do sort the dates array */
-      sort_date_ary.sort(function (a, b) {
-        // Turn your strings into dates, and then subtract them
-        // to get a value that is either negative, positive, or zero.
-        return a.getTime() - b.getTime();
-      });
-
-      this.start_delivery_date = sort_date_ary[0].toDateString();
-      this.last_delivery_date = sort_date_ary[order_length].toDateString();
-
-      this.remaining_days = this.date_utils.dateDiff(new Date(), sort_date_ary[order_length]);
+      this.remaining_days = this.date_utils.dateDiff(new Date(), new Date(this.last_delivery_date));
 
       this._changeDet.detectChanges();
     });
-    // debugger;
   }
 
   clickToGoBack() {

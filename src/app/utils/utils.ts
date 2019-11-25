@@ -11,7 +11,8 @@ export class Utils {
     todayDate: Date;
     todayString: string;
 
-    constructor() {
+    constructor(
+    ) {
         // this.orderService = (this._localStorage.getItem("itemPrice")) ? (this._localStorage.getItem("itemPrice")) : 1;
         this.todayDate = new Date();
         this.todayNo = this.todayDate.getDay();
@@ -46,6 +47,28 @@ export class Utils {
         return today.getDate() + divider + (today.getMonth() + 1) + divider + today.getFullYear();
     }
 
+    sortDateObject(obj, dateUtils) {
+        // debugger;
+        let order_length = Object.keys(obj.dates).length - 1;
+
+        let sort_date_ary = [];
+        let tmp = Object.keys(obj.dates);
+        for (let j = 0; j <= order_length; j++) {
+            sort_date_ary.push(new Date(dateUtils.stdDateFormater(dateUtils.dateFormater(tmp[j], "-"), "/")));
+        }
+        
+           // /* Do sort the dates array */
+        sort_date_ary.sort(function (a, b) {
+            // Turn your strings into dates, and then subtract them
+            // to get a value that is either negative, positive, or zero.
+            return a.getTime() - b.getTime();
+        });
+
+        return {
+            "start_date": sort_date_ary[0],
+            "end_date": sort_date_ary[sort_date_ary.length - 1],
+        }
+    }
 }
 
 

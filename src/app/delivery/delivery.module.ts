@@ -13,6 +13,7 @@ import { MatProgressSpinnerModule, MatSnackBarModule, MatTabsModule, MatFormFiel
 import { CommonsService } from '../services/commons.service';
 import { HttpClientModule } from '@angular/common/http';
 import { DateUtils } from '../utils/date-utils';
+import { Utils } from '../utils/utils';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,7 @@ import { DateUtils } from '../utils/date-utils';
     Ng2SearchPipe,
     CommonsService,
     DateUtils,
+    Utils
   ]
 })
 export class DeliveryModule { }

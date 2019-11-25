@@ -8,7 +8,20 @@
                 <div><b style="font-weight: 500; font-size: 18px;">{{item.name|titlecase}}</b></div>
             </a>
 
-            
+            <div *ngFor="let history of item.details" style="margin-bottom: 12px;">
+                <div style="padding:3px; background-color:#eee;">Package :: {{history.history}}</div>
+                <div><span style="color:#999">Start :: </span><b
+                        style="font-weight: 500;">{{history.start_date | date:'dd-MM-yyyy'}}</b></div>
+                <div>end :: <b style="font-weight: 500;">{{history.end_date | date:'dd-MM-yyyy'}}</b></div>
+                <!-- <div>id :: <b style="font-weight: 500;">{{history.history}}</b></div> -->
+                <!-- <div>index :: <b style="font-weight: 500;">{{history.index}}</b></div> -->
+                <div>Total :: <b style="font-weight: 500;">{{history.total}}</b></div>
+                <div>Paid :: <b style="font-weight: 500;">{{history.paid}}</b></div>
+                <div>Remaining :: <b style="font-weight: 500;">{{history.balance}}</b></div>
+
+                <button id="pay_{{history.index+'_'+history.history}}" (click)="pay_click_action($event)">Pay
+                    now</button>
+            </div>
         </div>
         <div class="col-4">
             <div style="color: #c00; float: right; font-size: 16px; font-weight: 500;"> <span
