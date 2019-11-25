@@ -4,10 +4,29 @@
     <div class="row" *ngFor="let item of balance_list"
         style="font-size: 14px; padding-top: 6px; padding-bottom: 6px; border-bottom: 1px dashed #ccc !important;">
         <div class="col-8">
-            <div><b style="font-weight: 500;">{{item.name}}</b></div>
+            <a href="tel:{{item.mobile}}">
+                <div><b style="font-weight: 500; font-size: 18px;">{{item.name|titlecase}}</b></div>
+            </a>
+
+            
         </div>
         <div class="col-4">
-            <div style="color: #c00; float: right; font-size: 16px; font-weight: 500;"> <span style="color: #999; font-size: 15px; font-weight: 300;">₹</span>{{item.remaining}}</div>
+            <div style="color: #c00; float: right; font-size: 16px; font-weight: 500;"> <span
+                    style="color: #999; font-size: 15px; font-weight: 300;">₹</span>{{item.remaining}}</div>
         </div>
     </div>
 </div>
+<div class="myModal center" style="z-index: 100;" *ngIf="overlay">
+    <div style="background-color: #fff; padding:24px; border-radius:2px;">
+        <input [(ngModel)]="priceVal"
+            style="text-align: center; display: block; border:none; border-bottom: 1px dotted #999;">
+        <p style="text-align: center; font-size: 11px; color: #999; margin:12px;">Remaining to pay</p>
+        <div style="display: flex; justify-content:center;">
+            <button class="btn btn-outline-secondary" style="margin-left: 0 !important; margin-right:6px;"
+                (click)="modalSaveAction()">Save</button>
+            <button class="btn btn-outline-secondary" (click)="modalCancelAction()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div id="overlay" (click)="overlayClickHandler()" *ngIf="overlay">

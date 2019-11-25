@@ -1,0 +1,16 @@
+.orderPage-btns {
+  width: 100%;
+  border-radius: 1px;
+  background-color: #008000;
+  color: #fff;
+}
+
+#overlay {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.2);
+  top: 0;
+  left: 0;
+  z-index: 10;
+}

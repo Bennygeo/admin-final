@@ -574,6 +574,8 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     let index = 0, actualIndex = 0;
     // debugger;
 
+    this.trace("this.assigned_to :: " + this.assigned_to);
+
     this.historyObj = {
       "details": {
         // "start_date": this.date_utils.getDateString(this.start_date, "-"),
@@ -608,8 +610,8 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       if (this.selectedDays[key] == 1) {
         // debugger;
         actualIndex++;
-        this.trace("index :: " + index);
-        this.trace("key :: " + key);
+        // this.trace("index :: " + index);
+        // this.trace("key :: " + key);
         let _date = this.date_utils.addDays(new Date(), key);
         this.firebase.write_tc_orders(this.date_utils.getDateString(_date, ""), this.mobile, this.tenderDetails);
 

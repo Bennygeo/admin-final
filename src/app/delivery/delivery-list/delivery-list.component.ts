@@ -192,6 +192,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
             }
           }
         }
+
         this.target_ary = [];
         if (this.tab_index == 0) this.target_ary = this.undelivered_list;
         if (this.tab_index == 1) this.target_ary = this.delivered_list;
@@ -306,9 +307,9 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
     this.selectedIndex = e.currentTarget.id.split("_")[1] * 1;
     this.selectedTarget = this.list[this.selectedIndex].data;
 
-    debugger;
+   
     this.packageData = this.user_data[this.selectedTarget.m_no].history[this.selectedTarget.history_id].details;
-    debugger;
+   
     this.priceVal = this.packageData.remaining_to_pay;
 
     (this.overlay) ? this.overlay = false : this.overlay = true;

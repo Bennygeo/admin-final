@@ -68,7 +68,7 @@
 
                     <div class="col-12" style="margin-bottom: 12px; font-size: 24px;">
                         <mat-checkbox (change)="tc_selection_change_handler($event)"><span style="color: #999;">TC
-                                x</span> {{item.data.per_day + (item.data.replacement*1)}}
+                                x</span> {{(item.data.per_day + (item.data.replacement*1)) || item.data.per_day }}
                         </mat-checkbox>
                     </div>
 
