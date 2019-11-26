@@ -7,6 +7,7 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { CommonsService } from 'src/app/services/commons.service';
 import { StorageService } from 'src/app/utils/storage.service';
 import { Ng2SearchPipe } from 'ng2-search-filter';
+import { Utils } from 'src/app/utils/utils';
 
 @Component({
   selector: 'delivery-list',
@@ -24,7 +25,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
   selectedIndex: number = NaN;
   selectedTarget: any;
 
-  dateUtils: DateUtils;
+  date_utils: DateUtils;
   todaysDate: any;
   todaysDateFormatted: any;
   listFlg: boolean = true;
@@ -69,10 +70,11 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
     private ng2: Ng2SearchPipe,
     private _ngZone: NgZone,
     private _commons: CommonsService,
-    private _changeDet: ChangeDetectorRef
+    private _changeDet: ChangeDetectorRef,
+    private _utils: Utils
   ) {
     this.firebase = new FireBase(this.db);
-    this.dateUtils = new DateUtils();
+    this.date_utils = new DateUtils();
   }
 
   ngOnInit() {
@@ -90,10 +92,10 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
     // debugger;
     if (todayTime <= 18) {
       this.todaysDate = new Date();
-      this.todaysDate = this.dateUtils.getDateString(this.todaysDate, "");
+      this.todaysDate = this.date_utils.getDateString(this.todaysDate, "");
     } else {
       this.todaysDate = new Date();
-      this.todaysDate = this.dateUtils.getDateString(this.dateUtils.addDays(this.todaysDate, 1), "");
+      this.todaysDate = this.date_utils.getDateString(this.date_utils.addDays(this.todaysDate, 1), "");
     }
     this.renderList();
   }
@@ -103,7 +105,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
     this._service.readCustomerList(false);
     this.userListUpdateObservable = this._service.onUserListUpdate.subscribe((user_data) => {
       this.user_data = user_data;
-      this.todaysDateFormatted = this.dateUtils.dateFormater(this.todaysDate, "-");
+      this.todaysDateFormatted = this.date_utils.dateFormater(this.todaysDate, "-");
 
       this.listObservable = this.firebase.readDailyOrders(this.todaysDate).subscribe((data: any) => {
         this.listFlg = false;
@@ -344,48 +346,47 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
       status = "Not paid";
     }
 
-    // let item = this._utils.sortDateObject(data[this.historyLength], this.date_utils);
+    //sort the object and returns the start and end day of the package
+    let item = this._utils.sortDateObject(this.user_data[this.selectedTarget.m_no].history[this.selectedTarget.history_id], this.date_utils);
 
-    // this.firebase.packageInfoUpdate(this.selectedTarget.m_no, this.selectedTarget.history_id,
-    //   {
-    //     "total_price": this.packageData.total_price,
-    //     "paid_amt": paid,
-    //     "remaining_to_pay": remaining,
-    //     "paid_status": status
-    //   }, () => {
-    //     // debugger;
-    //     this._changeDet.detectChanges();
-    //     this.renderList();
-    //   });
+    let dates = this.user_data[this.selectedTarget.m_no].history[this.selectedTarget.history_id].dates;
 
-    // this.firebase.packagePaidHistoryUpdate(this.selectedTarget.m_no, this.selectedTarget.history_id, this.priceVal, () => {
-    //   this._changeDet.detectChanges();
+    let details = {
+      "start_date": item.start_date.toDateString(),
+      "end_date": item.end_date.toDateString(),
+      "count": dates[Object.keys(dates)[0]].count,
+      "total_days": this.packageData.no_of_days,
+      "paid": this.packageData.paid_amt,
+      "remaining": this.packageData.remaining_to_pay,
+      "total": this.packageData.total_price,
+      "product_name": this.selectedTarget.name
+    }
 
-    // });
+    this.firebase.packageInfoUpdate(this.selectedTarget.m_no, this.selectedTarget.history_id,
+      {
+        "total_price": this.packageData.total_price,
+        "paid_amt": paid,
+        "remaining_to_pay": remaining,
+        "paid_status": status
+      }, () => {
+        // debugger;
+        this._changeDet.detectChanges();
+        this.renderList();
+      });
 
-    // let content = "";
-    // if (remaining == 0) {
-    //   content = "Your payment of Rs." + paid + " is recieved by our delivery agent. Thank you!\nwww.thinkspot.in\n7200015551";
-    // } else if (remaining < 0) {
-    //   content = "Your payment of Rs." + paid + " is recieved by our delivery agent and you have Rs." + remaining + " in your account. Thank you!\nwww.thinkspot.in\n7200015551";
-    // } else if (remaining > 0) {
-    //   content = "Your payment of Rs." + paid + " is recieved by our delivery agent and you have Rs." + remaining + " remaining to pay. Thank you!\nwww.thinkspot.in\n7200015551";
-    // }
+    this.firebase.packagePaidHistoryUpdate(this.selectedTarget.m_no, this.selectedTarget.history_id, this.priceVal, () => {
+      this._changeDet.detectChanges();
+    });
 
-
-    this.trace(this.selectedTarget);
-    // this.trace(this.list[this.selectedIndex]);
-    debugger;
-
-    // let content = "";
-    // if (remaining == 0) {
-    //   content = `Dear Customer!\nThank you for your payment of Rs.${this.priceVal} towards your ${this.packageData.count}x${this.packageData.total_days} days of ${this.packageData.product_name} subscription from ${this.packageData.start_date} to ${this.packageData.end_date}.\nStay Healthy!\nwww.thinkspot.in`;
-    // } else if (remaining < 0) {
-    //   content = `Dear Customer!\nThank you for you payment of Rs.${this.priceVal} towards your order total of Rs.${this.packageData.balance} for ${this.packageData.count}x${this.packageData.total_days} days of ${this.packageData.product_name} subscription from ${this.packageData.start_date} to ${this.packageData.end_date}. Kindly collect the balance of Rs.${Math.abs(remaining)} on your next delivery. Thank you.\nStay Healthy!\nwww.thinkspot.in`;
-    // } else if (remaining > 0) {
-    //   content = `Dear Customer!\nThank you for you payment of Rs.${this.priceVal} towards your order total of Rs.${this.packageData.balance} for ${this.packageData.count}x${this.packageData.total_days} days of ${this.packageData.product_name} subscription from ${this.packageData.start_date} to ${this.packageData.end_date}. Kindly pay the balance of Rs.${remaining} on your next delivery. Thank you.\nStay Healthy!\nwww.thinkspot.in`;
-    // }
-
+    let content = "";
+    if (remaining == 0) {
+      content = `Dear Customer!\nThank you for your payment of Rs.${this.priceVal} towards your ${details.count}x${details.total_days} days of ${details.product_name} subscription from ${details.start_date} to ${details.end_date}.\nStay Healthy!\nwww.thinkspot.in`;
+    } else if (remaining < 0) {
+      content = `Dear Customer!\nThank you for you payment of Rs.${this.priceVal} towards your order total of Rs.${details.total} for ${details.count}x${details.total_days} days of ${details.product_name} subscription from ${details.start_date} to ${details.end_date}. Kindly collect the balance of Rs.${Math.abs(remaining)} on your next delivery. Thank you.\nStay Healthy!\nwww.thinkspot.in`;
+    } else if (remaining > 0) {
+      content = `Dear Customer!\nThank you for you payment of Rs.${this.priceVal} towards your order total of Rs.${details.total} for ${details.count}x${details.total_days} days of ${details.product_name} subscription from ${details.start_date} to ${details.end_date}. Kindly pay the balance of Rs.${remaining} on your next delivery. Thank you.\nStay Healthy!\nwww.thinkspot.in`;
+    }
+    this.trace(content);
     // console.log("this.mobile  :: " + this.data.m_no);
     // this._service.send_bulk_sms({
     //   'mobile_nos': [this.selectedTarget.m_no],

@@ -42,6 +42,7 @@ export class Utils {
     generateRandomNumber(): string {
         return Math.floor(1000 + Math.random() * 9000).toString();
     }
+    
     static getDate(divider): string {
         var today = new Date();
         return today.getDate() + divider + (today.getMonth() + 1) + divider + today.getFullYear();
