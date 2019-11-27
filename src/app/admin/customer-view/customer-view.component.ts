@@ -5,8 +5,7 @@ import { FireBase } from 'src/app/utils/firebase';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { Utils, NuType } from 'src/app/utils/utils';
 import { DateUtils } from 'src/app/utils/date-utils';
-import * as moment from 'moment';
-import { DaterangepickerConfig } from 'ng2-daterangepicker';
+import { DaterangePickerComponent } from 'ng2-daterangepicker';
 
 @Component({
   selector: 'app-customer-view',
@@ -15,6 +14,7 @@ import { DaterangepickerConfig } from 'ng2-daterangepicker';
 })
 
 export class CustomerViewComponent implements OnInit, OnDestroy {
+
 
   /*
   * Tender types
@@ -142,10 +142,21 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   // save_btn_flg:boolean = true;
 
 
+  // http://www.daterangepicker.com/#options
   //Date range picker properties
   public daterange: any = {};
   public options: any = {
     locale: { format: 'DD-MM-YYYY' },
+    startDate: "27-11-2019",
+    minDate: "27-11-2019",
+    endDate: "30-11-2019",
+    maxDate:'27-12-2019',
+    showDropdowns:false,
+    showWeekNumbers:false,
+    showCustomRangeLabel:false,
+    opens:'center',
+    drops:'up',
+    singleDatePicker:false,
     alwaysShowCalendars: false,
   };
   public rangepicker_data: any = {};

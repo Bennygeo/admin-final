@@ -270,8 +270,10 @@
 
         <div style="margin-bottom: 6px;">
           <p style="padding-bottom: 0; margin-bottom:0; color:#999; font-size: 12px;">Select custom days.</p>
+
           <input ScrollToTop type="text" name="daterangeInput" daterangepicker [options]="options"
             (selected)="selectedDateRangePicker($event, daterange)" />
+            
         </div>
 
         <div *ngIf="changeDetecter" style="font-size: 12px; text-decoration: underline; margin: 9px; cursor: pointer;"
