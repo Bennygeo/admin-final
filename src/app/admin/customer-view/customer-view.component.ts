@@ -5,7 +5,6 @@ import { FireBase } from 'src/app/utils/firebase';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { Utils, NuType } from 'src/app/utils/utils';
 import { DateUtils } from 'src/app/utils/date-utils';
-import { DaterangePickerComponent } from 'ng2-daterangepicker';
 
 @Component({
   selector: 'app-customer-view',
@@ -150,13 +149,13 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     startDate: "27-11-2019",
     minDate: "27-11-2019",
     endDate: "30-11-2019",
-    maxDate:'27-12-2019',
-    showDropdowns:false,
-    showWeekNumbers:false,
-    showCustomRangeLabel:false,
-    opens:'center',
-    drops:'up',
-    singleDatePicker:false,
+    maxDate: '27-12-2019',
+    showDropdowns: false,
+    showWeekNumbers: false,
+    showCustomRangeLabel: false,
+    opens: 'center',
+    drops: 'up',
+    singleDatePicker: false,
     alwaysShowCalendars: false,
   };
   public rangepicker_data: any = {};
@@ -1239,6 +1238,16 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       }, 5000);
     });
 
+  }
+
+  logMonthChanged(){
+    console.log("logMonthChanged");
+  }
+  highlightDays(){
+    console.log("highlightDays");
+  }
+  oneDaySelectionOnly(evt, date){
+    console.log("oneDaySelectionOnly");
   }
 }
 

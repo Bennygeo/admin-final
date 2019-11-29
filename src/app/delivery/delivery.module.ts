@@ -23,7 +23,6 @@ import { Utils } from '../utils/utils';
   ],
   imports: [
     CommonModule,
-    HttpClientModule,
     DeliveryRoutingModule,
     FormsModule,
     DragDropModule,

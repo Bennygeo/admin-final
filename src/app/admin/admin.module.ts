@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule, LocationStrategy, HashLocationStrategy } from '@angular/common';
+import { CommonModule } from '@angular/common';
 
 import { AdminRoutingModule } from './admin-routing.module';
 import { TestComponent } from './test/test.component';
@@ -17,11 +17,10 @@ import { PlusMinusComponent } from '../utils/plus-minus/plus-minus.component';
 import { CommonsService } from '../services/commons.service';
 import { MatDialogComponent } from '../others/mat-dialog/mat-dialog.component';
 import { ScrollDispatchModule } from '@angular/cdk/scrolling';
-import { HttpClientModule } from '@angular/common/http';
 import { Daterangepicker } from 'ng2-daterangepicker';
 import { ReportComponent } from './report/report.component';
 import { UnpaidComponent } from './unpaid/unpaid.component';
-
+import { MultipleDatePickerModule } from 'multiple-date-picker-angular';
 
 @NgModule({
   declarations: [
@@ -38,15 +37,15 @@ import { UnpaidComponent } from './unpaid/unpaid.component';
   ],
   imports: [
     CommonModule,
-    HttpClientModule,
     AdminRoutingModule,
     FormsModule,
     MatFormFieldModule, MatOptionModule, MatSelectModule, MatButtonModule, MatInputModule, MatSnackBarModule, MatCheckboxModule, MatIconModule, MatRadioModule,
     MatDialogModule,
-    ReactiveFormsModule,
     Ng2SearchPipeModule,
     ScrollDispatchModule,
-    Daterangepicker
+    ReactiveFormsModule,
+    Daterangepicker,
+    MultipleDatePickerModule
   ],
   entryComponents: [
     MatDialogComponent
