@@ -170,15 +170,15 @@ export class ReportComponent implements OnInit, OnDestroy {
 
     if (todayTime <= 12) {
       this.todaysDate = new Date();
-      this.yesterday_date = this._dateUtils.addDays(this.todaysDate, -1);
+      this.yesterday_date = this._dateUtils.addDaysToCalendar(this.todaysDate, -1);
       this.yesterday_date_formatted = this._dateUtils.getDateString(this.yesterday_date, "");
       this.todaysDateFormatted = this._dateUtils.getDateString(new Date(), "");
     } else {
       this.todaysDate = new Date();
-      this.yesterday_date = this._dateUtils.addDays(this.todaysDate, 0);
+      this.yesterday_date = this._dateUtils.addDaysToCalendar(this.todaysDate, 0);
       this.yesterday_date_formatted = this._dateUtils.getDateString(this.yesterday_date, "");
-      this.todaysDate = this._dateUtils.addDays(this.todaysDate, 0);
-      this.todaysDateFormatted = this._dateUtils.getDateString(this._dateUtils.addDays(this.todaysDate, 1), "");
+      this.todaysDate = this._dateUtils.addDaysToCalendar(this.todaysDate, 0);
+      this.todaysDateFormatted = this._dateUtils.getDateString(this._dateUtils.addDaysToCalendar(this.todaysDate, 1), "");
     }
 
     //daily rental

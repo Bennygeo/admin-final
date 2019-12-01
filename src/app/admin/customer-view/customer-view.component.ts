@@ -5,6 +5,8 @@ import { FireBase } from 'src/app/utils/firebase';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { Utils, NuType } from 'src/app/utils/utils';
 import { DateUtils } from 'src/app/utils/date-utils';
+import * as moment from 'moment/moment';
+import { ThrowStmt } from '@angular/compiler';
 
 @Component({
   selector: 'app-customer-view',
@@ -13,8 +15,6 @@ import { DateUtils } from 'src/app/utils/date-utils';
 })
 
 export class CustomerViewComponent implements OnInit, OnDestroy {
-
-
   /*
   * Tender types
   */
@@ -137,7 +137,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   delete_subscriber: any;
   delete_orders_subscriber: any;
   sendMsgBtnFlg: boolean = false;
-  trace: any;
+  trace: any = console.log;
   // save_btn_flg:boolean = true;
 
 
@@ -146,11 +146,11 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   public daterange: any = {};
   public options: any = {
     locale: { format: 'DD-MM-YYYY' },
-    startDate: "27-11-2019",
-    minDate: "27-11-2019",
-    endDate: "30-11-2019",
-    maxDate: '27-12-2019',
-    showDropdowns: false,
+    // startDate: "27-11-2019",
+    // minDate: new Date(),
+    // endDate: "30-11-2019",
+    // maxDate: '27-12-2019',
+    showDropdowns: true,
     showWeekNumbers: false,
     showCustomRangeLabel: false,
     opens: 'center',
@@ -164,6 +164,14 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   customerMsgFlag: boolean = true;
   warn_msg_info: string = "..";
   warn_msg_to_pay: string = "";
+
+  //selective date picker options
+  multiCalendarFlg: boolean = false;
+  myCustomDays: any = {};
+
+  packageData: any = {
+
+  }
 
   constructor(
     private _service: CommonsService,
@@ -194,6 +202,8 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       "1": 1, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0
     }
 
+    this.myCustomDays = {}
+
     this.subscribeActiveFlgs = {
       1: 0,
       2: 0,
@@ -207,7 +217,6 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     this.firebase = new FireBase(this.db);
     this.orders = [];
 
-    this.trace = console.log;
     // this.daterangepickerOptions.skipCSS = true;
   }
 
@@ -240,6 +249,13 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       this.c_name = params.get('name');
       this.start_d = params.get('start');
       this.end_d = params.get('end');
+
+      this.packageData = {
+        mobile: this.mobile,
+        start: this.start_d,
+        end: this.end_d,
+        c_name: this.c_name
+      }
       // this._route_index = params.get('index');
 
       // console.log("this.mobile :: " + this.mobile);
@@ -347,6 +363,13 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
           last_date = last_date[1] + " " + last_date[2];
         }
 
+
+        this.packageData["total_days"] = _data.details.no_of_days;
+        this.packageData['paid'] = this.historyObj['details'].paid_amt;
+        this.packageData["total_price"] = this.historyObj['details'].total_price;
+        this.packageData["count"] = this.unitsPerDay
+
+
         if (this.historyObj['details']['remaining_to_pay'] > 0) {
           this.warn_msg_to_pay = `Dear Customer,\nThere ${grammer_rule['first']} only ${remaining_days} ${grammer_rule['second']} left in your ${this.unitsPerDay} x ${_data.details.no_of_days} days of ${_data.details.name} subscription pack. Your current subscription ends on ${last_date}. Kindly renew your subscription.\nStay Healthy!\nwww.thinkspot.in`;
         } else if (this.historyObj['details']['remaining_to_pay'] <= 0) {
@@ -410,6 +433,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     }
     this.subscribedDays = totalDays;
 
+
     if (!this.subsFlag) totalDays = 1;
 
     if (alternateCnt_A == 4 && totalDays == 4) this.setSubscribeSetActiveButton(1);
@@ -433,7 +457,6 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       this.originalPrice = (this.packageOptions['std'] * this.unitsPerDay * this.subscribedDays);
       this.diff = Math.abs((this.priceOption * this.subscribedDays *
         this.unitsPerDay) - (this.packageOptions['std'] * this.unitsPerDay * this.subscribedDays));
-
     } else {
       this.subscribedDays = 1;
       this.totalPrice = this.priceOption * this.unitsPerDay;
@@ -445,7 +468,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     }
 
     // console.log("subscribed days :: " + this.subscribedDays);
-    this.end_date = this.date_utils.addDays(new Date(), this.subscribedDays);
+    this.end_date = this.date_utils.addDaysToCalendar(new Date(), this.subscribedDays);
 
     this.tenderDetails = {
       // "category": "Vegetables",
@@ -480,6 +503,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       "assigned_to": this.assigned_to,
       "history_id": this._service.historyLength + 1
     }
+
   }
 
   onNutVarietyChange(e): void {
@@ -574,7 +598,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   addToCart() {
     // debugger;
     for (let i = 0; i < this.subscribedDays; i++) {
-      let _date = this.date_utils.addDays(new Date(), i);
+      let _date = this.date_utils.addDaysToCalendar(new Date(), i);
       // console.log(i + " : date : " + this.date_utils.getDateString(_date, ""));
     }
   }
@@ -582,9 +606,6 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   addToSubscriptionBag() {
     this.subsBtnVisibility = true;
     let index = 0, actualIndex = 0;
-    // debugger;
-
-    this.trace("this.assigned_to :: " + this.assigned_to);
 
     this.historyObj = {
       "details": {
@@ -616,13 +637,12 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     // console.log("addToSubscriptionBag");
     for (var key in this.selectedDays) {
       index++;
-
       if (this.selectedDays[key] == 1) {
         // debugger;
         actualIndex++;
         // this.trace("index :: " + index);
         // this.trace("key :: " + key);
-        let _date = this.date_utils.addDays(new Date(), key);
+        let _date = this.date_utils.addDaysToCalendar(new Date(), key);
         this.firebase.write_tc_orders(this.date_utils.getDateString(_date, ""), this.mobile, this.tenderDetails);
 
         // this.trace("*****************");
@@ -742,35 +762,6 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       });
 
     this.orderInfo = this.historyObj["details"];
-    // this.tenderDetails = {
-    //   "category": "Vegetables",
-    //   "name": this.data["p_name"],
-    //   "c_name": this.c_name,
-    //   "m_no": this.mobile,
-    //   "img": "assets/products/veg/tender.jpg",
-    //   "id": "product_1",
-    //   "price": this.originalPrice,
-    //   "type": this.selectedNutType,
-    //   "quantity": (this.unitsPerDay * this.subscribedDays),
-    //   "totalPrice": this.totalPrice,
-    //   "per_day": this.unitsPerDay,
-    //   "total": (this.unitsPerDay * this.subscribedDays),
-    //   "no_of_days": this.subscribedDays,
-    //   "sub_type": this.subscribe_type,
-    //   "subscribe": this.subsFlag,
-    //   "offers": this.diff,
-    //   "delivery_charge": this.deliveryCharges * (this.unitsPerDay * this.subscribedDays),
-    //   "straw": this.strawFlag,
-    //   "strawPrice": (this.strawFlag) ? (this.strawPrice * this.unitsPerDay) : 0,
-    //   "units": 1,
-    //   "delivery_status": "Not delivered",
-    //   "start_date": this.date_utils.getDateString(this.start_date, "-"),
-    //   "end_date": this.date_utils.getDateString(this.end_date, "-"),
-    //   "paid": "No",
-    //   "nut_type": "sweet",
-    //   "DND": "No",
-    //   "assigned_to": this.assigned_to,
-    // }
 
     this.tenderDetails['per_day'] = this.editedUnitsPerDay;
     this.tenderDetails['replacement'] = this.noOfReplacements;
@@ -830,8 +821,6 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       //default date format
       let targetDate = new Date(this.date_utils.stdDateFormater(ordersToPostpone[i].date, "/"));
 
-      // trace("ordersToPostpone[i].index :: " + ordersToPostpone[i].index);
-      //update the orders object from the copied object     
 
       tmp = ordersToPostpone.slice() || undefined;
       if (ordersToPostpone[i].index != 'postponed') {
@@ -841,7 +830,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
         pastPostponeCount++;
       }
       // trace("pastPostponeCount :: " + pastPostponeCount);
-      let updateDate = this.date_utils.addDays(targetDate, this.noOfDaysToPostpone * 1);
+      let updateDate = this.date_utils.addDaysToCalendar(targetDate, this.noOfDaysToPostpone * 1);
       ordersToPostpone[i].date = this.date_utils.getDateString(updateDate, "-");
       ordersToPostpone[i].delivered = false;
 
@@ -885,8 +874,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       let target = (this.selectedDateIndex + i) - 1;
       let start_target = (this.selectedDateIndex + 0) - 1;
       let _targetDate = new Date(this.date_utils.stdDateFormater(this.orders[start_target].date, "/"));
-      let _updateDate = this.date_utils.addDays(_targetDate, i);
-
+      let _updateDate = this.date_utils.addDaysToCalendar(_targetDate, i);
 
       // debugger;
       this.delete_orders_subscriber = this.firebase.deleteUserOrder(this.mobile, this.date_utils.getDateString(_updateDate, ""), () => {
@@ -983,7 +971,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     let _nut_price = this.historyObj['details']['nut_price'] * 1;
     let _nut_count = 0;
     for (let i = 0; i < remainingDays; i++) {
-      let updateDate = this.date_utils.addDays(targetDate, 1);
+      let updateDate = this.date_utils.addDaysToCalendar(targetDate, 1);
       let _date = this.date_utils.getDateString(updateDate, "");
       if (this.historyObj['dates'][_date].index != "Stopped" || this.historyObj['dates'][_date].index != "postponed")
         _nut_count += this.historyObj['dates'][_date].count * 1;
@@ -1091,7 +1079,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     let _dates = [];
     _dates.push(this.rangepicker_data.start);
     for (let i = 0; i < this.subscribedDays - 1; i++) {
-      let _date = this.date_utils.addDays(new Date(this.rangepicker_data.start), i + 1);
+      let _date = this.date_utils.addDaysToCalendar(new Date(this.rangepicker_data.start), i + 1);
       _dates.push(_date.toDateString());
     }
     let index = 0;
@@ -1136,8 +1124,18 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     // console.log("Save action :: " + val.value);
 
     let inpVal = val.value;
-    let remaining = Math.abs(val.value - this.orderInfo['remaining_to_pay']);//this.packageData.remaining_to_pay - this.packageData.paid_amt;
+    // let remaining = val.value - this.orderInfo['remaining_to_pay'];//this.packageData.remaining_to_pay - this.packageData.paid_amt;
+    // let paid = remaining;// - this.orderInfo['total_price'];
+
+    let remaining = this.orderInfo['remaining_to_pay'] - val.value;//this.packageData.remaining_to_pay - this.packageData.paid_amt;
     let paid = Math.abs(remaining - this.orderInfo['total_price']);
+
+    let wallet = 0;
+    if (remaining >= 0) {
+      wallet = remaining;
+    } else {
+      wallet = remaining;
+    }
     let status = "";
 
     if (paid == this.orderInfo['total_price']) {
@@ -1154,40 +1152,51 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
         "total_price": this.orderInfo['total_price'],
         "paid_amt": paid,
         "remaining_to_pay": remaining,
+        "wallet": wallet,
         "paid_status": status
       }, () => {
         this._changeDet.detectChanges();
       });
 
       this.firebase.packagePaidHistoryUpdate(this.mobile, this._service.historyLength, inpVal, () => {
-        // this._changeDet.detectChanges();
+        this._changeDet.detectChanges();
       });
     }
 
+    this.packageData["c_name"] = this.c_name;
+    this.packageData["product_name"] = this.data.p_name;
 
-    // let content = "";
-    // if (remaining == 0) {
-    //   content = "Your payment of Rs." + paid + " is recieved by our delivery agent. Thank you!\nwww.thinkspot.in\n7200015551";
-    // } else if (remaining < 0) {
-    //   content = "Your payment of Rs." + paid + " is recieved by our delivery agent and you have Rs." + remaining + " in your account. Thank you!\nwww.thinkspot.in\n7200015551";
-    // } else if (remaining > 0) {
-    //   content = "Your payment of Rs." + paid + " is recieved by our delivery agent and you have Rs." + remaining + " remaining to pay. Thank you!\nwww.thinkspot.in\n7200015551";
-    // }
+    this.trace("remainig :: " + remaining);
+    let content = "";
+    if (remaining == 0) {
+      content = `Dear Customer!\nThank you for your payment of Rs.${inpVal} towards your ${this.packageData.count}x${this.packageData.total_days} days of ${this.packageData.product_name} subscription from ${this.packageData.start} to ${this.packageData.end}.\nStay Healthy!\nwww.thinkspot.in`;
+    } else if (remaining < 0) {
+      content = `Dear Customer!\nThank you for you payment of Rs.${inpVal} towards your order total of Rs.${this.packageData['total_price']} for ${this.packageData.count}x${this.packageData.total_days} days of ${this.packageData.product_name} subscription from ${this.packageData.start} to ${this.packageData.end}. Kindly collect the balance of Rs.${Math.abs(remaining)} on your next delivery. Thank you.\nStay Healthy!\nwww.thinkspot.in`;
+    } else if (remaining > 0) {
+      content = `Dear Customer!\nThank you for you payment of Rs.${inpVal} towards your order total of Rs.${this.packageData['total_price']} for ${this.packageData.count}x${this.packageData.total_days} days of ${this.packageData.product_name} subscription from ${this.packageData.start} to ${this.packageData.end}. Kindly pay the balance of Rs.${Math.abs(remaining)} on your next delivery. Thank you.\nStay Healthy!\nwww.thinkspot.in`;
+    }
 
-    // console.log("this.mobile  :: " + this.data.m_no);
-    // this._service.send_bulk_sms({
-    //   'mobile_nos': [this.data.m_no],
-    //   'fName': "",
-    //   'content': content
-    // });
+
+    this.trace(content);
+    this._service.send_bulk_sms({
+      'mobile_nos': [this.mobile],
+      'fName': "",
+      'content': content
+    }, () => {
+      // this.modalCancelAction();
+    });
 
     //empty the value;
     val.value = 0;
   }
 
+
+
   payCancelAction() {
     console.log("Cancel action.");
   }
+
+
 
   deleteOrderAction() {
     // console.log("delete order action.", this._service.historyLength, this.mobile);
@@ -1237,17 +1246,122 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
         this.sendMsgBtnFlg = false;
       }, 5000);
     });
-
+    0
   }
 
-  logMonthChanged(){
-    console.log("logMonthChanged");
+  pickMyDates(el: HTMLElement) {
+    (this.multiCalendarFlg) ? this.multiCalendarFlg = false : this.multiCalendarFlg = true;
+    // el.scrollIntoView();
   }
-  highlightDays(){
-    console.log("highlightDays");
-  }
-  oneDaySelectionOnly(evt, date){
-    console.log("oneDaySelectionOnly");
+
+  multidaySelection(dates) {
+
+    let _dates: any = dates.slice(0);
+    _dates.sort(function (a, b) { return a._d.getTime() - b._d.getTime() });
+    // console.log(_dates);
+    // if(_dates.length>3) debugger;
+    let _startDate: any = _dates[0]._d;
+    let _endDate: any = _dates[_dates.length - 1]._d;
+    let _diff = this.date_utils.dateDiff(_startDate, _endDate);
+
+    // console.log("_diff :: " + _diff);
+    let tst = [], actualIndex = 0, index = 0;
+    for (let i = 0; i <= _diff; i++) {
+      index = i;
+      let _d = moment(_startDate, "DD/MM/YYYY").add('days', i);
+      for (let j = 0; j < _dates.length; j++) {
+        if (_d['_d'].getTime() == _dates[j]._d.getTime()) {
+          // console.log("matches");
+          actualIndex++;
+          tst[i] = {
+            _d: _dates[j]._d,
+            actualIndex: actualIndex,
+            index: index
+          }
+          break;
+        }
+      }
+    }
+
+    this.subscribedDays = actualIndex;
+
+    if (actualIndex > this.subscribedDays || this.unitsPerDay > this.unitsPerDay - 1) {
+      this.priceOption = this.packageOptions["pack7"];
+      this.subsFlag = true
+    } else {
+      this.priceOption = this.packageOptions["std"];
+    }
+
+    if (this.subsFlag) {
+      this.totalPrice = this.priceOption * this.subscribedDays * this.unitsPerDay;
+      this.originalPrice = (this.packageOptions['std'] * this.unitsPerDay * this.subscribedDays);
+      this.diff = Math.abs((this.priceOption * this.subscribedDays *
+        this.unitsPerDay) - (this.packageOptions['std'] * this.unitsPerDay * this.subscribedDays));
+
+    } else {
+      this.subscribedDays = 1;
+      this.totalPrice = this.priceOption * this.unitsPerDay;
+
+      this.originalPrice = (this.packageOptions['std'] * this.unitsPerDay);
+
+      this.diff = Math.abs((this.priceOption *
+        this.unitsPerDay) - (this.packageOptions['std'] * this.unitsPerDay));
+    }
+
+    this.historyObj = {
+      "details": {
+        // "start_date": this.date_utils.getDateString(this.start_date, "-"),
+        // "end_date": this.date_utils.getDateString(this.end_date, "-"),
+        "total_price": this.totalPrice,
+        "remaining_to_pay": this.totalPrice,
+        // "per_day": this.unitsPerDay,
+        "straw": this.strawFlag,
+        // "offers": this.diff,
+        "no_of_days": this.subscribedDays,
+        "active": "yes",
+        "nut_variety": this.selectedNutVariety,
+        // "price": this.originalPrice,
+        // "paused": false,
+        "nut_price": this.price + this.deliveryCharges - this.discount,
+        "paid_status": "No",
+        "paid_amt": 0,
+        "nut_type": "",
+        "DND": "No",
+        "instructions": "hole and open",
+        "special_notes": "",
+        "assigned_to": this.assigned_to,
+        "name": this.data["p_name"],
+      },
+      "dates": {}
+    }
+
+    for (let i = 0; i < tst.length; i++) {
+      if (tst[i]) {
+        this.firebase.write_tc_orders(this.date_utils.getDateString(tst[i]._d, ""), this.mobile, this.tenderDetails);
+
+        //History object creation 
+        this.historyObj['dates'][this.date_utils.getDateString(tst[i]._d, "")] = {
+          index: tst[i].actualIndex,
+          actualIndex: tst[i].index,
+          'delivered': false,
+          'missed': false,
+          'replacement': 0,
+          'assigned_to': this.assigned_to,
+          'delivered_by': 'nil',
+          'count': this.unitsPerDay
+        }
+      }
+    }
+
+
+    this.firebase.user_history(this.mobile, this.historyObj, "yes", (this._service.historyLength * 1 + 1), () => {
+      // console.log("added to the history.");
+      this.subsBtnVisibility = true;
+      this.ordersExist = true;
+      this._router.navigate(['/admin/customer_view/' + Date.now(), { mobile: this.mobile, status: 'active', name: this.c_name }]);
+      // this._changeDet.detectChanges();
+    });
+
   }
 }
 

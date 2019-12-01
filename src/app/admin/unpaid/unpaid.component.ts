@@ -145,7 +145,7 @@ export class UnpaidComponent implements OnInit {
     } else {
       status = "Not paid";
     }
-    this.trace("remaining :: " + remaining);
+    // this.trace("remaining :: " + remaining);
 
     // this.firebase.packageInfoUpdate(this.balance_list[this.current_target_index].mobile, this.packageData.history_id,
     //   {
@@ -174,6 +174,16 @@ export class UnpaidComponent implements OnInit {
     }
     // this.trace(content);
     // this.trace("++++++++++++++++");
+
+
+    this._service.send_bulk_sms({
+      'mobile_nos': [this.balance_list[this.current_target_index].mobile],
+      'fName': "",
+      'content': content
+    }, () => { 
+      this.modalCancelAction();
+    });
+
   }
 
   modalCancelAction() {

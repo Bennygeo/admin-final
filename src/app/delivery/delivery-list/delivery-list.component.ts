@@ -95,7 +95,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
       this.todaysDate = this.date_utils.getDateString(this.todaysDate, "");
     } else {
       this.todaysDate = new Date();
-      this.todaysDate = this.date_utils.getDateString(this.date_utils.addDays(this.todaysDate, 1), "");
+      this.todaysDate = this.date_utils.getDateString(this.date_utils.addDaysToCalendar(this.todaysDate, 1), "");
     }
     this.renderList();
   }

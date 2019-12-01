@@ -3,9 +3,14 @@ export class DateUtils extends Date {
         super();
     }
 
-    addDays(date, days): Date {
+    addDaysToCalendar(date, days): Date {
         date.setDate(date.getDate() + parseInt(days));
         return date;
+    }
+
+    addDays(date, days): void {
+        
+        date.setDate(date.getDate() + parseInt(days));
     }
 
     getDateString(date, divider): string {
@@ -37,7 +42,7 @@ export class DateUtils extends Date {
     }
 
     daysInMonth(month, year) {
-        return new Date(year, month, 0).getDate(); 
+        return new Date(year, month, 0).getDate();
     }
 
 }

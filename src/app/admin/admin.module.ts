@@ -20,7 +20,7 @@ import { ScrollDispatchModule } from '@angular/cdk/scrolling';
 import { Daterangepicker } from 'ng2-daterangepicker';
 import { ReportComponent } from './report/report.component';
 import { UnpaidComponent } from './unpaid/unpaid.component';
-import { MultipleDatePickerModule } from 'multiple-date-picker-angular';
+import { MultidatepickerComponent } from '../utils/multidate/multidatepicker.component';
 
 @NgModule({
   declarations: [
@@ -34,6 +34,7 @@ import { MultipleDatePickerModule } from 'multiple-date-picker-angular';
     MatDialogComponent,
     ReportComponent,
     UnpaidComponent,
+    MultidatepickerComponent
   ],
   imports: [
     CommonModule,
@@ -45,7 +46,6 @@ import { MultipleDatePickerModule } from 'multiple-date-picker-angular';
     ScrollDispatchModule,
     ReactiveFormsModule,
     Daterangepicker,
-    MultipleDatePickerModule
   ],
   entryComponents: [
     MatDialogComponent

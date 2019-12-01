@@ -278,13 +278,15 @@
         <!-- 
           Multi day selection calendar 
         -->
-        <div style="margin-bottom: 6px;">
+        <button (click)="pickMyDates(target)">pick my dates</button>
+        <div class="clearfix"></div>
+        <div style="margin-bottom: 6px;" *ngIf="multiCalendarFlg" #target>
           <p style="padding-bottom: 0; margin-bottom:0; color:#999; font-size: 12px;">Select your days.</p>
-          <multiple-date-picker [showDaysOfSurroundingMonths]="false" [matIcons]="true" [disallowBackPastMonths]="true"
-            [sundayFirstDay]="true" [disableDaysBefore]="true" [disableDaysAfter]="false"
-            [monthChanged]="logMonthChanged" [highlightDays]="highlightDays" [dayClick]="oneDaySelectionOnly"
-            [weekDaysOff]="[]" [month]="myMonth" [disallowGoFuturMonths]="false">
-          </multiple-date-picker>
+          <multidatepicker (datesSelectedChange)="multidaySelection($event)" [showDaysOfSurroundingMonths]="false"
+            [matIcons]="true" [disallowBackPastMonths]="true" [disallowGoFuturMonths]="true" [sundayFirstDay]="true"
+            [disableDaysBefore]="true" [disableDaysAfter]="true" [weekDaysOff]="[]" [month]="myMonth"
+            [monthClick]="monthClick">
+          </multidatepicker>
         </div>
 
         <div *ngIf="changeDetecter" style="font-size: 12px; text-decoration: underline; margin: 9px; cursor: pointer;"
@@ -293,6 +295,7 @@
         <button mat-button class="addToBagBtn" (click)="addToSubscriptionBag()" [disabled]="subsBtnVisibility"
           style="margin-bottom: 6px;">
           Add to subscription</button>
+
         <button mat-button class="addToBagBtn" (click)="addToCustomSubscriptionBag()"
           [disabled]="customSubsBtnVisibility" style="margin-bottom: 6px; margin-left: 6px;">
           Custom bag</button>

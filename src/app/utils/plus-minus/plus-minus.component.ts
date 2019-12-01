@@ -7,7 +7,7 @@ import { Component, OnInit, Output, Input, ChangeDetectorRef, EventEmitter } fro
 })
 export class PlusMinusComponent implements OnInit {
 
-  
+
   @Output() updateValue;
   @Input() inputVal: number;
   @Input() caption: string;
@@ -18,7 +18,7 @@ export class PlusMinusComponent implements OnInit {
   constructor(private changeDet: ChangeDetectorRef) {
     this.inputVal = 1;
     this.caption = "";
-    this.updateValue = new EventEmitter();
+    this.updateValue = new EventEmitter<any>();
   }
 
   ngOnInit() {

@@ -1,0 +1,122 @@
+.text-center {
+  text-align: center;
+}
+.multiple-date-picker {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.multiple-date-picker,
+.picker-days-row,
+.picker-days-week-row,
+.picker-top-row {
+  width: 100%;
+}
+.picker-top-row > div {
+  display: inline-block;
+}
+.picker-navigate {
+  width: 16.5%;
+}
+.picker-navigate:hover {
+  cursor: pointer;
+}
+.picker-navigate.disabled,
+.picker-navigate.disabled:hover {
+  color: #ddd;
+  cursor: default;
+}
+.picker-month {
+  width: 65%;
+}
+.picker-days-row > div,
+.picker-days-week-row > div {
+  width: 14.28%;
+  display: inline-block;
+}
+.picker-day,
+.picker-top-row {
+  padding: 10px 0;
+}
+.picker-day {
+  background-color: #fff;
+  border: 1px solid #eee;
+  box-sizing: border-box;
+  color: #000;
+  border-radius: 50%;
+}
+.picker-day.today.picker-off,
+.picker-day.today.picker-off:hover,
+.picker-day.today.picker-selected,
+.picker-day.today:hover {
+  // color: #00a3ff;
+}
+.picker-day.today {
+  // background-color: #00a5ce;
+  background-color: none;
+  // color: #f7fb65;
+  color: #fff;
+}
+.picker-day:not(.picker-off):not(.picker-empty):hover {
+  // background-color: rgba(0, 165, 206, 0.5);
+  background-color: none;
+  color: #111;
+}
+.picker-day.picker-selected {
+  background-color: #95c342;
+  color: #fff;
+  // color: #111;
+}
+.picker-day.picker-selected.click-selection-active:not(.picker-off) {
+  background-color: #95c342;
+  // color: #fff;
+  color: #fff;
+}
+.picker-day.picker-off,
+.picker-day.picker-off:hover {
+  background-color: #eee;
+  color: #111;
+  cursor: default;
+}
+.picker-day.picker-empty,
+.picker-day.picker-empty:hover {
+  background-color: #fafafa;
+  cursor: default;
+}
+.picker-day.stay-dates {
+  background-color: #78bc42;
+  color: #fff;
+}
+.picker-day.stay-dates.picker-selected {
+  background-color: #95c342;
+  color: #568eab;
+}
+.picker-day.today.stay-dates {
+  // background-color: #00a5ce;
+  background-color: none;
+  color: #f7fb65;
+}
+.picker-day.today.stay-dates.picker-selected {
+  background-color: #95c342;
+  color: #568eab;
+}
+.picker-day.stay-dates.picker-off {
+  background-color: rgba(91, 136, 56, 0.6);
+  color: rgba(255, 255, 255, 0.6);
+}
+.picker-day.stay-dates:not(.picker-off):hover {
+  background-color: rgba(0, 165, 206, 0.5);
+  color: #f7fb65;
+}
+.picker-day.stay-dates.picker-selected.click-selection-active:not(.picker-off) {
+  background-color: #95c342;
+  color: #568eab;
+}
+input {
+  border: 0;
+  border-radius: 3px;
+  height: 30px;
+  max-width: 100px;
+  text-align: center;
+}
