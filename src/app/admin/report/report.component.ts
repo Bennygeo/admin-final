@@ -209,7 +209,6 @@ export class ReportComponent implements OnInit, OnDestroy {
     this.read_local_sale_subs = this.firebase.read_local_sales(this.todaysDateFormatted).subscribe((data: any) => {
       // debugger;
       this.local_firebase_data = data;
-
     });
 
     //Stocks data
@@ -224,17 +223,16 @@ export class ReportComponent implements OnInit, OnDestroy {
 
       //get the total stocks count
       let details = data[0];
-
-
       this.listObservable = this.firebase.readDailyOrders(this.todaysDateFormatted).subscribe((data: any) => {
         try {
           this.listObservable.unsubscribe();
         } catch (e) { }
 
-        this.trace("readDailyOrders");
+        // this.trace("readDailyOrders");
         for (let key in data) {
           let _data = JSON.parse(data[key].tender);
           for (let _agents = 0; _agents < this.delivery_boys.length; _agents++) {
+            // this.trace("_data.assigned_to :: " + _data.assigned_to);
             if (_data.assigned_to == this.delivery_boys[_agents]) {
               let _index = this.delivery_boys.indexOf(_data.assigned_to);
               // this.trace("_index :: " + _index);

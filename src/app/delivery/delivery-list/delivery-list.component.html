@@ -23,6 +23,10 @@
             </form>
         </div>
     </div>
+    <div class="row"  style="margin:6px;">
+        <div class="col-6">Green : {{green_count}}</div>
+        <div class="col-6">Orange : {{orange_count}}</div>
+    </div>
 
     <mat-tab-group #tabGroup (selectedTabChange)="tabChanged($event)" [selectedIndex]="this.tab_index">
         <mat-tab label="Orders :: {{total_undelivered}}" mat-align-tabs="center">
@@ -69,8 +73,11 @@
                     <div class="col-12" style="margin-bottom: 12px; font-size: 24px;">
                         <mat-checkbox (change)="tc_selection_change_handler($event)"><span style="color: #999;">TC
                                 x</span> {{(item.data.per_day + (item.data.replacement*1)) || item.data.per_day }}
+                            <span>({{item.nut_type}})</span>
                         </mat-checkbox>
                     </div>
+
+                    <div>{{item.nut_type}}</div>
 
                     <div class="col-6" style="margin-bottom: 12px;">
                         Paid : <span style="color: green;  font-weight: bold;">₹{{item.paid}}</span>

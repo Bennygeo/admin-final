@@ -665,7 +665,8 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
           'replacement': 0,
           'assigned_to': this.assigned_to,
           'delivered_by': 'nil',
-          'count': this.unitsPerDay
+          'count': this.unitsPerDay,
+          "nut_variety": this.selectedNutVariety,
         }
       }
     }
@@ -725,7 +726,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   }
 
   deleteAction() {
-    console.log("Delete :: " + this.selectedDateItem.date);
+    // console.log("Delete :: " + this.selectedDateItem.date);
     // debugger;
     console.log(this.orders[this.selectedDateActualIndex - 1]);
     let history_date = this.date_utils.dateFormater(this.selectedDateItem.date, "");
@@ -741,6 +742,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       'assigned_to': 'nil',
       'delivered_by': 'nil',
       'count': 0,
+      "nut_variety": this.selectedNutVariety,
     }
 
     let actualIndex = 0, index = 0;
@@ -756,15 +758,26 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       }
     }
 
-    let actualIndex1 = 0, index1 = 0;
+    let actualIndex1 = 0, index1 = 0, _nut_count = 0;
     Object.keys(this.historyObj['dates']).sort().map((key, index) => {
       actualIndex1++;
+      // debugger;
+      _nut_count += this.historyObj['dates'][key].count;
       this.historyObj['dates'][key].actualIndex = actualIndex1;
       if (this.historyObj['dates'][key].index != 'postponed' && this.historyObj['dates'][key].index != 'stopped') {
         index1++;
+        // debugger;
         this.historyObj['dates'][key].index = index1;
       }
     });
+
+    // debugger;
+    let _nut_price = this.historyObj['details']['nut_price'] * 1;
+    let _after_total = (_nut_count * _nut_price);
+    // debugger;
+    this.historyObj['details']['remaining_to_pay'] = _after_total;//this.historyObj['details']['remaining_to_pay'] * 1 - _after_total;
+    this.historyObj['details']['total_price'] = _after_total;//this.historyObj['details']['total_price'] * 1 - _after_total;
+
     this.firebase.user_history(this.mobile, this.historyObj, "yes", this._service.historyLength, () => { });
 
   }
@@ -796,9 +809,9 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     // debugger;
     this.firebase.editupdateWrite(this.mobile, this._service.historyLength,
       {
-        count: this.editedUnitsPerDay,
-        replacement: this.noOfReplacements,
-        assigned_to: this.assigned_to,
+        "count": this.editedUnitsPerDay,
+        "replacement": this.noOfReplacements,
+        "assigned_to": this.assigned_to,
         "total_price": _total_price,
         "remaining_to_pay": _total_price - this.historyObj["details"]['paid_amt'],
         "paid_status": ""
@@ -841,7 +854,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   onDeliveryBoyChange(evt): void {
     this.assigned_to = evt.value;
     this.assigned_to_index = this.delivery_boys_list.indexOf(this.assigned_to);
-    // console.log("this.assigned_to_index :: " + this.assigned_to_index);
+    console.log("this.assigned_to :: " + this.assigned_to);
   }
 
   postponeUpdateAction() {
@@ -890,7 +903,8 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
           'replacement': 0,
           'assigned_to': this.assigned_to,
           'delivered_by': 'nil',
-          'count': ordersToPostpone[i].count
+          'count': ordersToPostpone[i].count,
+          "nut_variety": this.selectedNutVariety,
         }
       } else {
         this.historyObj['dates'][history_date] = {
@@ -980,14 +994,6 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     let trace = console.log;
     let targetDate = new Date(this.date_utils.stdDateFormater(this.orders[this.selectedDateIndex - 2].date, "/"));
 
-    // for (let i = this.selectedDateIndex - 1; i < this.orders.length; i++) {
-    //   this.orders[i].index = "Stopped";
-    //   this.orders[i].count = 0;
-    // }
-    // debugger;
-
-    // its like a double M.A. job. Kind of diverting the context.
-
     this.orders.splice(this.selectedDateIndex - 1, this.orders.length);
 
     let _nut_price = this.historyObj['details']['nut_price'] * 1;
@@ -995,7 +1001,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     for (let i = 0; i < remainingDays; i++) {
       let updateDate = this.date_utils.addDaysToCalendar(targetDate, 1);
       let _date = this.date_utils.getDateString(updateDate, "");
-      if (this.historyObj['dates'][_date].index != "Stopped" || this.historyObj['dates'][_date].index != "postponed")
+      if (this.historyObj['dates'][_date].index != "stopped" || this.historyObj['dates'][_date].index != "postponed")
         _nut_count += this.historyObj['dates'][_date].count * 1;
 
       // this.historyObj['dates'][_date].index = "Stopped";
@@ -1074,7 +1080,8 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       "per_day": this.unitsPerDay,
       "delivery_status": "Not delivered",
       "assigned_to": this.assigned_to,
-      "history_id": (this._service.historyLength * 1) + 1
+      "history_id": (this._service.historyLength * 1) + 1,
+      "nut_variety": this.selectedNutVariety,
     }
     // this.subsBtnVisibility = true;
     this.customSubsBtnVisibility = true;
@@ -1094,7 +1101,8 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
         "DND": "No",
         "instructions": "hole and open",
         "special_notes": "",
-        "sub_type": "Regular"
+        "sub_type": "Regular",
+        "nut_variety": this.selectedNutVariety,
       },
       "dates": {}
     }
@@ -1119,7 +1127,8 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
         'replacement': 0,
         'assigned_to': this.assigned_to,
         'delivered_by': 'nil',
-        'count': this.unitsPerDay
+        'count': this.unitsPerDay,
+        "nut_variety": this.selectedNutVariety,
       }
     }
     // let start = this.date_utils.stdDateFormater(this.historyObj['start_date']);
@@ -1346,8 +1355,22 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
         "special_notes": "",
         "assigned_to": this.assigned_to,
         "name": this.data["p_name"],
+
       },
       "dates": {}
+    }
+
+    this.tenderDetails = {
+      "name": this.data["p_name"],
+      "c_name": this.c_name,
+      "m_no": this.mobile,
+      "id": "product_1",
+      "type": this.selectedNutType,
+      "per_day": this.unitsPerDay,
+      "delivery_status": "Not delivered",
+      "assigned_to": this.assigned_to,
+      "history_id": (this._service.historyLength * 1) + 1,
+      "nut_variety": this.selectedNutVariety,
     }
 
     for (let i = 0; i < tst.length; i++) {
@@ -1356,24 +1379,24 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
 
         //History object creation 
         this.historyObj['dates'][this.date_utils.getDateString(tst[i]._d, "")] = {
-          index: tst[i].actualIndex,
-          actualIndex: tst[i].index,
+          index: tst[i].index,
+          actualIndex: tst[i].actualIndex,
           'delivered': false,
           'missed': false,
           'replacement': 0,
           'assigned_to': this.assigned_to,
           'delivered_by': 'nil',
-          'count': this.unitsPerDay
+          'count': this.unitsPerDay,
+          "nut_variety": this.selectedNutVariety,
         }
       }
     }
-
 
     this.firebase.user_history(this.mobile, this.historyObj, "yes", (this._service.historyLength * 1 + 1), () => {
       // console.log("added to the history.");
       this.subsBtnVisibility = true;
       this.ordersExist = true;
-      this._router.navigate(['/admin/customer_view/' + Date.now(), { mobile: this.mobile, status: 'active', name: this.c_name, start: this.packageData.start, end: this.packageData.end }]);
+      this._router.navigate(['/admin/customer_view/' + Date.now(), { mobile: this.mobile, status: 'active', name: this.c_name, start: _startDate.toDateString(), end: _endDate.toDateString() }]);
       // this._changeDet.detectChanges();
     });
   }

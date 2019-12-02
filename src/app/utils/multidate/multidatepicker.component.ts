@@ -263,7 +263,7 @@ export class MultidatepickerComponent implements OnInit {
   isDayOff(day) {
     let today: number = 1;
     let currentDateTime = moment(new Date());
-    if (currentDateTime.hours() >= 21) {
+    if (currentDateTime.hours() >= 24) {
       today = 2;
     }
     return this.allDaysOff ||

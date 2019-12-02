@@ -60,6 +60,10 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
 
   sortVals: Array<any> = ["Apartment", "Block"];
 
+  orange_count: number = 0;
+  green_count: number = 0;
+
+
   constructor(
     private _activatedRoute: ActivatedRoute,
     private db: AngularFireDatabase,
@@ -121,6 +125,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
         for (let key in data) {
           index++;
           let _data = JSON.parse(data[key].tender);
+          // debugger;
           let deliveryFlg = (_data.delivery_status == "Delivered") ? true : false;
           this.deliveredStatus = (deliveryFlg) ? "Done" : "Delivered";
 
@@ -156,6 +161,11 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
             let updated_address = addr.block + ", " + addr.floor + ", " + addr.door;
             // console.log("key :: " + key);
             // console.log("--- :: " + user_data[key].history[history_len].details.remaining_to_pay);
+
+            // debugger;
+            if (_data.nut_variety == "orange" || _data.nut_variety == "Orange") this.orange_count += _data.per_day;
+            else this.green_count += _data.per_day;
+
             if (!deliveryFlg) {
 
               this.total_undelivered += (_data.per_day + (_data.replacement * 1 || 0));
@@ -167,6 +177,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
                 'door': addr.door,
                 'delivery_status': deliveryFlg,
                 'delivery_string': this.deliveredStatus,
+                'nut_type': _data.nut_variety,
                 'data': _data,
                 'address': updated_address,
                 'rtp': user_data[key].history[history_len].details.remaining_to_pay,
@@ -181,6 +192,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
                 'block': addr.block,
                 'floor': addr.floor,
                 'door': addr.door,
+                'nut_type': _data.nut_variety,
                 'delivery_status': deliveryFlg,
                 'delivery_string': this.deliveredStatus,
                 'data': _data,
