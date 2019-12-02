@@ -13,7 +13,6 @@ export const environment = {
     messagingSenderId: "614482375695"
   },
   url: "http://www.thinkspot.in/php/"
-  // url:"http://www.lifiadesign.com/php/"
 };
 
 /*

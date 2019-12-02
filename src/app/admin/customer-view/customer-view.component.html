@@ -77,7 +77,7 @@
   <div class="row" style="margin-top:12px;">
     <div class="col-3" *ngFor="let item of orders; let i = index;" (click)="onUserDatesClick($event, item)"
       (clickOutside)=" closeOutsideSidenav()"
-      [ngStyle]="{'pointer-events': (item.expired || item.postponed|| item.stopped) ? 'none' : 'all', 'opacity': (item.expired || item.postponed || item.stopped) ? '0.5' : '1'}">
+      [ngStyle]="{'pointer-events': (item.expired || item.postponed || item.stopped) ? 'none' : 'all', 'opacity': (item.expired || item.postponed || item.stopped) ? '0.5' : '1'}">
       <div class="row" style="margin-bottom: 6px; margin-left:-14px; margin-right:-14px;">
         <div style="border:1px solid #ccc; margin-bottom: 6px; width: 100%;"
           [ngClass]="{'activeDate': selectedDateItem == item}">
@@ -85,7 +85,10 @@
             [ngStyle]="{'background': item.today ? '#007bff' : '#DDD'}">
             {{item.index}}
           </div>
-          <div class="col-12 center">{{item.count}}</div>
+          <div class="row">
+            <div class="col-8 center no-padding">{{item.count}}</div>
+            <div class="col-4 center no-padding" style="font-size: 12px;">{{item.replacement}}</div>
+          </div>
           <div style="border-top:1px dashed #ccc; padding: 6px; text-align: center; font-size: 11px; "
             class="col-12 center assigned"
             [ngClass]="{'delivered': false, 'notDelivered': false, 'missed': false, 'assigned': true}">
@@ -164,9 +167,11 @@
   <!-- Menus -->
   <div class="row btn-group-vertical center" style="margin-left:-9px;margin-right:-9px;" *ngIf="btnsView">
     <button class="btn btn-primary" (click)="editAction()">Edit</button>
-    <button class="btn btn-info" (click)="postponeAction()" [attr.disabled]="dayExpired ? true : null">Postpone</button>
+    <button class="btn btn-info" (click)="postponeAction()" *ngIf="orderModifyFlg"
+      [attr.disabled]="dayExpired ? true : null">Postpone</button>
     <!-- <button class="btn btn-danger" (click)="pauseAction()">Pause</button> -->
-    <button class="btn btn-danger" (click)="stopAction()">Stop</button>
+    <button class="btn btn-danger" (click)="stopAction()">Stop all</button>
+    <button class="btn btn-danger" (click)="deleteAction()">Delete today</button>
   </div>
 
   <!-- Tender coconut booking/subscription -->
@@ -275,19 +280,9 @@
             (selected)="selectedDateRangePicker($event, daterange)" />
         </div>
 
-        <!-- 
-          Multi day selection calendar 
-        -->
-        <button (click)="pickMyDates(target)">pick my dates</button>
+
         <div class="clearfix"></div>
-        <div style="margin-bottom: 6px;" *ngIf="multiCalendarFlg" #target>
-          <p style="padding-bottom: 0; margin-bottom:0; color:#999; font-size: 12px;">Select your days.</p>
-          <multidatepicker (datesSelectedChange)="multidaySelection($event)" [showDaysOfSurroundingMonths]="false"
-            [matIcons]="true" [disallowBackPastMonths]="true" [disallowGoFuturMonths]="true" [sundayFirstDay]="true"
-            [disableDaysBefore]="true" [disableDaysAfter]="true" [weekDaysOff]="[]" [month]="myMonth"
-            [monthClick]="monthClick">
-          </multidatepicker>
-        </div>
+
 
         <div *ngIf="changeDetecter" style="font-size: 12px; text-decoration: underline; margin: 9px; cursor: pointer;"
           (click)="onResetClick()">Reset</div>
@@ -299,6 +294,19 @@
         <button mat-button class="addToBagBtn" (click)="addToCustomSubscriptionBag()"
           [disabled]="customSubsBtnVisibility" style="margin-bottom: 6px; margin-left: 6px;">
           Custom bag</button>
+
+
+      </div>
+      <!-- 
+          Multi day selection calendar 
+        -->
+      <button (click)="pickMyDates()">pick my dates</button>
+      <div style="margin-bottom: 6px;" *ngIf="multiCalendarFlg">
+        <p style="padding-bottom: 0; margin-bottom:0; color:#999; font-size: 12px;">Select your days.</p>
+        <multidatepicker (datesSelectedChange)="multidaySelection($event)" [matIcons]="true"
+          [disallowBackPastMonths]="true" [disallowGoFuturMonths]="false" [sundayFirstDay]="true"
+          [disableDaysBefore]="true" [disableDaysAfter]="true" [weekDaysOff]="[]">
+        </multidatepicker>
       </div>
     </div>
   </div>

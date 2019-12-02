@@ -6,7 +6,6 @@ import { AngularFireDatabase } from 'angularfire2/database';
 import { Utils, NuType } from 'src/app/utils/utils';
 import { DateUtils } from 'src/app/utils/date-utils';
 import * as moment from 'moment/moment';
-import { ThrowStmt } from '@angular/compiler';
 
 @Component({
   selector: 'app-customer-view',
@@ -84,7 +83,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   priceOption: number;
 
   subscribeActiveFlgs: Object;
-  subscribe_type: string = "std";
+  subscribe_type: string = "";
   subscribeVisibilityFlg: boolean = false;
   diff: number = 0;
 
@@ -111,6 +110,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
 
   selectedDateItem: any;
   selectedDateIndex: number = 0;
+  selectedDateActualIndex: number = 0;
   editEnabled: boolean = false;
 
   postponeEnabled: boolean = false;
@@ -169,13 +169,16 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   multiCalendarFlg: boolean = false;
   myCustomDays: any = {};
 
-  packageData: any = {
+  packageData: any = {}
 
-  }
+  /*
+  * Whether the the orders can be postponed or not.
+  * allow if it is regular subscription
+  */
+  orderModifyFlg: boolean = false;
 
   constructor(
     private _service: CommonsService,
-
     private _utils: Utils,
     private date_utils: DateUtils,
     private db: AngularFireDatabase,
@@ -220,6 +223,17 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     // this.daterangepickerOptions.skipCSS = true;
   }
 
+  modifyPackage() {
+    let obj = {};
+    for (let i = 1; i <= 14; i++) {
+
+      if (i % 2 == 0)
+        obj[i] = 1;
+      else obj[i] = 0;
+    }
+    console.log(obj);
+  }
+
   ngOnInit() {
     // this.delivery_boys_list = this._service.deliveryBoysList;
     this.packageOptions = {
@@ -256,13 +270,8 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
         end: this.end_d,
         c_name: this.c_name
       }
-      // this._route_index = params.get('index');
 
-      // console.log("this.mobile :: " + this.mobile);
       this.orders_subscriber = this.firebase.readOrders(this.mobile).subscribe((data: any) => {
-        // debugger;
-        // console.log("this.orders_subscriber.unsubscribe();");
-
         //todays time in hours(24 hr format)
         let todayTime = new Date().getHours();
 
@@ -271,9 +280,6 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
         } catch (e) {
           this._service.historyLength = 0;
         }
-
-        // this.trace("todayTime :: " + todayTime);
-        // debugger;
         // if(this.mobile == "9841014473") debugger;
 
         if (!data || this.status != 'active' && (this.status == 'done' && todayTime > 16)) {
@@ -288,9 +294,10 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
         }
 
         this.ordersExist = true;
-        // debugger;
-        // console.log("this._service.historyLength :: " + this._service.historyLength);
         let _data = data[this._service.historyLength];
+
+        if (_data.details.sub_type == "Regular") this.orderModifyFlg = true;
+        else this.orderModifyFlg = false;
 
         // debugger;
         this.historyObj = _data;
@@ -321,16 +328,17 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
             index: _data["dates"][key].index,
             date: this.date_utils.dateFormater(key, "-"),
             count: _data["dates"][key].count,
+            replacement: _data["dates"][key].replacement,
             assigned_to: _data["dates"][key].assigned_to,
             //set expired if days or less than today || todaysTime >= 11            
             // expired: (Math.sign(this.date_utils.dateDiff(new Date(), new Date(this.date_utils.stdDateFormater(__date, "/")))) == -1 || todayFlg) ? true : false,
             expired: (Math.sign(this.date_utils.dateDiff(new Date(), new Date(this.date_utils.stdDateFormater(__date, "/")))) == -1 || _data["dates"][key].delivered || todayFlg) ? true : false,
             postponed: (_data["dates"][key].index == 'postponed') ? true : false,
-            stopped: (_data["dates"][key].index == 'Stopped') ? true : false,
+            stopped: (_data["dates"][key].index == 'stopped') ? true : false,
             today: diff == 0 ? true : false,
             actualIndex: _data["dates"][key].actualIndex,
             delivered: (_data["dates"][key].delivered),
-            delivered_by: (_data["dates"][key].delivered_by == 'nil') ? "Undelivered" : "Delivered"
+            delivered_by: (_data["dates"][key].delivered_by == 'nil') ? "Undelivered" : "Delivered",
           };
         }
 
@@ -440,7 +448,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     if (alternateCnt_B == 3 && totalDays == 3) this.setSubscribeSetActiveButton(1);
     if (thrice_a_week_cnt == 3 && totalDays == 3) this.setSubscribeSetActiveButton(2);
 
-    if (totalDays == 7) this.subscribe_type = "7 days pack";
+    if (totalDays == 7) this.subscribe_type = "Regular";
 
     if (totalDays == 7 || this.unitsPerDay > this.unitsPerDay - 1) {
       this.priceOption = this.packageOptions["pack7"];
@@ -527,7 +535,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   }
 
   sevenDaysClick() {
-    this.subscribe_type = "Seven days pack";
+    this.subscribe_type = "Regular";
     this.setSubscribeSetActiveButton(0);
     // debugger;
     for (let key in this.selectedDays) this.selectedDays[key] = 1;
@@ -630,6 +638,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
         "special_notes": "",
         "assigned_to": this.assigned_to,
         "name": this.data["p_name"],
+        "sub_type": this.subscribe_type
       },
       "dates": {}
     }
@@ -660,13 +669,12 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
         }
       }
     }
-    // let start = this.date_utils.stdDateFormater(this.historyObj['start_date']);
-    // console.log("this._service.historyLength + 1 :: " + (this._service.historyLength * 1 + 1));
+
     this.firebase.user_history(this.mobile, this.historyObj, "yes", (this._service.historyLength * 1 + 1), () => {
       // console.log("added to the history.");
       this.subsBtnVisibility = true;
       this.ordersExist = true;
-      this._router.navigate(['/admin/customer_view/' + Date.now(), { mobile: this.mobile, status: 'active', name: this.c_name }]);
+      this._router.navigate(['/admin/customer_view/' + Date.now(), { mobile: this.mobile, status: 'active', name: this.c_name, start: this.packageData.start, end: this.packageData.end }]);
       // this._changeDet.detectChanges();
     });
   }
@@ -683,6 +691,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   onUserDatesClick(evt, data) {
     this.infoEnabled = false;
     this.selectedDateIndex = data.index;
+    this.selectedDateActualIndex = data.actualIndex;
     this.selectedDateItem = data;
     this.dayExpired = data.expired;
 
@@ -693,7 +702,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     this.stopEnabled = false;
 
     // console.log("expired :: " + this.historyObj['dates'][date]["expired"])
-    if (!this.historyObj['dates'][date]["delivered"] && !this.historyObj['dates'][date]["expired"]) {
+    if (!this.historyObj['dates'][date]["delivered"] && !this.historyObj['dates'][date]["expired"] && !this.historyObj['dates'][date]["stopped"]) {
       this.btnsView = true;
     } else {
       this.btnsView = false;
@@ -713,11 +722,51 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     this.btnsView = false;
     this.postponeEnabled = true;
     console.log("Postpone");
-
   }
 
   deleteAction() {
-    console.log("Delete");
+    console.log("Delete :: " + this.selectedDateItem.date);
+    // debugger;
+    console.log(this.orders[this.selectedDateActualIndex - 1]);
+    let history_date = this.date_utils.dateFormater(this.selectedDateItem.date, "");
+
+    // debugger;
+    this.orders[this.selectedDateActualIndex - 1].index = "stopped";
+
+    this.historyObj['dates'][history_date] = {
+      index: "stopped",
+      'delivered': false,
+      'missed': false,
+      'replacement': 0,
+      'assigned_to': 'nil',
+      'delivered_by': 'nil',
+      'count': 0,
+    }
+
+    let actualIndex = 0, index = 0;
+    for (let key in this.orders) {
+      actualIndex++;
+      // trace("actualIndex :: " + actualIndex);
+      // trace(this.orders[key]);
+      // trace("_________");
+      this.orders[key].actualIndex = actualIndex;
+      if (this.orders[key].index != 'postponed' && this.orders[key].index != 'stopped') {
+        index++;
+        this.orders[key].index = index;
+      }
+    }
+
+    let actualIndex1 = 0, index1 = 0;
+    Object.keys(this.historyObj['dates']).sort().map((key, index) => {
+      actualIndex1++;
+      this.historyObj['dates'][key].actualIndex = actualIndex1;
+      if (this.historyObj['dates'][key].index != 'postponed' && this.historyObj['dates'][key].index != 'stopped') {
+        index1++;
+        this.historyObj['dates'][key].index = index1;
+      }
+    });
+    this.firebase.user_history(this.mobile, this.historyObj, "yes", this._service.historyLength, () => { });
+
   }
 
   pauseAction() {
@@ -743,7 +792,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
 
     // debugger;
     let _total_price = _cnt * (this.price + this.deliveryCharges - this.discount);
-    console.log("remainig amt :: " + (_total_price - this.historyObj["details"]['paid_amt']));
+    // console.log("remainig amt :: " + (_total_price - this.historyObj["details"]['paid_amt']));
     // debugger;
     this.firebase.editupdateWrite(this.mobile, this._service.historyLength,
       {
@@ -796,34 +845,30 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   }
 
   postponeUpdateAction() {
+    console.log("postponeUpdateAction");
     let trace = console.log;
     let pastPostponeCount = 0;
 
-    let remainingDays = (this.orders.length - this.selectedDateIndex + 1);
+    let remainingDays = (this.orders.length - this.selectedDateActualIndex + 1);
     // trace("remainingDays :: " + remainingDays);
     let ordersToPostpone = [];
 
     // debugger;
-    //copy the days from postpone date
+    //copy the days from postpone start date
     for (let i = 0; i < remainingDays; i++) {
-      let index = (this.selectedDateIndex + i) - 1;
+      let index = (this.selectedDateActualIndex + i) - 1;
       ordersToPostpone[i] = JSON.parse(JSON.stringify(this.orders[index]));
     }
-
-    // debugger;
 
     let tmp;
     //update the orders object
     for (let i = 0; i < remainingDays; i++) {
-      let index1 = (this.selectedDateIndex - 1) * 1 + (this.noOfDaysToPostpone * 1) + i - pastPostponeCount;
-      // let actualIndex = (this.selectedDateIndex) * 1 + this.noOfDaysToPostpone * 1 + i;
-      // trace("index 1 :: " + index1 + " actualIndex :: " + actualIndex);
+      let index1 = (this.selectedDateActualIndex - 1) * 1 + (this.noOfDaysToPostpone * 1) + i - pastPostponeCount;
       //default date format
       let targetDate = new Date(this.date_utils.stdDateFormater(ordersToPostpone[i].date, "/"));
 
-
       tmp = ordersToPostpone.slice() || undefined;
-      if (ordersToPostpone[i].index != 'postponed') {
+      if (ordersToPostpone[i].index != 'postponed' && ordersToPostpone[i].index != 'stopped') {
         ordersToPostpone[i].index = (index1 - this.noOfDaysToPostpone * 1) + 1 - pastPostponeCount;
         ordersToPostpone[i].actualIndex = (index1 + this.noOfDaysToPostpone * 1);
       } else {
@@ -838,7 +883,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
 
       //histroy update for write firebase
       let history_date = this.date_utils.getDateString(updateDate, "");
-      if (ordersToPostpone[i].index != 'postponed') {
+      if (ordersToPostpone[i].index != 'postponed' && ordersToPostpone[i].index != 'stopped') {
         this.historyObj['dates'][history_date] = {
           'delivered': false,
           'missed': false,
@@ -858,21 +903,12 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
           'count': 0
         }
       }
-
-      // if the subscription type other than regular days
-
-      if (ordersToPostpone[i + 1] && ordersToPostpone[i].actualIndex != "postponed" && ordersToPostpone[i + 1].actualIndex != "postponed") {
-        if ((ordersToPostpone[i + 1].actualIndex - ordersToPostpone[i].actualIndex) > 1) {
-          trace("loop breaked 1");
-          break;
-        }
-      }
     }
 
     for (let i = 0; i < this.noOfDaysToPostpone; i++) {
       // console.log("postpone :: " + i);
-      let target = (this.selectedDateIndex + i) - 1;
-      let start_target = (this.selectedDateIndex + 0) - 1;
+      let target = (this.selectedDateActualIndex + i) - 1;
+      let start_target = (this.selectedDateActualIndex + 0) - 1;
       let _targetDate = new Date(this.date_utils.stdDateFormater(this.orders[start_target].date, "/"));
       let _updateDate = this.date_utils.addDaysToCalendar(_targetDate, i);
 
@@ -901,27 +937,14 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
         'delivered_by': 'nil',
         'count': 0,
       }
-
-      // if the subscription type other than regular days
-      if (ordersToPostpone[i + 1] && ordersToPostpone[i].actualIndex != "postponed" && ordersToPostpone[i + 1].actualIndex != "postponed") {
-        if ((ordersToPostpone[i + 1].actualIndex - ordersToPostpone[i].actualIndex) > 1) {
-          trace("loop breaked");
-          this.orders.splice(i + 2, 0, tmp[i + 1]);
-          break;
-        }
-      }
     }
 
-    // debugger;
     //index update for both local and firebase object.
     let actualIndex = 0, index = 0;
     for (let key in this.orders) {
       actualIndex++;
-      // trace("actualIndex :: " + actualIndex);
-      // trace(this.orders[key]);
-      // trace("_________");
       this.orders[key].actualIndex = actualIndex;
-      if (this.orders[key].index != 'postponed') {
+      if (this.orders[key].index != 'postponed' && this.orders[key].index != 'stopped') {
         index++;
         this.orders[key].index = index;
       }
@@ -931,14 +954,12 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     Object.keys(this.historyObj['dates']).sort().map((key, index) => {
       actualIndex1++;
       this.historyObj['dates'][key].actualIndex = actualIndex1;
-      if (this.historyObj['dates'][key].index != 'postponed') {
+      if (this.historyObj['dates'][key].index != 'postponed' && this.historyObj['dates'][key].index != 'stopped') {
         index1++;
         this.historyObj['dates'][key].index = index1;
       }
     });
     this.firebase.user_history(this.mobile, this.historyObj, "yes", this._service.historyLength, () => { });
-
-    // debugger;
   }
 
   postponeCancelAction() {
@@ -951,6 +972,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     this.stopEnabled = true;
     this.btnsView = false;
   }
+
 
   stopUpdateAction() {
     // console.log("stopUpdateAction");
@@ -1072,6 +1094,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
         "DND": "No",
         "instructions": "hole and open",
         "special_notes": "",
+        "sub_type": "Regular"
       },
       "dates": {}
     }
@@ -1106,7 +1129,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       this.subsBtnVisibility = true;
       this.ordersExist = true;
       // debugger;
-      this._router.navigate(['/admin/customer_view/' + Date.now(), { mobile: this.mobile, index: 0, status: 'active', name: this.c_name }]);
+      this._router.navigate(['/admin/customer_view/' + Date.now(), { mobile: this.mobile, status: 'active', name: this.c_name, start: this.packageData.start, end: this.packageData.end }]);
       // this._changeDet.detectChanges();
     });
 
@@ -1177,7 +1200,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     }
 
 
-    this.trace(content);
+    // this.trace(content);
     this._service.send_bulk_sms({
       'mobile_nos': [this.mobile],
       'fName': "",
@@ -1190,21 +1213,14 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     val.value = 0;
   }
 
-
-
   payCancelAction() {
     console.log("Cancel action.");
   }
 
-
-
   deleteOrderAction() {
     // console.log("delete order action.", this._service.historyLength, this.mobile);
     this.delete_subscriber = this.firebase.deleteUserHistory(this.mobile, this._service.historyLength, () => {
-      // this._router.navigate(["admin/customer_list"]);
       this.ordersExist = false;
-      // this._service.historyLength -= 1;
-      // console.log("History lenght after delete :: " + this._service.historyLength);
       this.orders = [];
       this._changeDet.detectChanges();
       this.delete_subscriber.unsubscribe();
@@ -1249,13 +1265,12 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     0
   }
 
-  pickMyDates(el: HTMLElement) {
+  pickMyDates() {
     (this.multiCalendarFlg) ? this.multiCalendarFlg = false : this.multiCalendarFlg = true;
     // el.scrollIntoView();
   }
 
   multidaySelection(dates) {
-
     let _dates: any = dates.slice(0);
     _dates.sort(function (a, b) { return a._d.getTime() - b._d.getTime() });
     // console.log(_dates);
@@ -1358,10 +1373,9 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       // console.log("added to the history.");
       this.subsBtnVisibility = true;
       this.ordersExist = true;
-      this._router.navigate(['/admin/customer_view/' + Date.now(), { mobile: this.mobile, status: 'active', name: this.c_name }]);
+      this._router.navigate(['/admin/customer_view/' + Date.now(), { mobile: this.mobile, status: 'active', name: this.c_name, start: this.packageData.start, end: this.packageData.end }]);
       // this._changeDet.detectChanges();
     });
-
   }
 }
 

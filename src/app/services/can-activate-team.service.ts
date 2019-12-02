@@ -13,5 +13,9 @@ export class CanActivateTeamService implements CanActivate {
     console.log("can activate :: " + this.authService.isLoggedin());
     return this.authService.isLoggedin();
   }
+
+  canDeactivate() {
+    return !this.authService.isLoggedin();
+  }
 }
 

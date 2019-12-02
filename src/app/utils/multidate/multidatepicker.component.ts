@@ -73,8 +73,6 @@ export class MultidatepickerComponent implements OnInit {
     }
   }
 
-
-
   @Input() _projectScope: any[];
   get projectScope2() {
     return this._projectScope;
@@ -83,6 +81,7 @@ export class MultidatepickerComponent implements OnInit {
     this._projectScope = val;
     // this.propagateChange(this._projectScope);
   }
+
   checkNavigationButtons() {
     let today = moment(),
       previousMonth = moment(this.month).subtract(1, 'month'),
@@ -90,6 +89,7 @@ export class MultidatepickerComponent implements OnInit {
     this.disableBackButton = this.disableNavigation || (this.disallowBackPastMonths && today.isAfter(previousMonth, 'month'));
     this.disableNextButton = this.disableNavigation || (this.disallowGoFuturMonths && today.isBefore(nextMonth, 'month'));
   }
+
   getDaysOfWeek() {
     /*To display days of week names in moment.lang*/
     let momentDaysOfWeek = moment().localeData().weekdaysMin(),
@@ -104,10 +104,12 @@ export class MultidatepickerComponent implements OnInit {
     }
     return daysOfWeek;
   }
+
   getMonthYearToDisplay() {
     let month = this.month.format('MMMM');
     return month.charAt(0).toUpperCase() + month.slice(1);
   }
+
   getYearsForSelect() {
     var now = moment(),
       changeYearPast = Math.max(0, parseInt(this.changeYearPast, 10) || 0),
@@ -266,7 +268,7 @@ export class MultidatepickerComponent implements OnInit {
     }
     return this.allDaysOff ||
       (this.disableDaysBefore && moment(day.date).isBefore(moment().add(today, 'day'), 'day')) ||
-      (this.disableDaysAfter && moment(day.date).isAfter(moment().add(29 + today, 'day'), 'day')) ||
+      (this.disableDaysAfter && moment(day.date).isAfter(moment().add(30 + today, 'day'), 'day')) ||
       ((this.weekDaysOff instanceof Array) && this.weekDaysOff.some(function (dayOff) {
         return day.date.day() === dayOff;
       })) ||

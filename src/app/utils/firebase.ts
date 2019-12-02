@@ -349,14 +349,12 @@ export class FireBase implements OnInit {
 
     deleteUserOrder(id, date, callback) {
         var ref = this.db.database.ref("/orders/" + date + "/" + id);
-        ref.remove()
-            .then(function () {
-                console.log("Remove succeeded from orders.");
-                callback();
-            })
-            .catch(function (error) {
-                console.log("Remove failed: " + error.message)
-            });
+        ref.remove().then(function () {
+            console.log("Remove succeeded from orders.");
+            callback();
+        }).catch(function (error) {
+            console.log("Remove failed: " + error.message)
+        });
     }
 
     deleteFromCart(target, user_id, product_id) {

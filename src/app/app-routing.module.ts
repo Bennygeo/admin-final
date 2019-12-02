@@ -13,7 +13,8 @@ const routes: Routes = [
   },
   {
     path: 'login',
-    component: LoginComponent
+    component: LoginComponent,
+    canDeactivate: [CanActivateTeamService]
   },
   {
     path: 'admin',
