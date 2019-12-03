@@ -228,32 +228,58 @@ export class ReportComponent implements OnInit, OnDestroy {
           this.listObservable.unsubscribe();
         } catch (e) { }
 
-        // this.trace("readDailyOrders");
-        for (let key in data) {
-          let _data = JSON.parse(data[key].tender);
-          for (let _agents = 0; _agents < this.delivery_boys.length; _agents++) {
-            // this.trace("_data.assigned_to :: " + _data.assigned_to);
+        this.trace("readDailyOrders");
+
+        //reset report Array
+        for (var i = 0; i < this.delivery_boys.length; i++) {
+          this.reportAry[i] = {
+            name: this.delivery_boys[i],
+            smallNuts: 0,
+            largeNuts: 0,
+            orangeNuts: 0,
+            total: 0,
+            replacements: 0,
+            missed: 0,
+            collection: 0
+          }
+        }
+        this.large_nut_cnt = 0;
+        this.orange_nut_cnt = 0;
+        this.small_nut_cnt = 0;
+
+        this.total_nut_price = {
+          large: 0,
+          orange: 0,
+          small: 0
+        }
+
+        for (let _agents = 0; _agents < this.delivery_boys.length; _agents++) {
+          for (let key in data) {
+            let _data = JSON.parse(data[key].tender);
+
             if (_data.assigned_to == this.delivery_boys[_agents]) {
               let _index = this.delivery_boys.indexOf(_data.assigned_to);
               // this.trace("_index :: " + _index);
-              if (_data.type == "Large") {
-                this.reportAry[_index].largeNuts++;
-                this.large_nut_cnt++;
+              if (_data.type == "Large" && _data.nut_variety != "Orange") {
+                this.reportAry[_index].largeNuts += _data.per_day;
+                this.large_nut_cnt += _data.per_day;
               }
 
               if (_data.type == "Medium") {
-                this.reportAry[_index].smallNuts++;
-                this.small_nut_cnt++;
+                this.reportAry[_index].smallNuts += _data.per_day;
+                this.small_nut_cnt += _data.per_day;
               }
 
-              if (_data.type == "Orange") {
-                this.reportAry[_index].orangeNuts++;
-                this.orange_nut_cnt++;
+              if (_data.type == "Large" && _data.nut_variety == "Orange") {
+                this.reportAry[_index].orangeNuts += _data.per_day;
+                this.orange_nut_cnt += _data.per_day;
               }
-              this.reportAry[_index].total++;
+              this.reportAry[_index].total += _data.per_day;
             }
           }
         }
+
+        // debugger;
 
         /*
               * Local sale data from firebase
@@ -319,9 +345,12 @@ export class ReportComponent implements OnInit, OnDestroy {
         var cnt = 0;
 
         for (var key in nuts) {
+          // this.trace("nuts[key] :: " + nuts[key]);
           cnt++;
           for (let i = this.stocks_copy.length - 1; i >= 0; i--) {
             let details = (this.stocks_copy[i]);
+            // debugger;
+
             if (details[nuts[key]] > 0) {
               var diff = details[nuts[key]] - (this[nuts[key] + "_nut_cnt"] + this.local_sales[nuts[key]]);
 
@@ -331,6 +360,7 @@ export class ReportComponent implements OnInit, OnDestroy {
                 if (this.stocks_copy[i]) {
                   details = (this.stocks_copy[i]);
                   details[nuts[key]] -= (this[nuts[key] + "_nut_cnt"] + this.local_sales[nuts[key]]);
+                  this.trace("nuts[key] :: " + nuts[key]);
                   this.total_nut_price[nuts[key]] += (this[nuts[key] + "_nut_cnt"] + this.local_sales[nuts[key]]) * (details[nuts[key] + '_price'] * 1);
                   this.stocks_copy[i][nuts[key]] = details[nuts[key]];
                 }
@@ -391,8 +421,10 @@ export class ReportComponent implements OnInit, OnDestroy {
             //total revenue update
             this.total_revenue = (this.large_nut_cnt * this.large_nut_selling_price) + (this.small_nut_cnt * this.small_nut_selling_price) + (this.orange_nut_cnt * this.orange_nut_selling_price);
             //total price update
+            // debugger;
             this.total_price = (this.total_nut_price.large) + (this.total_nut_price.small) + (this.total_nut_price.orange);
 
+            // debugger;
             //total profit update
             this.total_profit = (this.total_revenue + this.local_revenue) - this.total_price - this.rent_per_day - (this.delivery_boys_salary * this.no_of_delivery_boys);
 
@@ -552,7 +584,7 @@ export class ReportComponent implements OnInit, OnDestroy {
         }
       }, () => {
 
-        this.report;
+        // this.report;
         // debugger;
         for (var i = 0; i < this.delivery_boys.length; i++) {
           this.reportAry[i] = {

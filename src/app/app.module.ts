@@ -46,8 +46,8 @@ import { CanActivateTeamService } from './services/can-activate-team.service';
     CanActivateTeamService,
     CommonsService,
     AngularFireDatabase,    
-    // { provide: LocationStrategy, useClass: HashLocationStrategy },
-    { provide: APP_BASE_HREF, useValue: '/admin/' },
+    { provide: LocationStrategy, useClass: HashLocationStrategy },
+    // { provide: APP_BASE_HREF, useValue: '/admin/' },
     
   ],
   bootstrap: [AppComponent]

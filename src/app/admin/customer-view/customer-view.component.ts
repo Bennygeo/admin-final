@@ -1113,6 +1113,11 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       let _date = this.date_utils.addDaysToCalendar(new Date(this.rangepicker_data.start), i + 1);
       _dates.push(_date.toDateString());
     }
+
+    //update start and end dates
+    this.start_d = _dates[0];
+    this.end_d = _dates[_dates.length - 1];
+
     let index = 0;
     for (let i = 0; i < _dates.length; i++) {
       index++;
@@ -1138,8 +1143,8 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       this.subsBtnVisibility = true;
       this.ordersExist = true;
       // debugger;
-      this._router.navigate(['/admin/customer_view/' + Date.now(), { mobile: this.mobile, status: 'active', name: this.c_name, start: this.packageData.start, end: this.packageData.end }]);
-      // this._changeDet.detectChanges();
+      this.trace("end d :: " + _dates[_dates.length - 1]);
+      this._router.navigate(['/admin/customer_view/' + Date.now(), { mobile: this.mobile, status: 'active', name: this.c_name, start: this.start_d, end: this.end_d }]);      // this._changeDet.detectChanges();
     });
 
     if (this.customerMsgFlag) {
