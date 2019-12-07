@@ -138,6 +138,8 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   delete_orders_subscriber: any;
   sendMsgBtnFlg: boolean = false;
   trace: any = console.log;
+
+  subscribed_dates: Array<any> = [];
   // save_btn_flg:boolean = true;
 
 
@@ -185,7 +187,8 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     private _activatedRoute: ActivatedRoute,
     private _changeDet: ChangeDetectorRef,
     private _ngZone: NgZone,
-    private _router: Router
+    private _router: Router,
+
   ) {
 
     this.nutTypes = this._service.nutTypes;
@@ -485,28 +488,9 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       "m_no": this.mobile,
       // "img": "assets/products/veg/tender.jpg",
       "id": "product_1",
-      // "price": this.originalPrice,
       "type": this.selectedNutType,
-      // "quantity": (this.unitsPerDay * this.subscribedDays),
-      // "totalPrice": this.totalPrice,
       "per_day": this.unitsPerDay,
-      // "total": (this.unitsPerDay * this.subscribedDays),
-      // "paid_amt": 0,
-      // "remaining_to_pay": this.totalPrice,
-      // "no_of_days": this.subscribedDays,
-      // "sub_type": this.subscribe_type,
-      // "subscribe": this.subsFlag,
-      // "offers": this.diff,
-      // "delivery_charge": this.deliveryCharges * (this.unitsPerDay * this.subscribedDays),
-      // "straw": this.strawFlag,
-      // "strawPrice": (this.strawFlag) ? (this.strawPrice * this.unitsPerDay) : 0,
-      // "units": 1,
       "delivery_status": "Not delivered",
-      // "start_date": this.date_utils.getDateString(this.start_date, "-"),
-      // "end_date": this.date_utils.getDateString(this.end_date, "-"),
-      // "paid": "No",
-      // "nut_type": "sweet",
-      // "DND": "No",
       "nut_variety": this.selectedNutVariety,
       "assigned_to": this.assigned_to,
       "history_id": this._service.historyLength + 1
@@ -643,6 +627,22 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       "dates": {}
     }
 
+    this.tenderDetails = {
+      // "category": "Vegetables",
+      "name": this.data["p_name"],
+      "c_name": this.c_name,
+      "m_no": this.mobile,
+      // "img": "assets/products/veg/tender.jpg",
+      "id": "product_1",
+      "type": this.selectedNutType,
+      "per_day": this.unitsPerDay,
+      "delivery_status": "Not delivered",
+      "nut_variety": this.selectedNutVariety,
+      "assigned_to": this.assigned_to,
+      "history_id": this._service.historyLength + 1
+    }
+
+    this.subscribed_dates = [];
     // console.log("addToSubscriptionBag");
     for (var key in this.selectedDays) {
       index++;
@@ -652,6 +652,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
         // this.trace("index :: " + index);
         // this.trace("key :: " + key);
         let _date = this.date_utils.addDaysToCalendar(new Date(), key);
+        this.subscribed_dates.push(_date);
         this.firebase.write_tc_orders(this.date_utils.getDateString(_date, ""), this.mobile, this.tenderDetails);
 
         // this.trace("*****************");
@@ -671,11 +672,14 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       }
     }
 
+    this.start_d = this.subscribed_dates[0].toDateString();
+    this.end_d = this.subscribed_dates[this.subscribed_dates.length - 1].toDateString();
+
     this.firebase.user_history(this.mobile, this.historyObj, "yes", (this._service.historyLength * 1 + 1), () => {
       // console.log("added to the history.");
       this.subsBtnVisibility = true;
       this.ordersExist = true;
-      this._router.navigate(['/admin/customer_view/' + Date.now(), { mobile: this.mobile, status: 'active', name: this.c_name, start: this.packageData.start, end: this.packageData.end }]);
+      this._router.navigate(['/admin/customer_view/' + Date.now(), { mobile: this.mobile, status: 'active', name: this.c_name, start: this.start_d, end: this.end_d }]);
       // this._changeDet.detectChanges();
     });
   }
@@ -779,7 +783,6 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     this.historyObj['details']['total_price'] = _after_total;//this.historyObj['details']['total_price'] * 1 - _after_total;
 
     this.firebase.user_history(this.mobile, this.historyObj, "yes", this._service.historyLength, () => { });
-
   }
 
   pauseAction() {
@@ -854,7 +857,6 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
   onDeliveryBoyChange(evt): void {
     this.assigned_to = evt.value;
     this.assigned_to_index = this.delivery_boys_list.indexOf(this.assigned_to);
-    console.log("this.assigned_to :: " + this.assigned_to);
   }
 
   postponeUpdateAction() {
@@ -1404,6 +1406,19 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
       this._router.navigate(['/admin/customer_view/' + Date.now(), { mobile: this.mobile, status: 'active', name: this.c_name, start: _startDate.toDateString(), end: _endDate.toDateString() }]);
       // this._changeDet.detectChanges();
     });
+  }
+
+  writeNotes(evt, val) {
+    // this.trace("writeNotes :: " + val.value);
+    if (val.value != "" && val.value.length > 3) {
+      this.firebase.write_special_notes(val.value, this.mobile, this._service.historyLength * 1, () => {
+        this.trace("Special notes has been written.");
+        val.value = "";
+        this._service.openSnackBar("Notes had been updated.", "");
+      });
+    } else {
+      this._service.openSnackBar("Notes length should be greater than 10.", "");
+    }
   }
 }
 

@@ -40,7 +40,8 @@
                 (click)="onCustomerClick($event, i,item.mobile)" id="{{'list_' + i}}">
                 <div class="col-10" style="margin-left: -6px; margin-right: -6px">
                     <div style="position: relative; float: left; padding-right: 6px;">
-                        <mat-checkbox [checked]='item.checked'></mat-checkbox>
+                        <mat-checkbox (change)="onClick($event, i)" (click)="$event.stopPropagation()" [checked]="item.checked">
+                        </mat-checkbox>
                     </div>
                     <div class="customer_name">{{item.name}}&nbsp;
                         <span
@@ -76,24 +77,23 @@
 
 
 <div class="footerCls">
-    <div style="width: 60%; position:relative; float:left; left:10px;">
-        <mat-form-field>
-            <mat-select placeholder="Assign delivery to" (selectionChange)="onDeliveryBoyChange($event)"
-                style="z-index: 100;">
-                <mat-option *ngFor="let item of delivery_boys_list; let i=index;" [value]="item">
-                    {{item}}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
-    </div>
+    <!-- <div style="width: 60%; position:relative; float:left; left:10px;"> -->
+    <mat-form-field>
+        <mat-select placeholder="Assign delivery to" (selectionChange)="onDeliveryBoyChange($event)">
+            <mat-option *ngFor="let item of delivery_boys_list; let i=index;" [value]="item">
+                {{item}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+    <!-- </div> -->
 
-    <div style="width: 40%; position:relative; float:left;">
-        <button [disabled]='assignBtnFlg' class="btn btn-light"
-            style="background: #008000; color:#fff; text-align: center; padding: 12px;width: auto; float: right;"
-            (click)="assign()">
-            Assign
-        </button>
-    </div>
+    <!-- <div style="width: 40%; position:relative; float:left;"> -->
+    <button class="btn btn-light"
+        style="background: #008000; color:#fff; text-align: center; padding: 12px;width: auto; float: right;"
+        (click)="assign()">
+        Assign
+    </button>
+    <!-- </div> -->
 </div>
 
 

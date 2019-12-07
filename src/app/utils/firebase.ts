@@ -471,14 +471,21 @@ export class FireBase implements OnInit {
 
     remove_all_users_history(id) {
         var ref = this.db.database.ref("/users_info/" + id + "/history");
-        ref.remove()
-            .then(function () {
-                console.log("User history has been removed.");
-                // callback();
-            })
-            .catch(function (error) {
-                console.log("Remove failed: " + error.message)
-            });
+        ref.remove().then(function () {
+            console.log("User history has been removed.");
+            // callback();
+        }).catch(function (error) {
+            console.log("Remove failed: " + error.message)
+        });
+    }
+
+    write_special_notes(notes, id, historyLen, callback) {
+        var ref = this.db.database.ref("/users_info/" + id + "/history/" + historyLen).update({
+            "notes": notes
+        }, (error) => {
+            if (error) console.log("Written failed: " + error.message);
+            else callback();
+        });
     }
 
     public logout() {

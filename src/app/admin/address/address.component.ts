@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, FormControl, FormGroupDirective, NgForm } from '@angular/forms';
-import { UserDetails, Utils, Places, Globals } from 'src/app/utils/utils';
+import { UserDetails, Places, Globals } from 'src/app/utils/utils';
 
 import { ErrorStateMatcher, MatDialogRef } from '@angular/material';
 import { FireBase } from 'src/app/utils/firebase';
@@ -10,8 +10,6 @@ import { StorageService } from 'src/app/utils/storage.service';
 import { ValidationService } from 'src/app/utils/validation.service';
 import { CommonsService } from 'src/app/services/commons.service';
 import { MatDialogComponent } from 'src/app/others/mat-dialog/mat-dialog.component';
-import { database } from 'firebase';
-
 
 
 @Component({

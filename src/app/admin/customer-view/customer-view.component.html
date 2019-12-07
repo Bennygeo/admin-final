@@ -65,6 +65,8 @@
     </tr>
   </table>
 
+
+
   <div *ngIf="ordersExist">
     <button class="btn btn-danger" (click)="deleteOrderAction()">Delete Order</button> &nbsp;
     <div style="border:1px solid #aaa; padding: 12px;">
@@ -72,6 +74,18 @@
       <button class="btn btn-dark" [disabled]="sendMsgBtnFlg" (click)="SendMsgAction()">Notify</button>
       <p style="margin-bottom: 0; font-size: 12px;">{{warn_msg_info}}</p>
     </div>
+
+
+    <div style="margin-top:18px; margin-bottom:6px; padding-bottom: 3px;">
+      <mat-form-field style="width:100%">
+        <textarea matInput placeholder="Special notes." style="height: 80px;" #notesVal></textarea>
+      </mat-form-field>
+      <button mat-button class="addToBagBtn float-right" id="writeNotesBtn" style="background: #666;"
+        (click)="writeNotes($event, notesVal)" [disabled]="addToCartBtnDisabled">
+        <mat-icon>note_add</mat-icon> Update notes
+      </button>
+    </div>
+    <div class="clearfix"></div>
   </div>
 
   <div class="row" style="margin-top:12px;">
@@ -220,6 +234,16 @@
         </mat-checkbox>
       </div>
 
+      <div style="margin-top:18px; margin-bottom:6px; padding-bottom: 3px;">
+        <mat-form-field style="width:100%">
+          <textarea matInput placeholder="Special notes." style="height: 80px;" #notesVal></textarea>
+        </mat-form-field>
+        <button mat-button class="addToBagBtn float-right" style="background: #666;"
+          (click)="writeNotes($event, notesVal)" [disabled]="addToCartBtnDisabled">
+          <mat-icon>note_add</mat-icon> Update notes
+        </button>
+      </div>
+
       <div [ngStyle]="{'margin-top': '12px', 'margin-bottom': '0px'}">
         <mat-form-field [ngStyle]="{'width': '100%'}">
           <mat-select placeholder="Assign delivery to" [value]="delivery_boys_list[assigned_to_index]"
@@ -233,7 +257,6 @@
 
       <div style="margin-top:6px; margin-bottom:12px; padding-right:12px; padding-bottom: 3px;">
         <mat-checkbox class="noselect" color="primary" [(ngModel)]="customerMsgFlag" (change)="onCustomerMsgChange()">
-          <!-- add bio-degradable straw to package(2Rs/-) -->
           send message
         </mat-checkbox>
       </div>
@@ -289,6 +312,9 @@
 
         <button mat-button class="addToBagBtn" (click)="addToSubscriptionBag()" [disabled]="subsBtnVisibility"
           style="margin-bottom: 6px;">
+          <i class="material-icons">
+            subscriptions
+          </i>
           Add to subscription</button>
 
         <button mat-button class="addToBagBtn" (click)="addToCustomSubscriptionBag()"

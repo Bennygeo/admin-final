@@ -69,6 +69,9 @@
                     <div class="col-12 inst">
                         {{item.instructions}}
                     </div>
+                    <div class="col-12 inst">
+                        {{item.notes}}
+                    </div>
 
                     <div class="col-12" style="margin-bottom: 12px; font-size: 24px;">
                         <mat-checkbox (change)="tc_selection_change_handler($event)"><span style="color: #999;">TC
@@ -136,6 +139,10 @@
 
                     <div class="col-12 inst">
                         {{item.instructions}}
+                    </div>
+                    
+                    <div class="col-12 inst">
+                        {{item.notes}}
                     </div>
                 </div>
             </div>

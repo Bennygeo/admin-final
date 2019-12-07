@@ -72,6 +72,9 @@ export class CustomerListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
+    
+
     this.listHeight = window.innerHeight - 220;
     // console.log("this.listHeight :: " + this.listHeight);
     // console.log("customer list class :: oninit");
@@ -94,8 +97,7 @@ export class CustomerListComponent implements OnInit, OnDestroy {
     //   }
     // });
 
-
-
+    this.delivery_boys_list = this._service.delivery_boys_list;
     this._service.deliveryBoysUpdate.subscribe(() => {
       this.delivery_boys_list = this._service.delivery_boys_list;
     });
@@ -181,6 +183,7 @@ export class CustomerListComponent implements OnInit, OnDestroy {
           } else {
             data[key].active = "expired";
           }
+          data[key].checked = false;
 
           // trace("diff :: " + _diff);
           if (_diff == 0) {
@@ -195,7 +198,6 @@ export class CustomerListComponent implements OnInit, OnDestroy {
       // this.ngZone.run(() => this._router.navigate(['customer_list']));
       // this.ngZone.run(() => console.log("ng on init."));
       this._changeDet.detectChanges();
-
     });
 
     // if (this._service.sendCustomerMsg.observers.length == 0) {
@@ -210,7 +212,7 @@ export class CustomerListComponent implements OnInit, OnDestroy {
   onCustomerClick(evt, index, mobile) {
     let trace = console.log;
     trace("customer view");
-    // this.userList[index].checked = (this.userList[index].checked) ? false : true;
+    this.userList[index].checked = (this.userList[index].checked) ? false : true;
     this.searchAry[index].checked = (this.searchAry[index].checked) ? false : true;
 
     if (this.searchAry[index].checked) this.assignBtnFlg = false;
@@ -250,7 +252,7 @@ export class CustomerListComponent implements OnInit, OnDestroy {
   }
 
   assign() {
-    // console.log("Assign deliveries.");
+    console.log("Assign deliveries.");
     this.assignBtnFlg = true;
     let modifiedData = [];
     // debugger;
@@ -258,7 +260,6 @@ export class CustomerListComponent implements OnInit, OnDestroy {
     // console.log("datre :: " + _date);
     this.readDataObservable = this.firebase.readDailyOrders(_date).subscribe((data) => {
       this.assignBtnFlg = false;
-      // debugger;
 
       for (let key in this.searchAry) {
         if (this.searchAry[key].active == "active" && this.searchAry[key].checked) {
@@ -414,6 +415,14 @@ export class CustomerListComponent implements OnInit, OnDestroy {
 
     }
     // throw new Error("Method not implemented.");
+  }
+
+  onClick(evt, index) {
+
+    console.log("checked :: " + evt.checked + " index :: " + index);
+    // debugger;
+    this.searchAry[index].checked = evt.checked;
+    // this._changeDet.detectChanges();
   }
 }
 

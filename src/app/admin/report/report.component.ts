@@ -279,8 +279,6 @@ export class ReportComponent implements OnInit, OnDestroy {
           }
         }
 
-        // debugger;
-
         /*
               * Local sale data from firebase
               * Read the data and add it with the public appropriate nuts
@@ -360,7 +358,7 @@ export class ReportComponent implements OnInit, OnDestroy {
                 if (this.stocks_copy[i]) {
                   details = (this.stocks_copy[i]);
                   details[nuts[key]] -= (this[nuts[key] + "_nut_cnt"] + this.local_sales[nuts[key]]);
-                  this.trace("nuts[key] :: " + nuts[key]);
+                  // this.trace("nuts[key] :: " + nuts[key]);
                   this.total_nut_price[nuts[key]] += (this[nuts[key] + "_nut_cnt"] + this.local_sales[nuts[key]]) * (details[nuts[key] + '_price'] * 1);
                   this.stocks_copy[i][nuts[key]] = details[nuts[key]];
                 }
@@ -400,6 +398,7 @@ export class ReportComponent implements OnInit, OnDestroy {
             this.stocks_copy.reverse();
             var cnt1 = -1;
 
+            // debugger;
             //write the array data into the object
             for (var yr in this.stocks_data) {
               for (var mnth in this.stocks_data[yr]) {
@@ -414,6 +413,7 @@ export class ReportComponent implements OnInit, OnDestroy {
                 }
               }
             }
+
 
             for (var key in this.local_stocks)
               this.local_revenue += (this.local_stocks[key]['large_price'] * 1);
@@ -458,8 +458,12 @@ export class ReportComponent implements OnInit, OnDestroy {
   readStocks(year, month, callback) {
     this.trace("readStocks .......................");
     /*
-    * Read stock entry from firebase
+    * Read stock entry from firebase    
     */
+    //  debugger;
+    if (!this.stocks_data[year]) this.stocks_data[year] = {};
+    if (!this.stocks_data[year][month]) this.stocks_data[year][month] = {};
+
     this.read_stock = this.firebase.read_stock(year, month).subscribe((data: any) => {
       // this.trace("read stock");
       // debugger;
@@ -471,9 +475,6 @@ export class ReportComponent implements OnInit, OnDestroy {
         this.read_stock.unsubscribe();
         if (this.tmp_cnt > 5) return;
       }
-
-      this.stocks_data[year] = {};
-      this.stocks_data[year][month] = {};
 
       for (let key in data) {
         let _tmp_data = [];
@@ -501,6 +502,7 @@ export class ReportComponent implements OnInit, OnDestroy {
           });
         }
 
+        // debugger;
         //write in an object
         this.stocks_data[year][month][key] = _tmp_data[_tmp_data.length - 1];
         this.stocks.push(_tmp_data[_tmp_data.length - 1]);
@@ -576,7 +578,7 @@ export class ReportComponent implements OnInit, OnDestroy {
         "small_count": this.stock_small_nuts_cnt,
         "orange_count": this.stock_orange_nuts_cnt,
         "remaining": {
-          [this.todaysDateFormatted]: {
+          [this._dateUtils.getDateString(new Date(), "")]: {
             large: this.stock_large_nuts_cnt * 1,
             small: this.stock_small_nuts_cnt * 1,
             orange: this.stock_orange_nuts_cnt * 1

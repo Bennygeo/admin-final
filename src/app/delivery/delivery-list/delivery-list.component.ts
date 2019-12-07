@@ -63,7 +63,6 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
   orange_count: number = 0;
   green_count: number = 0;
 
-
   constructor(
     private _activatedRoute: ActivatedRoute,
     private db: AngularFireDatabase,
@@ -93,8 +92,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
     });
 
     let todayTime = new Date().getHours();
-    // debugger;
-    if (todayTime <= 18) {
+    if (todayTime <= 15) {
       this.todaysDate = new Date();
       this.todaysDate = this.date_utils.getDateString(this.todaysDate, "");
     } else {
@@ -123,15 +121,14 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
         this.total_undelivered = 0;
 
         for (let key in data) {
+          
           index++;
           let _data = JSON.parse(data[key].tender);
+          // this.trace(_data);
           // debugger;
           let deliveryFlg = (_data.delivery_status == "Delivered") ? true : false;
           this.deliveredStatus = (deliveryFlg) ? "Done" : "Delivered";
 
-          // this.trace("key :: " + key);
-          // if (key == "7795747843") debugger;
-          // debugger;
           if (_data.assigned_to == this.name) {
             this.total_deliveries += _data.per_day;
             let history_len = Object.keys(user_data[_data.m_no].history).length;
@@ -155,19 +152,18 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
               }
             }
 
-            // debugger;
             let addr = JSON.parse(user_data[key].address.address1);
             // let updated_address = addr.street;
             let updated_address = addr.block + ", " + addr.floor + ", " + addr.door;
-            // console.log("key :: " + key);
-            // console.log("--- :: " + user_data[key].history[history_len].details.remaining_to_pay);
 
             // debugger;
             if (_data.nut_variety == "orange" || _data.nut_variety == "Orange") this.orange_count += _data.per_day;
             else this.green_count += _data.per_day;
 
-            if (!deliveryFlg) {
+            this.trace(user_data[key].history[history_len].notes);
+            this.trace("--------------------");
 
+            if (!deliveryFlg) {
               this.total_undelivered += (_data.per_day + (_data.replacement * 1 || 0));
               this.undelivered_list.push({
                 'no': key,
@@ -182,7 +178,8 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
                 'address': updated_address,
                 'rtp': user_data[key].history[history_len].details.remaining_to_pay,
                 'paid': user_data[key].history[history_len].details.paid_amt,
-                'instructions': addr.inst
+                'instructions': addr.inst,
+                "notes":user_data[key].history[history_len].notes
               });
             } else {
               this.total_delivered += (_data.per_day + (_data.replacement * 1 || 0));
@@ -199,7 +196,8 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
                 'address': updated_address,
                 'rtp': user_data[key].history[history_len].details.remaining_to_pay,
                 'paid': user_data[key].history[history_len].details.paid_amt,
-                'instructions': user_data[key].history[history_len].details.instructions
+                'instructions': user_data[key].history[history_len].details.instructions,
+                "notes":user_data[key].history[history_len].notes
               });
             }
           }
@@ -320,7 +318,6 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
     this.selectedIndex = e.currentTarget.id.split("_")[1] * 1;
     this.selectedTarget = this.list[this.selectedIndex].data;
 
-
     this.packageData = this.user_data[this.selectedTarget.m_no].history[this.selectedTarget.history_id].details;
 
     this.priceVal = this.packageData.remaining_to_pay;
@@ -398,7 +395,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
     } else if (remaining > 0) {
       content = `Dear Customer!\nThank you for you payment of Rs.${this.priceVal} towards your order total of Rs.${details.total} for ${details.count}x${details.total_days} days of ${details.product_name} subscription from ${details.start_date} to ${details.end_date}. Kindly pay the balance of Rs.${remaining} on your next delivery. Thank you.\nStay Healthy!\nwww.thinkspot.in`;
     }
-    this.trace(content);
+    // this.trace(content);
     // console.log("this.mobile  :: " + this.data.m_no);
     // this._service.send_bulk_sms({
     //   'mobile_nos': [this.selectedTarget.m_no],
