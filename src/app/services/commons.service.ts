@@ -1,13 +1,9 @@
-import { Injectable, EventEmitter, OnDestroy, ChangeDetectorRef, NgZone } from '@angular/core';
+import { Injectable, EventEmitter, NgZone } from '@angular/core';
 import { FireBase } from '../utils/firebase';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { MatSnackBar } from '@angular/material';
-import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
 import * as $ from 'jquery';
 import { environment } from 'src/environments/environment';
-import { Options } from 'selenium-webdriver';
-import { callbackify } from 'util';
 import { NuType } from '../utils/utils';
 
 @Injectable({

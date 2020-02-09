@@ -1,3 +1,15 @@
+$break-small: 320px;
+$break-large: 1200px;
+
+$font-stack: Lato, sans-serif;
+$primary-bg-color: #efefef;
+$Montserrat: Montserrat, sans-serif;
+
+$title-txt-clr: #333;
+$para-txt-clr: #444;
+
+$border-radius: 4px;
+
 .box {
   height: auto;
   margin: -9px;
@@ -9,16 +21,18 @@
   padding-bottom: 6px;
   width: 100%;
 }
+
 .customer_name {
-  font-size: 24px;
+  font-family: $Montserrat;
+  font-size: 16px;
   color: #111;
   font-style: normal;
   font-weight: 500;
   line-height: 40px;
-  color: #999;
-
+  color: #333;
 }
 .customer_m_no {
+  font-family: $Montserrat;
   font-size: 14px;
   color: #444;
   // font-weight: 500;
@@ -33,6 +47,8 @@
   font-weight: 500;
   font-size: 14px;
   border-radius: 1px;
+  font-family: $Montserrat;
+  font-size: 14px;
   // border:none;
 }
 
@@ -95,6 +111,8 @@
   font-weight: 500;
   color: #fff;
   background-color: #666;
+  font-family: $Montserrat;
+  font-size: 14px;
 }
 
 .apartment {
@@ -105,6 +123,8 @@
   font-size: 13px;
   border: 1px solid #ccc;
   border-radius: 2;
+  font-family: $Montserrat;
+  font-size: 14px;
 }
 
 .nut_type {
@@ -115,6 +135,8 @@
   font-size: 11px;
   border: 1px solid #ccc;
   border-radius: 2;
+  font-family: $Montserrat;
+  font-size: 14px;
 }
 .rtp {
   background-color: #ab2d2d;
@@ -176,6 +198,9 @@
   margin-top: 6x;
   margin-bottom: 6px;
   font-size: 14px;
+  color: #666;
+  font-family: $Montserrat;
+
   // background-color: #f5f5f5;
 }
 
@@ -189,7 +214,8 @@
   margin-bottom: 0px !important;
   // border: 1px solid #eee;
   color: #dc6504;
-  font-size: 15px;
+  font-family: $Montserrat;
+  font-size: 14px;
 }
 
 .orderPage-btns {
@@ -207,4 +233,38 @@
   top: 0;
   left: 0;
   z-index: 1;
+}
+
+::ng-deep .mat-select {
+  font-family: $Montserrat;
+  font-size: 14px;
+}
+
+::ng-deep .mat-checkbox {
+  font-size: 14px !important;
+  // background-color: #1bbc9d !important;
+}
+
+::ng-deep .mat-checkbox .mat-checkbox-frame {
+  border-color: #1bbc9d !important;
+}
+
+::ng-deep .mat-active {
+  color: #fff !important;
+  background-color: #1bbc9d !important;
+  font-family: $Montserrat;
+  font-size: 14px;
+}
+
+::ng-deep .cdk-overlay-pane {
+  min-width: auto;
+}
+
+::ng-deep mat-form-field.mat-focused span.mat-form-field-label-wrapper label {
+  color: #333 !important;
+}
+
+::ng-deep .mat-checkbox-checked.mat-accent .mat-checkbox-background,
+.mat-checkbox-indeterminate.mat-accent .mat-checkbox-background {
+  background-color: #1bbc9d !important;
 }

@@ -4,7 +4,6 @@
     <button (click)="clickToHome()">home</button>
   </div> -->
 
-
   <table class="orderView tg" *ngIf="ordersExist">
     <tr>
       <th class="tg-0pky">Customer name </th>
@@ -64,8 +63,6 @@
       </td>
     </tr>
   </table>
-
-
 
   <div *ngIf="ordersExist">
     <button class="btn btn-danger" (click)="deleteOrderAction()">Delete Order</button> &nbsp;
@@ -320,8 +317,6 @@
         <button mat-button class="addToBagBtn" (click)="addToCustomSubscriptionBag()"
           [disabled]="customSubsBtnVisibility" style="margin-bottom: 6px; margin-left: 6px;">
           Custom bag</button>
-
-
       </div>
       <!-- 
           Multi day selection calendar 

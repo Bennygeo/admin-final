@@ -66,7 +66,7 @@ export class FireBase implements OnInit {
     public readDailyOrders(date) {
         // console.log("readDailyOrders");
         return new Observable((observer) => {
-            var ref = this.db.database.ref("orders/" + date);
+            var ref = this.db.database.ref("orders_test/" + date);
             ref.on("value", function (snapshot) {
                 observer.next(snapshot.exportVal());
             });
@@ -135,8 +135,9 @@ export class FireBase implements OnInit {
 
 
     public write_tc_orders(date, id, obj) {
+        debugger;
         this.db.database.ref("/orders/" + date + "/" + id + "/").update({
-            tender: JSON.stringify(obj)
+            "tender": JSON.stringify(obj)
         }, (error) => {
             if (error) console.log("The write failed...");
             else {
@@ -162,23 +163,6 @@ export class FireBase implements OnInit {
                 callback();
             }
         });
-
-        // this.db.database.ref("/users_info/" + id + '/history/').update({
-        //     [cnt]: obj,
-        // }, (error) => {
-        //     if (error) console.log("The write failed...");
-        //     else {
-        //         console.log("Data saved successfully!");
-        //         callback();
-        //     }
-        // });
-
-        // this.db.database.ref("/users_info/" + id + "/").update({
-        //     active: active
-        // }, (error) => {
-        //     if (error) console.log("The write failed...");
-        //     // else console.log("Data saved successfully!");
-        // });
     }
 
     /*
@@ -296,11 +280,6 @@ export class FireBase implements OnInit {
 
     public readAnIndividualUser(target, id) {
         return new Observable((observer) => {
-
-            // const reader = new FileReader();
-            // reader.onload = () => console.log("loading");
-            // reader.onloadend = () => console.log("loaded");
-            // debugger;
             var ref = this.db.database.ref('/' + target + '/' + id);
             ref.on("value", function (snapshot) {
                 switch (target) {
@@ -423,8 +402,6 @@ export class FireBase implements OnInit {
             else callback();
         });
     }
-
-
 
     /*
    * read stocki

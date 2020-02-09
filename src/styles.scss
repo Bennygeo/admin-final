@@ -1,5 +1,17 @@
 /* You can add global styles to this file, and also import other style files */
 
+$break-small: 320px;
+$break-large: 1200px;
+
+$font-stack: Lato, sans-serif;
+$primary-bg-color: #efefef;
+$Montserrat: Montserrat, sans-serif;
+
+$title-txt-clr: #333;
+$para-txt-clr: #444;
+
+$border-radius: 4px;
+
 html,
 body {
   height: 100%;
@@ -216,7 +228,6 @@ label {
   top: -47px;
   right: -99px;
 } /* You can add global styles to this file, and also import other style files */
-
 
 ::ng-deep .mat-checkbox .mat-checkbox-frame {
   border-color: #333;

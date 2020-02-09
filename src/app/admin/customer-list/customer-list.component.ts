@@ -419,7 +419,7 @@ export class CustomerListComponent implements OnInit, OnDestroy {
 
   onClick(evt, index) {
 
-    console.log("checked :: " + evt.checked + " index :: " + index);
+    // console.log("checked :: " + evt.checked + " index :: " + index);
     // debugger;
     this.searchAry[index].checked = evt.checked;
     // this._changeDet.detectChanges();

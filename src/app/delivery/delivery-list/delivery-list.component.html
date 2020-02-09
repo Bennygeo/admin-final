@@ -23,144 +23,44 @@
             </form>
         </div>
     </div>
-    <div class="row"  style="margin:6px;">
+    <div class="row" style="margin:6px; font-size: 14px;">
         <div class="col-6">Green : {{green_count}}</div>
         <div class="col-6">Orange : {{orange_count}}</div>
     </div>
 
     <mat-tab-group #tabGroup (selectedTabChange)="tabChanged($event)" [selectedIndex]="this.tab_index">
         <mat-tab label="Orders :: {{total_undelivered}}" mat-align-tabs="center">
-            <div disabled>
-                <div class="row box" *ngFor="let item of target_ary; let i = index;" id="{{'list_' + i}}">
-                    <div class="col-7">
-                        <div class="customer_name">{{item.data.c_name||'unknown'|titlecase}}</div>
+            <div disabled class="col-12">
+                <div *ngFor="let user of users" class="row">
+                    <div class="col-6" style="padding: 0;">
+                        <div style="font-size: 18px;">{{address[user].name}}</div>
                     </div>
-                    <div class="col-5 d-flex flex-row-reverse"
+
+                    <div class="col-6"
                         style="text-align: right; margin-left: -6px; margin-right: -6px; padding-right: 0;">
-                        <!-- <button style="margin:3px;" class="right">Call</button> -->
-                        <!-- <a style="margin:3px;" href={{item.mobile}}>Call</a> -->
+                        <!-- <button style="margin:3px; height: 36px;" class="btn btn-primary btns"
+                            (click)="viewAction($event)" id="{{'view_'+i}}">View</button> -->
 
-                        <!-- <button style="margin:3px; height: 36px; width:100%" class="btn btn-primary btns"
-                            id="{{'call_'+i}}">Call</button> -->
-
-                        <button style="margin:3px; height: 36px;" class="btn btn-primary btns"
-                            (click)="viewAction($event)" id="{{'view_'+i}}">View</button>
-
-                        <a style="border: 1px solid #ccc; width: 55px; margin: 0; padding: 0; height: 36px; margin-top: 3px; text-align: center; line-height: 36px; background-color: #eee; color:#000;"
-                            href="tel:{{item.no}}">Call</a>
-
-
-
-                    </div>
-
-                    <!-- <div class="col-12"> -->
-                    <!-- <span class="apartment">{{item.apartment}}</span>&nbsp; -->
-                    <!-- <span class="nut_type">{{item.data.nut_type}}</span>&nbsp; -->
-                    <!-- <span class="rtp">Rs. {{item.rtp}}</span>&nbsp; -->
-                    <!-- <span class="nut_type">DND</span>&nbsp; -->
-                    <!-- <span class="paid">Paid</span> -->
-                    <!-- </div> -->
-
-
-                    <div class="col-12 addr">
-                        <b>{{item.apartment}}</b> {{item.address}}
-                    </div>
-
-                    <div class="col-12 inst">
-                        {{item.instructions}}
-                    </div>
-                    <div class="col-12 inst">
-                        {{item.notes}}
-                    </div>
-
-                    <div class="col-12" style="margin-bottom: 12px; font-size: 24px;">
-                        <mat-checkbox (change)="tc_selection_change_handler($event)"><span style="color: #999;">TC
-                                x</span> {{(item.data.per_day + (item.data.replacement*1)) || item.data.per_day }}
-                            <span>({{item.nut_type}})</span>
-                        </mat-checkbox>
-                    </div>
-
-                    <div class="col-6" style="margin-bottom: 12px;">
-                        Paid : <span style="color: green;  font-weight: bold;">₹{{item.paid}}</span>
-                    </div>
-
-                    <div class="col-6" style="margin-bottom: 12px;">
-                        Balance : <span style="color: red; font-weight: bold;">₹{{item.rtp}}</span>
-                    </div>
-
-                    <div class="col-6">
-                        <button class="orderPage-btns btn btn-outline-secondary" id="{{'pay_'+i}}"
-                            (click)="payAction($event)">Collect</button>
-                    </div>
-                    <div class="col-6">
-                        <button style="margin:0px; height: 38px; width:100%" class="btn btn-primary btns"
-                            (click)="deliveredAction($event)" id="{{'deliver_'+i}}"
-                            [ngClass]="[item.delivery_status ? 'delivered' : 'notDelivered']"
-                            [disabled]=item.delivery_status>{{item.delivery_string}}</button>
-                    </div>
-                </div>
-            </div>
-        </mat-tab>
-        <mat-tab label="Delivered :: {{total_delivered}}" style="max-height: 300px;">
-            <div disabled>
-                <div class="row box" *ngFor="let item of target_ary; let i = index;" id="{{'list_' + i}}"
-                    style="max-height: 500px; overflow: scroll;">
-                    <div class="col-7">
-                        <a href="tel:{{item.no}}">
-                            <div class="customer_name">{{item.data.c_name||'unknown'|titlecase}}</div>
+                        <a style="border: 1px solid #ccc; width: 55px; margin: 0; padding: 6px; height: 36px; margin-top: 6px; text-align: center; line-height: 36px; background-color: #eee; color:#000;"
+                            href="tel:{{user}}">Call
                         </a>
                     </div>
-                    <div class="col-5 d-flex flex-row-reverse"
-                        style="text-align: right; margin-left: -6px; margin-right: -6px; padding-right: 0;">
 
-                        <button style="margin:3px; height: 36px;" class="btn btn-primary btns"
-                            (click)="viewAction($event)" id="{{'view_'+i}}">View</button>
+                    <div class="addr">{{address[user].building}}, {{address[user].block}}, {{address[user].floor}},
+                        {{address[user].door}}, {{address[user].area}}</div>
 
-                        <button style="margin:3px; height: 36px;" class="btn btn-primary btns"
-                            (click)="deliveredAction($event)" id="{{'deliver_'+i}}"
-                            [ngClass]="[item.delivery_status ? 'delivered' : 'notDelivered']"
-                            [disabled]=item.delivery_status><i class="material-icons" style="font-size: 24px;">
-                                done
-                            </i></button>
-
-                    </div>
-                    <div class="col-12">
-                        <span class="delivery_count">{{item.data.per_day}}</span>&nbsp;
-                        <span class="apartment">{{item.apartment}}</span>&nbsp;
-                        <!-- <span class="rtp">Rs. {{item.rtp}}</span>&nbsp; -->
-                        <!-- <span class="nut_type">{{item.data.nut_type}}</span>&nbsp; -->
-                        <!-- <span class="nut_type">Open</span>&nbsp; -->
-                        <!-- <span class="nut_type">DND</span>&nbsp; -->
-                        <!-- <span class="paid">Paid</span> -->
-                    </div>
-                    <div class="col-12 addr">
-                        {{item.address}}
-                    </div>
-
-                    <div class="col-12 inst">
-                        {{item.instructions}}
-                    </div>
-                    
-                    <div class="col-12 inst">
-                        {{item.notes}}
+                    <div class="col-12" style="margin-bottom: 12px; font-size: 16px; padding: 0;"
+                        *ngFor="let _product of products[user]; let i=index">
+                        <mat-checkbox (change)="tc_selection_change_handler($event)" [disableRipple]="true"
+                            id="items_{{i}}"><span style="color: #666;">
+                                <b>{{_product.name}}</b>
+                                x</span>
+                            <b>{{_product.per_day }}</b>
+                            <span>({{_product.nut_variety}})</span>
+                        </mat-checkbox>
                     </div>
                 </div>
             </div>
-        </mat-tab>
-        <mat-tab label="Report :: ">
-            <div class="row" *ngFor="let item of paid_customers_list"
-                style="font-size: 14px; padding-top: 6px; padding-bottom: 6px; border-bottom: 1px dashed #ccc !important;">
-                <div class="col-8">
-                    <div><b style="font-weight: 500;">{{item.name}}</b> <span style="color: #999"> {{item.no}}</span>
-                    </div>
-                </div>
-                <div class="col-4"> ₹{{item.paid}}</div>
-            </div>
-
-            <div
-                style="background-color: #eeeeee; padding:3px; padding-top: 6px; padding-bottom: 6px; margin-top: 6px;">
-                <span style="color: #999; font-size: 14px;">Total amount has
-                    been collected </span>₹{{collected_amt}}</div>
         </mat-tab>
     </mat-tab-group>
     <mat-spinner *ngIf="listFlg" style="margin:0 auto;"></mat-spinner>

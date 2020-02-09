@@ -1035,7 +1035,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
 
   public selectedDate(value: any, datepicker?: any) {
     // this is the date the iser selected
-    console.log(value);
+    // console.log(value);
 
     // any object can be passed to the selected event and it will be passed back here
     datepicker.start = value.start;

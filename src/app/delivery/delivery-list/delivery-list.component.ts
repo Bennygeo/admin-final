@@ -63,6 +63,10 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
   orange_count: number = 0;
   green_count: number = 0;
 
+  products: any = {};
+  address: any;
+  users: any = [];
+
   constructor(
     private _activatedRoute: ActivatedRoute,
     private db: AngularFireDatabase,
@@ -81,7 +85,6 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-
     if (this._storage.readData("tabindex"))
       this.tab_index = this._storage.readData("tabindex") * 1;
     // this.trace("this.tab_index :: " + this.tab_index);
@@ -110,6 +113,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
       this.todaysDateFormatted = this.date_utils.dateFormater(this.todaysDate, "-");
 
       this.listObservable = this.firebase.readDailyOrders(this.todaysDate).subscribe((data: any) => {
+        // console.log(data);
         this.listFlg = false;
         let index = 0;
 
@@ -120,85 +124,128 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
         this.total_delivered = 0;
         this.total_undelivered = 0;
 
+        this.products = {};
+        this.address = {};
+
+        this.users = Object.keys(data);
+
         for (let key in data) {
-          
-          index++;
-          let _data = JSON.parse(data[key].tender);
-          // this.trace(_data);
-          // debugger;
-          let deliveryFlg = (_data.delivery_status == "Delivered") ? true : false;
-          this.deliveredStatus = (deliveryFlg) ? "Done" : "Delivered";
+          this.products[key] = [];
 
-          if (_data.assigned_to == this.name) {
-            this.total_deliveries += _data.per_day;
-            let history_len = Object.keys(user_data[_data.m_no].history).length;
+          for (var item in data[key]) {
+            index++;
 
-            let _pay_history_len;
-            try {
-              _pay_history_len = Object.keys(user_data[key].history[history_len].details.history).length;
-            } catch (e) { }
+            // let _data = data[key].tender;
+            let _data = data[key][item];
+            // console.log(_data);
+            // this.trace(_data);
+            let deliveryFlg = (_data.delivery_status == "Delivered") ? true : false;
+            this.deliveredStatus = (deliveryFlg) ? "Done" : "Delivered";
 
-            if (_pay_history_len > 0) {
-              for (let _date in user_data[key].history[history_len].details.history) {
-                if (new Date(Number(_date) * 1).toDateString() == new Date().toDateString()) {
-                  // debugger;
-                  this.collected_amt += user_data[key].history[history_len].details.history[_date] * 1;
-                  this.paid_customers_list.push({
-                    name: _data.c_name,
-                    no: _data.m_no,
-                    paid: user_data[key].history[history_len].details.history[_date] * 1
-                  })
+            _data.assigned_to = "Bala";
+            if (_data.assigned_to == this.name) {
+
+              // debugger;
+              let _product = {};
+              if (item != 'bag') {
+                _product = {
+                  name: data[key][item].name,
+                  nut_variety: data[key][item].nut_variety,
+                  per_day: data[key][item].per_day
+                }
+                this.products[key].push(_product);
+
+              } else if (item == 'bag') {
+                console.log(data[key][item]);
+                for (var key1 in data[key][item]) {
+                  // console.log(key1);
+                  if (key1 != "assigned_to") {
+                    // debugger;
+                    _product = {
+                      name: data[key][item][key1].name,
+                      nut_variety: data[key][item][key1]["category"],
+                      per_day: data[key][item][key1].weight + " " + data[key][item][key1]["unit_name"]
+                    }
+                    this.products[key].push(_product);
+                  }
+                }
+
+              }
+
+              if (item != 'bag')
+                this.address[key] = JSON.parse(data[key][item]['address']);
+              else {
+                // debugger;
+                for (var i = 0; i < Object.keys(data[key][item]).length; i++) {
+                  console.log("i :: " + i);
+
+                  if (Object.keys(data[key][item])[i] != "assigned_to") {
+                    this.address[key] = data[key][item][Object.keys(data[key][item])[0]].address;
+                    break;
+                  }
                 }
               }
-            }
 
-            let addr = JSON.parse(user_data[key].address.address1);
-            // let updated_address = addr.street;
-            let updated_address = addr.block + ", " + addr.floor + ", " + addr.door;
+              // this.total_deliveries += _data.per_day;
 
-            // debugger;
-            if (_data.nut_variety == "orange" || _data.nut_variety == "Orange") this.orange_count += _data.per_day;
-            else this.green_count += _data.per_day;
+              // debugger;
+              // let addr = JSON.parse(_data.address);
+              // // let updated_address = addr.street;
+              // let updated_address = addr.building + ", " + addr.block + ", " + addr.floor + ", " + addr.door;
 
-            this.trace(user_data[key].history[history_len].notes);
-            this.trace("--------------------");
+              // debugger;
+              // if (_data.nut_variety == "orange" || _data.nut_variety == "Orange") this.orange_count += _data.per_day;
+              // else this.green_count += _data.per_day;
 
-            if (!deliveryFlg) {
-              this.total_undelivered += (_data.per_day + (_data.replacement * 1 || 0));
-              this.undelivered_list.push({
-                'no': key,
-                'apartment': addr.apartment,
-                'block': addr.block,
-                'floor': addr.floor,
-                'door': addr.door,
-                'delivery_status': deliveryFlg,
-                'delivery_string': this.deliveredStatus,
-                'nut_type': _data.nut_variety,
-                'data': _data,
-                'address': updated_address,
-                'rtp': user_data[key].history[history_len].details.remaining_to_pay,
-                'paid': user_data[key].history[history_len].details.paid_amt,
-                'instructions': addr.inst,
-                "notes":user_data[key].history[history_len].notes
-              });
-            } else {
-              this.total_delivered += (_data.per_day + (_data.replacement * 1 || 0));
-              this.delivered_list.push({
-                'no': key,
-                'apartment': addr.apartment,
-                'block': addr.block,
-                'floor': addr.floor,
-                'door': addr.door,
-                'nut_type': _data.nut_variety,
-                'delivery_status': deliveryFlg,
-                'delivery_string': this.deliveredStatus,
-                'data': _data,
-                'address': updated_address,
-                'rtp': user_data[key].history[history_len].details.remaining_to_pay,
-                'paid': user_data[key].history[history_len].details.paid_amt,
-                'instructions': user_data[key].history[history_len].details.instructions,
-                "notes":user_data[key].history[history_len].notes
-              });
+              // this.trace(user_data[key].history[history_len].notes);
+              // this.trace("--------------------");
+
+              // debugger;
+              // if (!deliveryFlg) {
+              //   this.total_undelivered += (_data.per_day + (_data.replacement * 1 || 0));
+              //   this.undelivered_list.push({
+              //     [_data.name]: {
+              //       'name': addr.name,
+              //       'no': key,
+              //       'apartment': addr.apartment,
+              //       'block': addr.block,
+              //       'floor': addr.floor,
+              //       'door': addr.door,
+              //       'area': addr.area,
+              //       'delivery_status': deliveryFlg,
+              //       'delivery_string': this.deliveredStatus,
+              //       'nut_type': _data.nut_variety,
+              //       'data': _data,
+              //       'address': updated_address,
+              //       // 'rtp': user_data[key].history[history_len].details.remaining_to_pay,
+              //       // 'paid': user_data[key].history[history_len].details.paid_amt,
+              //       // 'instructions': addr.inst,
+              //       // "notes": user_data[key].history[history_len].notes
+              //     }
+              //   });
+              // } else {
+              //   this.total_delivered += (_data.per_day + (_data.replacement * 1 || 0));
+              //   this.delivered_list.push({
+              //     [_data.name]: {
+              //       'name': addr.name,
+              //       'no': key,
+              //       'apartment': addr.apartment,
+              //       'block': addr.block,
+              //       'floor': addr.floor,
+              //       'door': addr.door,
+              //       'area': addr.area,
+              //       'nut_type': _data.nut_variety,
+              //       'delivery_status': deliveryFlg,
+              //       'delivery_string': this.deliveredStatus,
+              //       'data': _data,
+              //       'address': updated_address,
+              //       // 'rtp': user_data[key].history[history_len].details.remaining_to_pay,
+              //       // 'paid': user_data[key].history[history_len].details.paid_amt,
+              //       // 'instructions': user_data[key].history[history_len].details.instructions,
+              //       // "notes": user_data[key].history[history_len].notes
+              //     }
+              //   });
+              // }
             }
           }
         }
@@ -217,6 +264,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
           }
           return 0;
         }
+
         this.userListUpdateObservable.unsubscribe();
         this.changeDet.detectChanges();
       });
@@ -229,17 +277,17 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
   }
 
   viewAction(e) {
-    this.selectedIndex = e.currentTarget.id.split("_")[1] * 1;
-    // debugger;
-    if (this.tab_index == 0) this.list = this.undelivered_list;
-    if (this.tab_index == 1) this.list = this.delivered_list;
+    // this.selectedIndex = e.currentTarget.id.split("_")[1] * 1;
+    // // debugger;
+    // if (this.tab_index == 0) this.list = this.undelivered_list;
+    // if (this.tab_index == 1) this.list = this.delivered_list;
 
-    this.selectedTarget = this.target_ary[this.selectedIndex].data;
-    this.selectedTarget.date = this.todaysDate;
+    // this.selectedTarget = this.target_ary[this.selectedIndex].data;
+    // this.selectedTarget.date = this.todaysDate;
 
-    // this.trace(this.selectedTarget);
-    // debugger;
-    this._router.navigate(['/delivery/view-order/', { data: JSON.stringify(this.selectedTarget) }]);
+    // // this.trace(this.selectedTarget);
+    // // debugger;
+    // this._router.navigate(['/delivery/view-order/', { data: JSON.stringify(this.selectedTarget) }]);
     // this.ngZone.run(() => console.log("view route."));
   }
 
@@ -293,7 +341,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
     if (this.tab_index == 0) this.target_ary = this.undelivered_list;
     if (this.tab_index == 1) this.target_ary = this.delivered_list;
     this.target_ary = this.ng2.transform(this.target_ary, evt);
-    console.log(evt);
+    // console.log(evt);
   }
 
   sortChange(evt) {
@@ -312,18 +360,18 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
 
   payAction(e): void {
 
-    if (this.tab_index == 0) this.list = this.undelivered_list;
-    if (this.tab_index == 1) this.list = this.delivered_list;
+    // if (this.tab_index == 0) this.list = this.undelivered_list;
+    // if (this.tab_index == 1) this.list = this.delivered_list;
 
-    this.selectedIndex = e.currentTarget.id.split("_")[1] * 1;
-    this.selectedTarget = this.list[this.selectedIndex].data;
+    // this.selectedIndex = e.currentTarget.id.split("_")[1] * 1;
+    // this.selectedTarget = this.list[this.selectedIndex].data;
 
-    this.packageData = this.user_data[this.selectedTarget.m_no].history[this.selectedTarget.history_id].details;
+    // this.packageData = this.user_data[this.selectedTarget.m_no].history[this.selectedTarget.history_id].details;
 
-    this.priceVal = this.packageData.remaining_to_pay;
+    // this.priceVal = this.packageData.remaining_to_pay;
 
-    (this.overlay) ? this.overlay = false : this.overlay = true;
-    this._ngZone.run(() => { });
+    // (this.overlay) ? this.overlay = false : this.overlay = true;
+    // this._ngZone.run(() => { });
   }
 
   overlayClickHandler(): void {
