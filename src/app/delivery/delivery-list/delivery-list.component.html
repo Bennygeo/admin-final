@@ -23,15 +23,15 @@
             </form>
         </div>
     </div>
-    <div class="row" style="margin:6px; font-size: 14px;">
+    <!-- <div class="row" style="margin:6px; font-size: 14px;">
         <div class="col-6">Green : {{green_count}}</div>
         <div class="col-6">Orange : {{orange_count}}</div>
-    </div>
+    </div> -->
 
     <mat-tab-group #tabGroup (selectedTabChange)="tabChanged($event)" [selectedIndex]="this.tab_index">
         <mat-tab label="Orders :: {{total_undelivered}}" mat-align-tabs="center">
             <div disabled class="col-12">
-                <div *ngFor="let user of users" class="row">
+                <div *ngFor="let user of users; let j=index;" class="row">
                     <div class="col-6" style="padding: 0;">
                         <div style="font-size: 18px;">{{address[user].name}}</div>
                     </div>
@@ -51,14 +51,20 @@
 
                     <div class="col-12" style="margin-bottom: 12px; font-size: 16px; padding: 0;"
                         *ngFor="let _product of products[user]; let i=index">
-                        <mat-checkbox (change)="tc_selection_change_handler($event)" [disableRipple]="true"
-                            id="items_{{i}}"><span style="color: #666;">
+                        <mat-checkbox (change)="selection_change_handler($event)" [disableRipple]="true"
+                            id="items_{{i}}_{{j}}"><span style="color: #666;">
                                 <b>{{_product.name}}</b>
                                 x</span>
                             <b>{{_product.per_day }}</b>
                             <span>({{_product.nut_variety}})</span>
                         </mat-checkbox>
                     </div>
+
+                    <div class="col-12">
+                        <button style="margin:0px; height: 38px; width:100%" class="btn btn-primary btns"
+                            (click)="deliveredAction($event)" id="{{'deliver_'+i}}">Delivered</button>
+                    </div>
+
                 </div>
             </div>
         </mat-tab>

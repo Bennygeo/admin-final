@@ -144,7 +144,6 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
 
             _data.assigned_to = "Bala";
             if (_data.assigned_to == this.name) {
-
               // debugger;
               let _product = {};
               if (item != 'bag') {
@@ -156,7 +155,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
                 this.products[key].push(_product);
 
               } else if (item == 'bag') {
-                console.log(data[key][item]);
+                // console.log(data[key][item]);
                 for (var key1 in data[key][item]) {
                   // console.log(key1);
                   if (key1 != "assigned_to") {
@@ -169,7 +168,6 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
                     this.products[key].push(_product);
                   }
                 }
-
               }
 
               if (item != 'bag')
@@ -177,8 +175,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
               else {
                 // debugger;
                 for (var i = 0; i < Object.keys(data[key][item]).length; i++) {
-                  console.log("i :: " + i);
-
+                  // console.log("i :: " + i);
                   if (Object.keys(data[key][item])[i] != "assigned_to") {
                     this.address[key] = data[key][item][Object.keys(data[key][item])[0]].address;
                     break;
@@ -292,7 +289,6 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
   }
 
   deliveredAction(e) {
-
     if (!this.tc_selection) {
       this._commons.openSnackBar("Tick the number of nuts.", "");
     } else {
@@ -379,9 +375,16 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
     (this.overlay) ? this.overlay = false : this.overlay = true;
   }
 
-  tc_selection_change_handler(evt): void {
+  selection_change_handler(evt): void {
     // debugger;
-    // this.trace("checked :: " + evt.checked);
+    // console.log("evt.source.id :: " + evt.source.id.split("_"));
+    let user_id = evt.source.id.split("_")[2];
+    let items_id = evt.source.id.split("_")[1];
+    let target_mobile = this.users[user_id]
+
+    console.log(evt.checked);
+    console.log(this.products[target_mobile][items_id]);
+
     this.tc_selection = evt.checked;
     // this._ngZone.run(() => { });
     this.changeDet.detectChanges();
