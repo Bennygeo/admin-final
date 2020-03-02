@@ -793,6 +793,7 @@ export class CustomerViewComponent implements OnInit, OnDestroy {
     this.editedUnitsPerDay = val;
   }
 
+  
   editUpdateAction() {
     let date = this.date_utils.dateFormater(this.selectedDateItem.date, "");
     // this.historyObj['dates'][date]['replacement'] = this.noOfReplacements;

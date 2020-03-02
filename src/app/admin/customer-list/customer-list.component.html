@@ -10,7 +10,8 @@
         </div>
         <div class="col-3 right" style="margin-top:18px;">
             <button mat-flat-button color="primary" style="position: relative; float: right;"><i class="material-icons"
-                    style="margin:0; font-size:22px;">search</i></button>
+                    style="margin:0; font-size:22px;">search</i>
+            </button>
         </div>
     </div>
 
@@ -40,7 +41,8 @@
                 (click)="onCustomerClick($event, i,item.mobile)" id="{{'list_' + i}}">
                 <div class="col-10" style="margin-left: -6px; margin-right: -6px">
                     <div style="position: relative; float: left; padding-right: 6px;">
-                        <mat-checkbox (change)="onClick($event, i)" (click)="$event.stopPropagation()" [checked]="item.checked">
+                        <mat-checkbox (change)="onClick($event, i)" (click)="$event.stopPropagation()"
+                            [checked]="item.checked">
                         </mat-checkbox>
                     </div>
                     <div class="customer_name">{{item.name}}&nbsp;

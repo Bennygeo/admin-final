@@ -41,9 +41,9 @@ export class OrderViewComponent implements OnInit, OnDestroy {
     private _utils: Utils,
 
   ) {
-    console.log("order view constructor.");
+    // console.log("order view constructor.");
     this.sub = this._router.events.subscribe((data: any) => {
-      console.log("router subscriber");
+      // console.log("router subscriber");
       // debugger;
       // console.log(data);
       try {

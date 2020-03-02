@@ -8,14 +8,15 @@ import { CommonsService } from 'src/app/services/commons.service';
 import { StorageService } from 'src/app/utils/storage.service';
 import { Ng2SearchPipe } from 'ng2-search-filter';
 import { Utils } from 'src/app/utils/utils';
+import * as $ from 'jquery';
 
 @Component({
   selector: 'delivery-list',
   templateUrl: './delivery-list.component.html',
   styleUrls: ['./delivery-list.component.scss']
 })
-export class DeliveryListComponent implements OnInit, OnDestroy {
 
+export class DeliveryListComponent implements OnInit, OnDestroy {
   trace: any = console.log;
   firebase: FireBase;
   mobile: string;
@@ -64,8 +65,10 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
   green_count: number = 0;
 
   products: any = {};
-  address: any;
+  address: any = {};
   users: any = [];
+
+  prev_target: any = 0;
 
   constructor(
     private _activatedRoute: ActivatedRoute,
@@ -125,125 +128,192 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
         this.total_undelivered = 0;
 
         this.products = {};
+
         this.address = {};
 
         this.users = Object.keys(data);
 
         for (let key in data) {
           this.products[key] = [];
+          this.address[key] = [];
 
           for (var item in data[key]) {
             index++;
 
-            // let _data = data[key].tender;
-            let _data = data[key][item];
-            // console.log(_data);
-            // this.trace(_data);
-            let deliveryFlg = (_data.delivery_status == "Delivered") ? true : false;
-            this.deliveredStatus = (deliveryFlg) ? "Done" : "Delivered";
-
-            _data.assigned_to = "Bala";
-            if (_data.assigned_to == this.name) {
+            if (item == "address") {
+              this.address[key] = JSON.parse(data[key]['address']);
               // debugger;
-              let _product = {};
-              if (item != 'bag') {
-                _product = {
-                  name: data[key][item].name,
-                  nut_variety: data[key][item].nut_variety,
-                  per_day: data[key][item].per_day
-                }
-                this.products[key].push(_product);
-
-              } else if (item == 'bag') {
-                // console.log(data[key][item]);
-                for (var key1 in data[key][item]) {
-                  // console.log(key1);
-                  if (key1 != "assigned_to") {
-                    // debugger;
-                    _product = {
-                      name: data[key][item][key1].name,
-                      nut_variety: data[key][item][key1]["category"],
-                      per_day: data[key][item][key1].weight + " " + data[key][item][key1]["unit_name"]
-                    }
-                    this.products[key].push(_product);
-                  }
-                }
-              }
-
-              if (item != 'bag')
-                this.address[key] = JSON.parse(data[key][item]['address']);
-              else {
-                // debugger;
-                for (var i = 0; i < Object.keys(data[key][item]).length; i++) {
-                  // console.log("i :: " + i);
-                  if (Object.keys(data[key][item])[i] != "assigned_to") {
-                    this.address[key] = data[key][item][Object.keys(data[key][item])[0]].address;
-                    break;
-                  }
-                }
-              }
-
-              // this.total_deliveries += _data.per_day;
-
-              // debugger;
-              // let addr = JSON.parse(_data.address);
-              // // let updated_address = addr.street;
-              // let updated_address = addr.building + ", " + addr.block + ", " + addr.floor + ", " + addr.door;
-
-              // debugger;
-              // if (_data.nut_variety == "orange" || _data.nut_variety == "Orange") this.orange_count += _data.per_day;
-              // else this.green_count += _data.per_day;
-
-              // this.trace(user_data[key].history[history_len].notes);
-              // this.trace("--------------------");
-
-              // debugger;
-              // if (!deliveryFlg) {
-              //   this.total_undelivered += (_data.per_day + (_data.replacement * 1 || 0));
-              //   this.undelivered_list.push({
-              //     [_data.name]: {
-              //       'name': addr.name,
-              //       'no': key,
-              //       'apartment': addr.apartment,
-              //       'block': addr.block,
-              //       'floor': addr.floor,
-              //       'door': addr.door,
-              //       'area': addr.area,
-              //       'delivery_status': deliveryFlg,
-              //       'delivery_string': this.deliveredStatus,
-              //       'nut_type': _data.nut_variety,
-              //       'data': _data,
-              //       'address': updated_address,
-              //       // 'rtp': user_data[key].history[history_len].details.remaining_to_pay,
-              //       // 'paid': user_data[key].history[history_len].details.paid_amt,
-              //       // 'instructions': addr.inst,
-              //       // "notes": user_data[key].history[history_len].notes
-              //     }
-              //   });
-              // } else {
-              //   this.total_delivered += (_data.per_day + (_data.replacement * 1 || 0));
-              //   this.delivered_list.push({
-              //     [_data.name]: {
-              //       'name': addr.name,
-              //       'no': key,
-              //       'apartment': addr.apartment,
-              //       'block': addr.block,
-              //       'floor': addr.floor,
-              //       'door': addr.door,
-              //       'area': addr.area,
-              //       'nut_type': _data.nut_variety,
-              //       'delivery_status': deliveryFlg,
-              //       'delivery_string': this.deliveredStatus,
-              //       'data': _data,
-              //       'address': updated_address,
-              //       // 'rtp': user_data[key].history[history_len].details.remaining_to_pay,
-              //       // 'paid': user_data[key].history[history_len].details.paid_amt,
-              //       // 'instructions': user_data[key].history[history_len].details.instructions,
-              //       // "notes": user_data[key].history[history_len].notes
-              //     }
-              //   });
-              // }
             }
+
+            if (item != 'address') {
+              // console.log("item :: " + item);
+              if (item == 'bag') {
+                let _data = data[key]['bag'];
+                let deliveryFlg = (_data.delivery_status == "Delivered") ? true : false;
+                this.deliveredStatus = (deliveryFlg) ? "Done" : "Delivered";
+
+                _data.assigned_to = "Bala";
+                if (_data.assigned_to == this.name) {
+                  //   // debugger;
+                  let _product = {};
+
+                  // console.log(data[key][item]);
+                  for (var key1 in data[key][item]) {
+                    if (key1 != "assigned_to") {
+
+                      for (let _data in data[key][item][key1]) {
+                        _product = {
+                          name: data[key][item][key1][_data].name,
+                          nut_variety: data[key][item][key1][_data]["category"],
+                          per_day: data[key][item][key1][_data].weight + " " + data[key][item][key1][_data]["unit_name"]
+                        }
+                        this.products[key].push(_product);
+                      }
+                    }
+                  }
+                }
+              }
+
+              if (item == 'milk' || item == 'tender') {
+
+                let _data = data[key][item];
+                let deliveryFlg = (_data.delivery_status == "Delivered") ? true : false;
+                this.deliveredStatus = (deliveryFlg) ? "Done" : "Delivered";
+
+                _data.assigned_to = "Bala";
+
+                if (_data.assigned_to == this.name) {
+                  //   // debugger;
+                  let _product = {};
+
+                  _product = {
+                    name: data[key][item].name,
+                    nut_variety: data[key][item]["nut_variety"] + " - " + data[key][item]['original_weight'] + "" + data[key][item]['unit_name'],
+                    per_day: data[key][item]["per_day"]
+                  }
+                  this.products[key].push(_product);
+                }
+              }
+
+              if (item == "tender") {
+
+              }
+
+              if (item == "grrens") {
+
+              }
+            }
+
+            // let _data = data[key].tender;
+            // let _data = data[key][item];
+            // // console.log(_data);
+            // // this.trace(_data);
+            // let deliveryFlg = (_data.delivery_status == "Delivered") ? true : false;
+            // this.deliveredStatus = (deliveryFlg) ? "Done" : "Delivered";
+
+            // _data.assigned_to = "Bala";
+            // if (_data.assigned_to == this.name) {
+            //   // debugger;
+            //   let _product = {};
+            //   if (item != 'bag') {
+            //     _product = {
+            //       name: data[key][item].name,
+            //       nut_variety: data[key][item].nut_variety,
+            //       per_day: data[key][item].per_day
+            //     }
+            //     this.products[key].push(_product);
+
+            //   } else if (item == 'bag') {
+            //     // console.log(data[key][item]);
+            //     for (var key1 in data[key][item]) {
+            //       // console.log(key1);
+            //       if (key1 != "assigned_to") {
+            //         // debugger;
+            //         _product = {
+            //           name: data[key][item][key1].name,
+            //           nut_variety: data[key][item][key1]["category"],
+            //           per_day: data[key][item][key1].weight + " " + data[key][item][key1]["unit_name"]
+            //         }
+            //         this.products[key].push(_product);
+            //       }
+            //     }
+            //   }
+
+            //   if (item != 'bag')
+            //     this.address[key] = JSON.parse(data[key][item]['address']);
+            //   else {
+            //     // debugger;
+            //     for (var i = 0; i < Object.keys(data[key][item]).length; i++) {
+            //       // console.log("i :: " + i);
+            //       if (Object.keys(data[key][item])[i] != "assigned_to") {
+            //         this.address[key] = data[key][item][Object.keys(data[key][item])[0]].address;
+            //         break;
+            //       }
+            //     }
+            //   }
+
+            // this.total_deliveries += _data.per_day;
+
+            // debugger;
+            // let addr = JSON.parse(_data.address);
+            // // let updated_address = addr.street;
+            // let updated_address = addr.building + ", " + addr.block + ", " + addr.floor + ", " + addr.door;
+
+            // debugger;
+            // if (_data.nut_variety == "orange" || _data.nut_variety == "Orange") this.orange_count += _data.per_day;
+            // else this.green_count += _data.per_day;
+
+            // this.trace(user_data[key].history[history_len].notes);
+            // this.trace("--------------------");
+
+            // debugger;
+            // if (!deliveryFlg) {
+            //   this.total_undelivered += (_data.per_day + (_data.replacement * 1 || 0));
+            //   this.undelivered_list.push({
+            //     [_data.name]: {
+            //       'name': addr.name,
+            //       'no': key,
+            //       'apartment': addr.apartment,
+            //       'block': addr.block,
+            //       'floor': addr.floor,
+            //       'door': addr.door,
+            //       'area': addr.area,
+            //       'delivery_status': deliveryFlg,
+            //       'delivery_string': this.deliveredStatus,
+            //       'nut_type': _data.nut_variety,
+            //       'data': _data,
+            //       'address': updated_address,
+            //       // 'rtp': user_data[key].history[history_len].details.remaining_to_pay,
+            //       // 'paid': user_data[key].history[history_len].details.paid_amt,
+            //       // 'instructions': addr.inst,
+            //       // "notes": user_data[key].history[history_len].notes
+            //     }
+            //   });
+            // } else {
+            //   this.total_delivered += (_data.per_day + (_data.replacement * 1 || 0));
+            //   this.delivered_list.push({
+            //     [_data.name]: {
+            //       'name': addr.name,
+            //       'no': key,
+            //       'apartment': addr.apartment,
+            //       'block': addr.block,
+            //       'floor': addr.floor,
+            //       'door': addr.door,
+            //       'area': addr.area,
+            //       'nut_type': _data.nut_variety,
+            //       'delivery_status': deliveryFlg,
+            //       'delivery_string': this.deliveredStatus,
+            //       'data': _data,
+            //       'address': updated_address,
+            //       // 'rtp': user_data[key].history[history_len].details.remaining_to_pay,
+            //       // 'paid': user_data[key].history[history_len].details.paid_amt,
+            //       // 'instructions': user_data[key].history[history_len].details.instructions,
+            //       // "notes": user_data[key].history[history_len].notes
+            //     }
+            //   });
+            // }
+            // }
+
           }
         }
 
@@ -457,6 +527,12 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
 
   modalCancelAction() {
     (this.overlay) ? this.overlay = false : this.overlay = true;
+  }
+
+  onUserClick(evt, target) {
+    $('#box_' + this.prev_target).css({ "display": "none" });
+    $('#box_' + target).css({ "display": "block" });
+    this.prev_target = target;
   }
 
   ngOnDestroy(): void {

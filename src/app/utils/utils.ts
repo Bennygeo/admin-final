@@ -17,12 +17,11 @@ export class Utils {
         this.todayDate = new Date();
         this.todayNo = this.todayDate.getDay();
 
-
         this.monthNames = ["January", "February", "March", "April", "May", "June",
             "July", "August", "September", "October", "November", "December"
         ];
-        this.weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
+        this.weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         this.todayString = this.weekdays[this.todayNo];
     }
 
@@ -42,7 +41,7 @@ export class Utils {
     generateRandomNumber(): string {
         return Math.floor(1000 + Math.random() * 9000).toString();
     }
-    
+
     static getDate(divider): string {
         var today = new Date();
         return today.getDate() + divider + (today.getMonth() + 1) + divider + today.getFullYear();
@@ -57,8 +56,8 @@ export class Utils {
         for (let j = 0; j <= order_length; j++) {
             sort_date_ary.push(new Date(dateUtils.stdDateFormater(dateUtils.dateFormater(tmp[j], "-"), "/")));
         }
-        
-           // /* Do sort the dates array */
+
+        // /* Do sort the dates array */
         sort_date_ary.sort(function (a, b) {
             // Turn your strings into dates, and then subtract them
             // to get a value that is either negative, positive, or zero.

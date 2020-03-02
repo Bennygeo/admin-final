@@ -30,10 +30,11 @@
 
     <mat-tab-group #tabGroup (selectedTabChange)="tabChanged($event)" [selectedIndex]="this.tab_index">
         <mat-tab label="Orders :: {{total_undelivered}}" mat-align-tabs="center">
-            <div disabled class="col-12">
-                <div *ngFor="let user of users; let j=index;" class="row">
+            <div disabled class="col-12" style="margin-bottom: 12px;">
+                <div *ngFor="let user of users; let j=index;" class="row"
+                    style=" border-bottom:1px dashed #ccc; margin-top:6px;" (click)="onUserClick($event,j)">
                     <div class="col-6" style="padding: 0;">
-                        <div style="font-size: 18px;">{{address[user].name}}</div>
+                        <div style="font-size: 18px;">{{j+1}}. {{address[user].name}}</div>
                     </div>
 
                     <div class="col-6"
@@ -49,22 +50,26 @@
                     <div class="addr">{{address[user].building}}, {{address[user].block}}, {{address[user].floor}},
                         {{address[user].door}}, {{address[user].area}}</div>
 
-                    <div class="col-12" style="margin-bottom: 12px; font-size: 16px; padding: 0;"
-                        *ngFor="let _product of products[user]; let i=index">
-                        <mat-checkbox (change)="selection_change_handler($event)" [disableRipple]="true"
-                            id="items_{{i}}_{{j}}"><span style="color: #666;">
-                                <b>{{_product.name}}</b>
-                                x</span>
-                            <b>{{_product.per_day }}</b>
-                            <span>({{_product.nut_variety}})</span>
-                        </mat-checkbox>
-                    </div>
+                    <div style="display: none;" id="box_{{j}}">
 
-                    <div class="col-12">
-                        <button style="margin:0px; height: 38px; width:100%" class="btn btn-primary btns"
-                            (click)="deliveredAction($event)" id="{{'deliver_'+i}}">Delivered</button>
-                    </div>
 
+                        <div class="col-12" style="margin-bottom: 12px; font-size: 16px; padding: 0;"
+                            *ngFor="let _product of products[user]; let i=index">
+                            <mat-checkbox (change)="selection_change_handler($event)" [disableRipple]="true"
+                                id="items_{{i}}_{{j}}"><span style="color: #666;">
+                                    <b>{{_product.name}}</b>
+                                    x </span>
+                                <b>{{_product.per_day }}</b>
+                                <span>({{_product.nut_variety}})</span>
+                            </mat-checkbox>
+                        </div>
+
+                        <div class="col-12" style="margin-bottom: 12px; ">
+                            <button style="margin:0px; height: 38px; width:100%; padding:0;"
+                                class="btn btn-primary btns" style="margin-bottom: 12px; "
+                                (click)="deliveredAction($event)" id="{{'deliver_'+i}}">Delivered</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </mat-tab>
