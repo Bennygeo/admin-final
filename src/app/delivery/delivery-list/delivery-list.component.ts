@@ -186,6 +186,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
                   //   // debugger;
                   let _product = {};
 
+                  debugger;
                   _product = {
                     name: data[key][item].name,
                     nut_variety: data[key][item]["nut_variety"] + " - " + data[key][item]['original_weight'] + "" + data[key][item]['unit_name'],
@@ -195,12 +196,27 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
                 }
               }
 
-              if (item == "tender") {
+              if (item == "greens") {
+                // debugger;
+                let _data = data[key][item];
+                let deliveryFlg = (_data.delivery_status == "Delivered") ? true : false;
+                this.deliveredStatus = (deliveryFlg) ? "Done" : "Delivered";
 
-              }
+                _data.assigned_to = "Bala";
 
-              if (item == "grrens") {
+                if (_data.assigned_to == this.name) {
+                  let _product = {};
 
+                  for (let _greens in data[key][item]['data']) {
+                    // debugger;
+                    _product = {
+                      name: data[key][item]['data'][_greens].name[0],
+                      nut_variety: 'greens',
+                      per_day: data[key][item]['data'][_greens]["count"]
+                    }
+                    this.products[key].push(_product);
+                  }
+                }
               }
             }
 
