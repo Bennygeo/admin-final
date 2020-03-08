@@ -9,6 +9,7 @@ import { StorageService } from 'src/app/utils/storage.service';
 import { Ng2SearchPipe } from 'ng2-search-filter';
 import { Utils } from 'src/app/utils/utils';
 import * as $ from 'jquery';
+import * as moment from 'moment/moment';
 
 @Component({
   selector: 'delivery-list',
@@ -69,6 +70,8 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
   users: any = [];
 
   prev_target: any = 0;
+  cashbacks: any = {};
+  data: any;
 
   constructor(
     private _activatedRoute: ActivatedRoute,
@@ -81,7 +84,8 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
     private _ngZone: NgZone,
     private _commons: CommonsService,
     private _changeDet: ChangeDetectorRef,
-    private _utils: Utils
+    private _utils: Utils,
+    private _dateUtils: DateUtils
   ) {
     this.firebase = new FireBase(this.db);
     this.date_utils = new DateUtils();
@@ -97,58 +101,65 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
       this.name = params.get('name');
     });
 
-    let todayTime = new Date().getHours();
-    if (todayTime <= 15) {
-      this.todaysDate = new Date();
-      this.todaysDate = this.date_utils.getDateString(this.todaysDate, "");
-    } else {
-      this.todaysDate = new Date();
-      this.todaysDate = this.date_utils.getDateString(this.date_utils.addDaysToCalendar(this.todaysDate, 1), "");
-    }
+    // let todayTime = new Date().getHours();
+    // if (todayTime <= 15) {
+    //   this.todaysDate = new Date();
+    //   this.todaysDate = this.date_utils.getDateString(this.todaysDate, "");
+    // } else {
+    this.todaysDate = new Date();
+    this.todaysDate = this.date_utils.getDateString(this.date_utils.addDaysToCalendar(this.todaysDate, 1), "");
+    // }
     this.renderList();
   }
 
   renderList() {
-    this.trace("renderList");
+    // this.trace("renderList");
     this._service.readCustomerList(false);
-    this.userListUpdateObservable = this._service.onUserListUpdate.subscribe((user_data) => {
-      this.user_data = user_data;
-      this.todaysDateFormatted = this.date_utils.dateFormater(this.todaysDate, "-");
+    // this.userListUpdateObservable = this._service.onUserListUpdate.subscribe((user_data) => {
+    // this.user_data = user_data;
+    this.todaysDateFormatted = this.date_utils.dateFormater(this.todaysDate, "-");
 
-      this.listObservable = this.firebase.readDailyOrders(this.todaysDate).subscribe((data: any) => {
-        // console.log(data);
-        this.listFlg = false;
-        let index = 0;
+    this.listObservable = this.firebase.readDailyOrders(this.todaysDate).subscribe((data: any) => {
+      // console.log(data);
+      this.data = data;
+      this.listFlg = false;
+      let index = 0;
 
-        //reset both arrays
-        this.undelivered_list = [];
-        this.delivered_list = [];
-        this.total_deliveries = 0;
-        this.total_delivered = 0;
-        this.total_undelivered = 0;
+      //reset both arrays
+      this.undelivered_list = [];
+      this.delivered_list = [];
+      this.total_deliveries = 0;
+      this.total_delivered = 0;
+      this.total_undelivered = 0;
 
-        this.products = {};
+      this.products = {};
 
-        this.address = {};
+      this.address = {};
 
-        this.users = Object.keys(data);
+      this.users = Object.keys(data);
 
-        for (let key in data) {
-          this.products[key] = [];
-          this.address[key] = [];
+      for (let key in data) {
+        this.products[key] = [];
+        this.address[key] = [];
+        this.cashbacks[key] = 0;
+        debugger;
+        for (var item in data[key]) {
+          index++;
 
-          for (var item in data[key]) {
-            index++;
+          if (item == "address") {
+            this.address[key] = JSON.parse(data[key]['address']);
+            // debugger;
+          }
+          // debugger;
 
-            if (item == "address") {
-              this.address[key] = JSON.parse(data[key]['address']);
-              // debugger;
-            }
+          if (item != 'address') {
+            // console.log("item :: " + item);
+            if (item == 'bag') {
+              let _data = data[key]['bag'];
 
-            if (item != 'address') {
-              // console.log("item :: " + item);
-              if (item == 'bag') {
-                let _data = data[key]['bag'];
+              for (let _items in _data) {
+                console.log("items :: " + _items);
+
                 let deliveryFlg = (_data.delivery_status == "Delivered") ? true : false;
                 this.deliveredStatus = (deliveryFlg) ? "Done" : "Delivered";
 
@@ -157,201 +168,217 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
                   //   // debugger;
                   let _product = {};
 
-                  // console.log(data[key][item]);
-                  for (var key1 in data[key][item]) {
-                    if (key1 != "assigned_to") {
+                  if (_items != "address") {
+                    for (var key1 in _data[_items]) {
+                      if (key1 != "assigned_to") {
 
-                      for (let _data in data[key][item][key1]) {
-                        _product = {
-                          name: data[key][item][key1][_data].name,
-                          nut_variety: data[key][item][key1][_data]["category"],
-                          per_day: data[key][item][key1][_data].weight + " " + data[key][item][key1][_data]["unit_name"]
+                        if (key1 == 'others') {
+                          // debugger;
+                          this.cashbacks[key] += Number(_data[_items][key1].cashback);
                         }
-                        this.products[key].push(_product);
+
+                        if (key1 != 'others') {
+                          for (let val in _data[_items][key1]) {
+                            _product = {
+                              name: _data[_items][key1][val].name,
+                              nut_variety: _data[_items][key1][val]["category"],
+                              per_day: _data[_items][key1][val].weight + " " + _data[_items][key1][val]["unit_name"],
+                              category: _data[_items][key1][val]["category"],
+                              p_id: _data[_items][key1][val]["id"],
+                              timestamp_id: _items
+                            }
+                            this.products[key].push(_product);
+                          }
+                        }
                       }
                     }
                   }
                 }
               }
+            }
 
-              if (item == 'milk' || item == 'tender') {
+            if (item == 'milk' || item == 'tender') {
 
-                let _data = data[key][item];
-                let deliveryFlg = (_data.delivery_status == "Delivered") ? true : false;
-                this.deliveredStatus = (deliveryFlg) ? "Done" : "Delivered";
+              let _data = data[key][item];
+              let deliveryFlg = (_data.delivery_status == "Delivered") ? true : false;
+              this.deliveredStatus = (deliveryFlg) ? "Done" : "Delivered";
 
-                _data.assigned_to = "Bala";
+              _data.assigned_to = "Bala";
 
-                if (_data.assigned_to == this.name) {
-                  //   // debugger;
-                  let _product = {};
+              if (_data.assigned_to == this.name) {
+                //   // debugger;
+                let _product = {};
 
-                  debugger;
+                // debugger;
+                _product = {
+                  name: data[key][item].name,
+                  nut_variety: data[key][item]["nut_variety"] + " - " + data[key][item]['original_weight'] + "" + data[key][item]['unit_name'],
+                  per_day: data[key][item]["per_day"],
+                  category: "subs"
+                }
+                this.products[key].push(_product);
+              }
+            }
+
+            if (item == "greens") {
+              // debugger;
+              let _data = data[key][item];
+              let deliveryFlg = (_data.delivery_status == "Delivered") ? true : false;
+              this.deliveredStatus = (deliveryFlg) ? "Done" : "Delivered";
+
+              _data.assigned_to = "Bala";
+
+              if (_data.assigned_to == this.name) {
+                let _product = {};
+
+                for (let _greens in data[key][item]['data']) {
+                  // debugger;
                   _product = {
-                    name: data[key][item].name,
-                    nut_variety: data[key][item]["nut_variety"] + " - " + data[key][item]['original_weight'] + "" + data[key][item]['unit_name'],
-                    per_day: data[key][item]["per_day"]
+                    name: data[key][item]['data'][_greens].name[0],
+                    nut_variety: 'greens',
+                    per_day: data[key][item]['data'][_greens]["count"],
+                    category: "subs"
                   }
                   this.products[key].push(_product);
                 }
               }
-
-              if (item == "greens") {
-                // debugger;
-                let _data = data[key][item];
-                let deliveryFlg = (_data.delivery_status == "Delivered") ? true : false;
-                this.deliveredStatus = (deliveryFlg) ? "Done" : "Delivered";
-
-                _data.assigned_to = "Bala";
-
-                if (_data.assigned_to == this.name) {
-                  let _product = {};
-
-                  for (let _greens in data[key][item]['data']) {
-                    // debugger;
-                    _product = {
-                      name: data[key][item]['data'][_greens].name[0],
-                      nut_variety: 'greens',
-                      per_day: data[key][item]['data'][_greens]["count"]
-                    }
-                    this.products[key].push(_product);
-                  }
-                }
-              }
             }
-
-            // let _data = data[key].tender;
-            // let _data = data[key][item];
-            // // console.log(_data);
-            // // this.trace(_data);
-            // let deliveryFlg = (_data.delivery_status == "Delivered") ? true : false;
-            // this.deliveredStatus = (deliveryFlg) ? "Done" : "Delivered";
-
-            // _data.assigned_to = "Bala";
-            // if (_data.assigned_to == this.name) {
-            //   // debugger;
-            //   let _product = {};
-            //   if (item != 'bag') {
-            //     _product = {
-            //       name: data[key][item].name,
-            //       nut_variety: data[key][item].nut_variety,
-            //       per_day: data[key][item].per_day
-            //     }
-            //     this.products[key].push(_product);
-
-            //   } else if (item == 'bag') {
-            //     // console.log(data[key][item]);
-            //     for (var key1 in data[key][item]) {
-            //       // console.log(key1);
-            //       if (key1 != "assigned_to") {
-            //         // debugger;
-            //         _product = {
-            //           name: data[key][item][key1].name,
-            //           nut_variety: data[key][item][key1]["category"],
-            //           per_day: data[key][item][key1].weight + " " + data[key][item][key1]["unit_name"]
-            //         }
-            //         this.products[key].push(_product);
-            //       }
-            //     }
-            //   }
-
-            //   if (item != 'bag')
-            //     this.address[key] = JSON.parse(data[key][item]['address']);
-            //   else {
-            //     // debugger;
-            //     for (var i = 0; i < Object.keys(data[key][item]).length; i++) {
-            //       // console.log("i :: " + i);
-            //       if (Object.keys(data[key][item])[i] != "assigned_to") {
-            //         this.address[key] = data[key][item][Object.keys(data[key][item])[0]].address;
-            //         break;
-            //       }
-            //     }
-            //   }
-
-            // this.total_deliveries += _data.per_day;
-
-            // debugger;
-            // let addr = JSON.parse(_data.address);
-            // // let updated_address = addr.street;
-            // let updated_address = addr.building + ", " + addr.block + ", " + addr.floor + ", " + addr.door;
-
-            // debugger;
-            // if (_data.nut_variety == "orange" || _data.nut_variety == "Orange") this.orange_count += _data.per_day;
-            // else this.green_count += _data.per_day;
-
-            // this.trace(user_data[key].history[history_len].notes);
-            // this.trace("--------------------");
-
-            // debugger;
-            // if (!deliveryFlg) {
-            //   this.total_undelivered += (_data.per_day + (_data.replacement * 1 || 0));
-            //   this.undelivered_list.push({
-            //     [_data.name]: {
-            //       'name': addr.name,
-            //       'no': key,
-            //       'apartment': addr.apartment,
-            //       'block': addr.block,
-            //       'floor': addr.floor,
-            //       'door': addr.door,
-            //       'area': addr.area,
-            //       'delivery_status': deliveryFlg,
-            //       'delivery_string': this.deliveredStatus,
-            //       'nut_type': _data.nut_variety,
-            //       'data': _data,
-            //       'address': updated_address,
-            //       // 'rtp': user_data[key].history[history_len].details.remaining_to_pay,
-            //       // 'paid': user_data[key].history[history_len].details.paid_amt,
-            //       // 'instructions': addr.inst,
-            //       // "notes": user_data[key].history[history_len].notes
-            //     }
-            //   });
-            // } else {
-            //   this.total_delivered += (_data.per_day + (_data.replacement * 1 || 0));
-            //   this.delivered_list.push({
-            //     [_data.name]: {
-            //       'name': addr.name,
-            //       'no': key,
-            //       'apartment': addr.apartment,
-            //       'block': addr.block,
-            //       'floor': addr.floor,
-            //       'door': addr.door,
-            //       'area': addr.area,
-            //       'nut_type': _data.nut_variety,
-            //       'delivery_status': deliveryFlg,
-            //       'delivery_string': this.deliveredStatus,
-            //       'data': _data,
-            //       'address': updated_address,
-            //       // 'rtp': user_data[key].history[history_len].details.remaining_to_pay,
-            //       // 'paid': user_data[key].history[history_len].details.paid_amt,
-            //       // 'instructions': user_data[key].history[history_len].details.instructions,
-            //       // "notes": user_data[key].history[history_len].notes
-            //     }
-            //   });
-            // }
-            // }
-
           }
+
+          // let _data = data[key].tender;
+          // let _data = data[key][item];
+          // // console.log(_data);
+          // // this.trace(_data);
+          // let deliveryFlg = (_data.delivery_status == "Delivered") ? true : false;
+          // this.deliveredStatus = (deliveryFlg) ? "Done" : "Delivered";
+
+          // _data.assigned_to = "Bala";
+          // if (_data.assigned_to == this.name) {
+          //   // debugger;
+          //   let _product = {};
+          //   if (item != 'bag') {
+          //     _product = {
+          //       name: data[key][item].name,
+          //       nut_variety: data[key][item].nut_variety,
+          //       per_day: data[key][item].per_day
+          //     }
+          //     this.products[key].push(_product);
+
+          //   } else if (item == 'bag') {
+          //     // console.log(data[key][item]);
+          //     for (var key1 in data[key][item]) {
+          //       // console.log(key1);
+          //       if (key1 != "assigned_to") {
+          //         // debugger;
+          //         _product = {
+          //           name: data[key][item][key1].name,
+          //           nut_variety: data[key][item][key1]["category"],
+          //           per_day: data[key][item][key1].weight + " " + data[key][item][key1]["unit_name"]
+          //         }
+          //         this.products[key].push(_product);
+          //       }
+          //     }
+          //   }
+
+          //   if (item != 'bag')
+          //     this.address[key] = JSON.parse(data[key][item]['address']);
+          //   else {
+          //     // debugger;
+          //     for (var i = 0; i < Object.keys(data[key][item]).length; i++) {
+          //       // console.log("i :: " + i);
+          //       if (Object.keys(data[key][item])[i] != "assigned_to") {
+          //         this.address[key] = data[key][item][Object.keys(data[key][item])[0]].address;
+          //         break;
+          //       }
+          //     }
+          //   }
+
+          // this.total_deliveries += _data.per_day;
+
+          // debugger;
+          // let addr = JSON.parse(_data.address);
+          // // let updated_address = addr.street;
+          // let updated_address = addr.building + ", " + addr.block + ", " + addr.floor + ", " + addr.door;
+
+          // debugger;
+          // if (_data.nut_variety == "orange" || _data.nut_variety == "Orange") this.orange_count += _data.per_day;
+          // else this.green_count += _data.per_day;
+
+          // this.trace(user_data[key].history[history_len].notes);
+          // this.trace("--------------------");
+
+          // debugger;
+          // if (!deliveryFlg) {
+          //   this.total_undelivered += (_data.per_day + (_data.replacement * 1 || 0));
+          //   this.undelivered_list.push({
+          //     [_data.name]: {
+          //       'name': addr.name,
+          //       'no': key,
+          //       'apartment': addr.apartment,
+          //       'block': addr.block,
+          //       'floor': addr.floor,
+          //       'door': addr.door,
+          //       'area': addr.area,
+          //       'delivery_status': deliveryFlg,
+          //       'delivery_string': this.deliveredStatus,
+          //       'nut_type': _data.nut_variety,
+          //       'data': _data,
+          //       'address': updated_address,
+          //       // 'rtp': user_data[key].history[history_len].details.remaining_to_pay,
+          //       // 'paid': user_data[key].history[history_len].details.paid_amt,
+          //       // 'instructions': addr.inst,
+          //       // "notes": user_data[key].history[history_len].notes
+          //     }
+          //   });
+          // } else {
+          //   this.total_delivered += (_data.per_day + (_data.replacement * 1 || 0));
+          //   this.delivered_list.push({
+          //     [_data.name]: {
+          //       'name': addr.name,
+          //       'no': key,
+          //       'apartment': addr.apartment,
+          //       'block': addr.block,
+          //       'floor': addr.floor,
+          //       'door': addr.door,
+          //       'area': addr.area,
+          //       'nut_type': _data.nut_variety,
+          //       'delivery_status': deliveryFlg,
+          //       'delivery_string': this.deliveredStatus,
+          //       'data': _data,
+          //       'address': updated_address,
+          //       // 'rtp': user_data[key].history[history_len].details.remaining_to_pay,
+          //       // 'paid': user_data[key].history[history_len].details.paid_amt,
+          //       // 'instructions': user_data[key].history[history_len].details.instructions,
+          //       // "notes": user_data[key].history[history_len].notes
+          //     }
+          //   });
+          // }
+          // }
+
         }
+      }
 
-        this.target_ary = [];
-        if (this.tab_index == 0) this.target_ary = this.undelivered_list;
-        if (this.tab_index == 1) this.target_ary = this.delivered_list;
+      this.target_ary = [];
+      if (this.tab_index == 0) this.target_ary = this.undelivered_list;
+      if (this.tab_index == 1) this.target_ary = this.delivered_list;
 
-        this.target_ary.sort(compare);
-        function compare(a, b) {
-          if (a.apartment < b.apartment) {
-            return -1;
-          }
-          if (a.apartment > b.apartment) {
-            return 1;
-          }
-          return 0;
+      // debugger;
+
+      this.target_ary.sort(compare);
+      function compare(a, b) {
+        if (a.apartment < b.apartment) {
+          return -1;
         }
+        if (a.apartment > b.apartment) {
+          return 1;
+        }
+        return 0;
+      }
 
-        this.userListUpdateObservable.unsubscribe();
-        this.changeDet.detectChanges();
-      });
+      // this.userListUpdateObservable.unsubscribe();
+      this.changeDet.detectChanges();
     });
+    // });
   }
 
   drop(event: CdkDragDrop<string[]>) {
@@ -375,39 +402,92 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
   }
 
   deliveredAction(e) {
+
+    console.log("deliveredAction");
+
+    this.tc_selection = true;
     if (!this.tc_selection) {
-      this._commons.openSnackBar("Tick the number of nuts.", "");
+      this._commons.openSnackBar("Tick the delivered items.", "");
     } else {
-      if (this.tab_index == 0) this.list = this.undelivered_list;
-      if (this.tab_index == 1) this.list = this.delivered_list;
+      // if (this.tab_index == 0) this.list = this.undelivered_list;
+      // if (this.tab_index == 1) this.list = this.delivered_list;
 
       this.selectedIndex = e.currentTarget.id.split("_")[1] * 1;
-      this.selectedTarget = this.list[this.selectedIndex].data;
+      $('#deliver_' + this.selectedIndex).attr({ 'disabled': 'true' });
+      $('#deliver_' + this.selectedIndex).css({ 'pointer-events': 'none' });
+      // debugger;
+      this.selectedTarget = this.products[this.users[this.selectedIndex]];
 
+
+      let _check = moment(new Date(), 'YYYY/MM/DD');
+      let _month = moment(_check.format('M'), 'MM').format('MMMM');//check.format('M');
+      let _day = _check.format('D');
+      let _year = _check.format('YYYY');
+
+      // debugger;
+      let _past_timestamp = "";
+      for (var key in this.products[this.users[this.selectedIndex]]) {
+        // console.log(this.products[this.users[this.selectedIndex]][key]);
+        // debugger;
+        let timestamp = this.products[this.users[this.selectedIndex]][key]["timestamp_id"];
+        // console.log("timestamp :: " + timestamp);
+
+        if (timestamp != _past_timestamp) {
+          // console.log("called");
+          // console.log(this.users[this.selectedIndex], _year, _month, _day, timestamp, "delivered");
+          if (this.products[this.users[this.selectedIndex]][key]['category'] != "subs") {
+            this.firebase.update_user_history_status(this.users[this.selectedIndex], _year, _month, _day, timestamp, "delivered", () => {
+
+            })
+          }
+        }
+        _past_timestamp = timestamp;
+      }
+
+      // debugger;
+      if (this.cashbacks[this.users[this.selectedIndex]] != 0) {
+        // console.log(this.users[this.selectedIndex]);
+        // console.log("--------");
+
+        // debugger;
+        this.firebase.readUserInfo("users", String(this.users[this.selectedIndex])).subscribe((data) => {
+          let _wallet = data['wallet'] + this.cashbacks[this.users[this.selectedIndex]];
+          let _ledger = data['ledger'];
+          // debugger;
+          // id, obj, callback, pageName
+          this.firebase.write_wallet(this.users[this.selectedIndex], { wallet: _wallet, ledger: _ledger }, () => { alert("wallet successfully updated."); }, "delivery-app");
+          let type = "Credit";
+          this.firebase.write_wallet_history(new Date().getTime(), this.users[this.selectedIndex], { type: type, amt: this.cashbacks[this.users[this.selectedIndex]], razor_id: "" }, () => {
+            alert("Cashback successfully credited to your account.");
+          })
+        });
+      }
+
+      // debugger;
       let calbackFlg1 = false;
       let calbackFlg2 = false;
       // debugger;
       this.selectedTarget.delivery_status = "Delivered";
       // update order history
-      this.firebase.update_delivery_status_order(this.selectedTarget.m_no, this.selectedTarget, this.todaysDate, () => {
-        calbackFlg1 = true;
-        if (calbackFlg1 && calbackFlg2) {
-          this.changeDet.detectChanges();
-          // this.trace("render change1s");
-        }
-      });
-      // //update user history
-      // // console.log("this.todaysDate :: " + this.todaysDate);
-      this.firebase.update_delivery_status_user_history(this.selectedTarget.m_no, this.selectedTarget.history_id, this.todaysDate, {
-        delivered: true,
-        delivered_by: this.selectedTarget.assigned_to
-      }, () => {
-        calbackFlg2 = true;
-        if (calbackFlg1 && calbackFlg2) {
-          this.changeDet.detectChanges();
-          // this.trace("render changes2");
-        }
-      });
+      // this.firebase.update_delivery_status_order(this.selectedTarget.m_no, this.selectedTarget, this.todaysDate, () => {
+      //   calbackFlg1 = true;
+      //   if (calbackFlg1 && calbackFlg2) {
+      //     this.changeDet.detectChanges();
+      //     // this.trace("render change1s");
+      //   }
+      // });
+      // // //update user history
+      // // // console.log("this.todaysDate :: " + this.todaysDate);
+      // this.firebase.update_delivery_status_user_history(this.selectedTarget.m_no, this.selectedTarget.history_id, this.todaysDate, {
+      //   delivered: true,
+      //   delivered_by: this.selectedTarget.assigned_to
+      // }, () => {
+      //   calbackFlg2 = true;
+      //   if (calbackFlg1 && calbackFlg2) {
+      //     this.changeDet.detectChanges();
+      //     // this.trace("render changes2");
+      //   }
+      // });
     }
   }
 
@@ -468,8 +548,9 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
     let items_id = evt.source.id.split("_")[1];
     let target_mobile = this.users[user_id]
 
-    console.log(evt.checked);
-    console.log(this.products[target_mobile][items_id]);
+    // debugger;
+    // console.log(evt.checked);
+    // console.log(this.products[target_mobile][items_id]);
 
     this.tc_selection = evt.checked;
     // this._ngZone.run(() => { });

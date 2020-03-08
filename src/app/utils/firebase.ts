@@ -1,7 +1,7 @@
 import { AngularFireDatabase } from 'angularfire2/database';
 import { Observable } from 'rxjs';
 import { OnInit } from '@angular/core';
-import { callbackify } from 'util';
+import * as moment from 'moment/moment';
 
 export class FireBase implements OnInit {
 
@@ -15,6 +15,15 @@ export class FireBase implements OnInit {
 
     ngOnInit(): void {
 
+    }
+
+    public readUserInfo(target, id) {
+        return new Observable((observer) => {
+            var ref = this.db.database.ref('/' + target + '/' + id);
+            ref.once("value", function (snapshot) {
+                observer.next(snapshot.exportVal());
+            });
+        });
     }
 
     public readUsers() {
@@ -135,7 +144,7 @@ export class FireBase implements OnInit {
 
 
     public write_tc_orders(date, id, obj) {
-        debugger;
+        // debugger;
         this.db.database.ref("/orders/" + date + "/" + id + "/").update({
             "tender": JSON.stringify(obj)
         }, (error) => {
@@ -155,6 +164,21 @@ export class FireBase implements OnInit {
     public user_history(id, obj, active, cnt, callback) {
         this.db.database.ref("/users_info/" + id + '/history/').update({
             [cnt]: obj,
+            // 'active': active
+        }, (error) => {
+            if (error) console.log("The write failed...");
+            else {
+                console.log("Data saved successfully!");
+                callback();
+            }
+        });
+    }
+
+    public update_user_history_status(id, year, month, day, timestamp, status, callback) {
+        // users/id/orders/history/year/month/day/timestamp/category/p_id/ .delivered = true
+        this.db.database.ref("/users/" + id + "/orders/history/" + year + "/" + month + "/" + day + "/" + timestamp + "/details/").update({
+            'delivered': status,
+            'timestamp': new Date().getTime()
             // 'active': active
         }, (error) => {
             if (error) console.log("The write failed...");
@@ -467,6 +491,42 @@ export class FireBase implements OnInit {
 
     public logout() {
         //logout
+    }
+
+    public write_wallet(id, obj, callback, pageName) {
+        // console.log("write_wallet pageName ::  " + pageName);
+        this.db.database.ref("/users/" + id + '/').update({
+            'wallet': obj.wallet,
+            'ledger': obj.ledger
+        }, (error) => {
+            if (error) console.log("Wallet write failed...");
+            else {
+                console.log("Wallet saved successfully!");
+                callback();
+            }
+        });
+    }
+
+    public write_wallet_history(timestamp, mobile_no, data, callback) {
+
+        var check = moment(new Date(), 'YYYY/MM/DD');
+        var month = moment(check.format('M'), 'MM').format('MMMM');//check.format('M');
+        var day = check.format('D');
+        var year = check.format('YYYY');
+
+        this.db.database.ref("users/" + mobile_no + "/wallet_history/" + year + "/" + month + "/").update({
+            [timestamp]: {
+                type: data['type'],
+                amt: data['amt'],
+                razor_id: data['razor_id'] || ""
+            },
+        }, (error) => {
+            if (error) console.log("write_wallet_history write failed...");
+            else {
+                console.log("write_wallet_history saved successfully!");
+                callback();
+            }
+        });
     }
 }
 
