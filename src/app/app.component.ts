@@ -26,7 +26,7 @@ export class AppComponent implements OnInit {
 
       if (this.localStorage.who == 'admin') {
         this._loginService.setLoginStatus('admin', true);
-        this._router.navigate(["admin/customer_list"]);
+        this._router.navigate(["admin/list"]);
       } else if (this.localStorage.who == 'agent') {
         this._loginService.setLoginStatus('agent', true);
         this._router.navigate(["delivery", { name: this.localStorage.name, mno: this.localStorage.target }]);

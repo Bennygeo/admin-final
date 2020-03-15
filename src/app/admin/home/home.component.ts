@@ -58,7 +58,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   clickToHome() {
-    this._router.navigate(["admin/customer_list"]);
+    this._router.navigate(["admin/list"]);
     this._service.readCustomerList(false);
   }
 

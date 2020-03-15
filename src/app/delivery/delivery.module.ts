@@ -19,7 +19,7 @@ import { Utils } from '../utils/utils';
   declarations: [
     TestComponent,
     DeliveryListComponent,
-    OrderViewComponent
+    OrderViewComponent,
   ],
   imports: [
     CommonModule,

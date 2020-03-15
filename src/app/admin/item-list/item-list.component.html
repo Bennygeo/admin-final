@@ -1,0 +1,31 @@
+<app-home></app-home>
+
+<div class="container">
+    <div class="row">
+        <mat-tab-group #tabGroup (selectedTabChange)="tabChanged($event)" [selectedIndex]="this.tab_index">
+            <mat-tab label="List " mat-align-tabs="center">
+                <div disabled class="col-12" style="margin-bottom: 12px;">
+
+                </div>
+            </mat-tab>
+        </mat-tab-group>
+        <mat-spinner *ngIf="listFlg" style="margin:0 auto;"></mat-spinner>
+
+        <div id="overlay" (click)="overlayClickHandler()" *ngIf="overlay">
+
+        </div>
+
+
+
+    </div>
+
+    <div class="row">
+        <div *ngFor="let list of this.total_items | keyvalue" class="col-12">
+            <div class="col-md-12 col-sm-12 col-xs-12">{{list.key}}</div>
+            <div>-------------------</div>
+            <div *ngFor="let item of this.total_items[list.key] | keyvalue">
+                <div>{{item.key}} - {{this.total_items[list.key][item.key].total}}</div>
+            </div>
+        </div>
+    </div>
+</div>

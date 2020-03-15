@@ -60,10 +60,10 @@ export class LoginComponent implements OnInit {
           // console.log("Good");
           this.submit_btn_disable = true;
           this._loginSerice.setLoginStatus('admin', true);
-          this._router.navigate(["admin/customer_list"]);
+          this._router.navigate(["admin/item_list"]);
           this._storageService.writeData("thinkspot_login", { who: 'admin', isLogged: true, target: this.username, name: 'admin' });
         } else if (this.pswd == undefined || this.pswd == "") {
-          console.log("Empty");
+          // console.log("Empty");
           this._loginSerice.setLoginStatus('admin', false);
           // this._storageService.writeData("thinkspot_login", { who: 'admin', isLogged: false, target: this.username, name: this.loginData[this.username].name });
           this.pswdErr = false;

@@ -18,7 +18,6 @@ import * as moment from 'moment/moment';
 })
 
 export class DeliveryListComponent implements OnInit, OnDestroy {
-  trace: any = console.log;
   firebase: FireBase;
   mobile: string;
   name: string;
@@ -94,7 +93,6 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
   ngOnInit() {
     if (this._storage.readData("tabindex"))
       this.tab_index = this._storage.readData("tabindex") * 1;
-    // this.trace("this.tab_index :: " + this.tab_index);
 
     this.sub = this._activatedRoute.paramMap.subscribe(params => {
       this.mobile = params.get('mobile');
@@ -107,13 +105,12 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
     //   this.todaysDate = this.date_utils.getDateString(this.todaysDate, "");
     // } else {
     this.todaysDate = new Date();
-    this.todaysDate = this.date_utils.getDateString(this.date_utils.addDaysToCalendar(this.todaysDate, 1), "");
+    this.todaysDate = this.date_utils.getDateString(this.date_utils.addDaysToCalendar(this.todaysDate, 0), "");
     // }
     this.renderList();
   }
 
   renderList() {
-    // this.trace("renderList");
     this._service.readCustomerList(false);
     // this.userListUpdateObservable = this._service.onUserListUpdate.subscribe((user_data) => {
     // this.user_data = user_data;
@@ -142,15 +139,13 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
         this.products[key] = [];
         this.address[key] = [];
         this.cashbacks[key] = 0;
-        debugger;
+
         for (var item in data[key]) {
           index++;
-
+          // debugger;
           if (item == "address") {
             this.address[key] = JSON.parse(data[key]['address']);
-            // debugger;
           }
-          // debugger;
 
           if (item != 'address') {
             // console.log("item :: " + item);
@@ -158,7 +153,12 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
               let _data = data[key]['bag'];
 
               for (let _items in _data) {
-                console.log("items :: " + _items);
+                try {
+                  if (_items == "address") {
+                    // debugger;
+                    this.address[key] = JSON.parse(data[key]['bag']['address']);
+                  }
+                } catch (e) { }
 
                 let deliveryFlg = (_data.delivery_status == "Delivered") ? true : false;
                 this.deliveredStatus = (deliveryFlg) ? "Done" : "Delivered";
@@ -179,14 +179,47 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
 
                         if (key1 != 'others') {
                           for (let val in _data[_items][key1]) {
-                            _product = {
-                              name: _data[_items][key1][val].name,
-                              nut_variety: _data[_items][key1][val]["category"],
-                              per_day: _data[_items][key1][val].weight + " " + _data[_items][key1][val]["unit_name"],
-                              category: _data[_items][key1][val]["category"],
-                              p_id: _data[_items][key1][val]["id"],
-                              timestamp_id: _items
+                            console.log(_data[_items][key1][val]["name"]);
+                            console.log("-----------------------");
+                            // console.log(val);
+
+                            if (_data[_items][key1][val]["name"] == "Tender Coconut") {
+                              // debugger;
+                              _product = {
+                                name: _data[_items][key1][val].name,
+                                nut_variety: _data[_items][key1][val]["category"],
+                                per_day: (_data[_items][key1][val].quantity) + " " + _data[_items][key1][val]["unit_name"],
+                                category: _data[_items][key1][val]["category"],
+                                p_id: _data[_items][key1][val]["id"],
+                                timestamp_id: _items,
+                                "delivered": _data[_items][key1][val]["delivered"] ? true : false || false,
+                              }
+
+                            } else if (_data[_items][key1][val]["name"] == "Fresh Cow Milk") {
+                              // debugger;
+                              _product = {
+                                name: _data[_items][key1][val].name,
+                                nut_variety: _data[_items][key1][val]["category"],
+                                per_day: (_data[_items][key1][val].quantity) + " " + _data[_items][key1][val].original_weight + " " + _data[_items][key1][val]["unit_name"],
+                                category: _data[_items][key1][val]["category"],
+                                p_id: _data[_items][key1][val]["id"],
+                                timestamp_id: _items,
+                                "delivered": _data[_items][key1][val]["delivered"] ? true : false || false,
+                              }
+
+                            } else {
+                              _product = {
+                                name: _data[_items][key1][val].name,
+                                nut_variety: _data[_items][key1][val]["category"],
+                                per_day: (_data[_items][key1][val].weight || _data[_items][key1][val].original_weight) + " " + _data[_items][key1][val]["unit_name"],
+                                category: _data[_items][key1][val]["category"],
+                                p_id: _data[_items][key1][val]["id"],
+                                timestamp_id: _items,
+                                "delivered": _data[_items][key1][val]["delivered"] ? true : false || false,
+                              }
                             }
+
+
                             this.products[key].push(_product);
                           }
                         }
@@ -206,10 +239,8 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
               _data.assigned_to = "Bala";
 
               if (_data.assigned_to == this.name) {
-                //   // debugger;
                 let _product = {};
 
-                // debugger;
                 _product = {
                   name: data[key][item].name,
                   nut_variety: data[key][item]["nut_variety"] + " - " + data[key][item]['original_weight'] + "" + data[key][item]['unit_name'],
@@ -221,7 +252,6 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
             }
 
             if (item == "greens") {
-              // debugger;
               let _data = data[key][item];
               let deliveryFlg = (_data.delivery_status == "Delivered") ? true : false;
               this.deliveredStatus = (deliveryFlg) ? "Done" : "Delivered";
@@ -232,7 +262,6 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
                 let _product = {};
 
                 for (let _greens in data[key][item]['data']) {
-                  // debugger;
                   _product = {
                     name: data[key][item]['data'][_greens].name[0],
                     nut_variety: 'greens',
@@ -403,7 +432,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
 
   deliveredAction(e) {
 
-    console.log("deliveredAction");
+    // console.log("deliveredAction");
 
     this.tc_selection = true;
     if (!this.tc_selection) {
@@ -418,7 +447,6 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
       // debugger;
       this.selectedTarget = this.products[this.users[this.selectedIndex]];
 
-
       let _check = moment(new Date(), 'YYYY/MM/DD');
       let _month = moment(_check.format('M'), 'MM').format('MMMM');//check.format('M');
       let _day = _check.format('D');
@@ -427,37 +455,45 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
       // debugger;
       let _past_timestamp = "";
       for (var key in this.products[this.users[this.selectedIndex]]) {
+        // console.log("key :: " + key);
+
+        // console.log(this.products[this.users[this.selectedIndex]][key].category);
+        // console.log(this.products[this.users[this.selectedIndex]][key].p_id);
+        // console.log("----------------------------------------------");
+
         // console.log(this.products[this.users[this.selectedIndex]][key]);
         // debugger;
-        let timestamp = this.products[this.users[this.selectedIndex]][key]["timestamp_id"];
-        // console.log("timestamp :: " + timestamp);
+        if (!this.products[this.users[this.selectedIndex]][key].delivered) {
 
-        if (timestamp != _past_timestamp) {
-          // console.log("called");
-          // console.log(this.users[this.selectedIndex], _year, _month, _day, timestamp, "delivered");
-          if (this.products[this.users[this.selectedIndex]][key]['category'] != "subs") {
-            this.firebase.update_user_history_status(this.users[this.selectedIndex], _year, _month, _day, timestamp, "delivered", () => {
 
-            })
+          let timestamp = this.products[this.users[this.selectedIndex]][key]["timestamp_id"];
+          // console.log("timestamp :: " + timestamp);
+
+          //write daily order status
+          this.firebase.update_orders_status(this.todaysDate, this.users[this.selectedIndex], timestamp, this.products[this.users[this.selectedIndex]][key].category, this.products[this.users[this.selectedIndex]][key].p_id, "delivered", () => { });
+
+          if (timestamp != _past_timestamp) {
+            if (this.products[this.users[this.selectedIndex]][key]['category'] != "subs") {
+              this.firebase.update_user_history_status(this.users[this.selectedIndex], _year, _month, _day, timestamp, "delivered", () => {
+
+              });
+            }
           }
+          _past_timestamp = timestamp;
         }
-        _past_timestamp = timestamp;
       }
 
       // debugger;
       if (this.cashbacks[this.users[this.selectedIndex]] != 0) {
-        // console.log(this.users[this.selectedIndex]);
-        // console.log("--------");
-
-        // debugger;
         this.firebase.readUserInfo("users", String(this.users[this.selectedIndex])).subscribe((data) => {
           let _wallet = data['wallet'] + this.cashbacks[this.users[this.selectedIndex]];
           let _ledger = data['ledger'];
-          // debugger;
+
           // id, obj, callback, pageName
           this.firebase.write_wallet(this.users[this.selectedIndex], { wallet: _wallet, ledger: _ledger }, () => { alert("wallet successfully updated."); }, "delivery-app");
           let type = "Credit";
-          this.firebase.write_wallet_history(new Date().getTime(), this.users[this.selectedIndex], { type: type, amt: this.cashbacks[this.users[this.selectedIndex]], razor_id: "" }, () => {
+
+          this.firebase.write_wallet_history(new Date().getTime(), this.users[this.selectedIndex], { type: type, amt: this.cashbacks[this.users[this.selectedIndex]], razor_id: "", category: "Cashback" }, () => {
             alert("Cashback successfully credited to your account.");
           })
         });
@@ -546,8 +582,12 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
     // console.log("evt.source.id :: " + evt.source.id.split("_"));
     let user_id = evt.source.id.split("_")[2];
     let items_id = evt.source.id.split("_")[1];
-    let target_mobile = this.users[user_id]
+    let target_mobile = this.users[user_id];
 
+    console.log(this.products[target_mobile][items_id]);
+    this.products[target_mobile][items_id].selected = (this.products[target_mobile][items_id].selected) ? false : true;
+    console.log("---------------------------" + this.products[target_mobile][items_id].selected);
+    // debugger;
     // debugger;
     // console.log(evt.checked);
     // console.log(this.products[target_mobile][items_id]);
@@ -558,7 +598,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
   }
 
   modalSaveAction() {
-    console.log("modalSaveAction");
+    // console.log("modalSaveAction");
     (this.overlay) ? this.overlay = false : this.overlay = true;
 
     let remaining = this.packageData.remaining_to_pay - this.priceVal;//this.packageData.remaining_to_pay - this.packageData.paid_amt;

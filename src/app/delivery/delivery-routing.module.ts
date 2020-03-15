@@ -18,7 +18,7 @@ const routes: Routes = [
   {
     path: 'list',
     component: DeliveryListComponent,
-  },
+  }
   // { path: 'no-access', component: NoAccessComponent },
   // { path: '**', component: PageNotFoundComponent }
 ];

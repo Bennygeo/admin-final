@@ -189,6 +189,22 @@ export class FireBase implements OnInit {
         });
     }
 
+    //write user daily orders history status
+    public update_orders_status(date, id, timestamp, category, p_id, status, callback) {
+        // users/id/orders/history/year/month/day/timestamp/category/p_id/ .delivered = true
+        this.db.database.ref("/orders_test/" + date + "/" + id + "/bag/" + timestamp + "/" + category + "/" + p_id + "/").update({
+            'delivered': status,
+            'timestamp': new Date().getTime()
+            // 'active': active
+        }, (error) => {
+            if (error) console.log("The update_orders_status write failed...");
+            else {
+                console.log("Update_orders_status Data saved successfully!");
+                callback();
+            }
+        });
+    }
+
     /*
     * Write from customer list ts
     */
@@ -508,7 +524,6 @@ export class FireBase implements OnInit {
     }
 
     public write_wallet_history(timestamp, mobile_no, data, callback) {
-
         var check = moment(new Date(), 'YYYY/MM/DD');
         var month = moment(check.format('M'), 'MM').format('MMMM');//check.format('M');
         var day = check.format('D');
@@ -518,6 +533,7 @@ export class FireBase implements OnInit {
             [timestamp]: {
                 type: data['type'],
                 amt: data['amt'],
+                category: data['category'] || "",
                 razor_id: data['razor_id'] || ""
             },
         }, (error) => {

@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { AdminRoutingModule } from './admin-routing.module';
 import { TestComponent } from './test/test.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatFormFieldModule, MatOptionModule, MatSelectModule, MatButtonModule, MatInputModule, MatDialogModule, MatSnackBarModule, MatCheckboxModule, MatIconModule, MatRadioModule, MatDialogRef } from '@angular/material';
+import { MatFormFieldModule, MatOptionModule, MatSelectModule, MatButtonModule, MatInputModule, MatDialogModule, MatSnackBarModule, MatCheckboxModule, MatIconModule, MatRadioModule, MatDialogRef, MatTabsModule, MatProgressSpinnerModule } from '@angular/material';
 import { Ng2SearchPipeModule, Ng2SearchPipe } from 'ng2-search-filter';
 import { AddressComponent } from './address/address.component';
 import { CustomerListComponent } from './customer-list/customer-list.component';
@@ -21,6 +21,7 @@ import { Daterangepicker } from 'ng2-daterangepicker';
 import { ReportComponent } from './report/report.component';
 import { UnpaidComponent } from './unpaid/unpaid.component';
 import { MultidatepickerComponent } from '../utils/multidate/multidatepicker.component';
+import { ItemListComponent } from './item-list/item-list.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { MultidatepickerComponent } from '../utils/multidate/multidatepicker.com
     MatDialogComponent,
     ReportComponent,
     UnpaidComponent,
-    MultidatepickerComponent
+    MultidatepickerComponent,
+    ItemListComponent
   ],
   imports: [
     CommonModule,
@@ -45,6 +47,9 @@ import { MultidatepickerComponent } from '../utils/multidate/multidatepicker.com
     Ng2SearchPipeModule,
     ScrollDispatchModule,
     ReactiveFormsModule,
+    MatTabsModule,
+    MatSelectModule,
+    MatProgressSpinnerModule,
     Daterangepicker,
   ],
   entryComponents: [

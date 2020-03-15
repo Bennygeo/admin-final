@@ -47,16 +47,15 @@
                         </a>
                     </div>
 
-                    <div class="addr">{{address[user].building}}, {{address[user].block}}, {{address[user].floor}},
+                    <div class="addr col-12" >{{address[user].building}}, {{address[user].block}}, {{address[user].floor}},
                         {{address[user].door}}, {{address[user].area}}</div>
 
                     <div style="display: none;" id="box_{{j}}">
-
-
                         <div class="col-12" style="margin-bottom: 12px; font-size: 16px; padding: 0;"
                             *ngFor="let _product of products[user]; let i=index">
                             <mat-checkbox (change)="selection_change_handler($event)" [disableRipple]="true"
-                                id="items_{{i}}_{{j}}"><span style="color: #666;">
+                                [checked]="_product['delivered']" [disabled]="_product['delivered']" id="items_{{i}}_{{j}}"><span
+                                    style="color: #666;">
                                     <b>{{_product.name}}</b>
                                     x </span>
                                 <b>{{_product.per_day }}</b>

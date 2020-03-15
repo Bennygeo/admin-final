@@ -8,17 +8,10 @@ import { NoAccessComponent } from '../others/no-access/no-access.component';
 import { PageNotFoundComponent } from '../others/page-not-found/page-not-found.component';
 import { ReportComponent } from './report/report.component';
 import { UnpaidComponent } from './unpaid/unpaid.component';
+import { ItemListComponent } from './item-list/item-list.component';
 
 const routes: Routes = [
-  {
-    path: 'test',
-    component: CustomerListComponent,
-    // children: [{
-    //   path: 'address',
-    //   component: AddressComponent,
-    //   outlet: 'homeOutlet'
-    // }]
-  },
+
   {
     // customer-list
     path: 'customer_list',
@@ -46,6 +39,12 @@ const routes: Routes = [
     // customer-list
     path: 'book_order',
     component: BookOrderComponent,
+    // outlet: 'homeOutlet'
+  },
+  {
+    // customer-list
+    path: 'list',
+    component: ItemListComponent,
     // outlet: 'homeOutlet'
   },
   // { path: 'no-access', component: NoAccessComponent },
