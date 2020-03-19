@@ -1,9 +1,11 @@
 $break-small: 320px;
 $break-large: 1200px;
 
-$font-stack: Lato, sans-serif;
+$font-stack: Lato,
+sans-serif;
 $primary-bg-color: #efefef;
-$Montserrat: Montserrat, sans-serif;
+$Montserrat: Montserrat,
+sans-serif;
 
 $title-txt-clr: #333;
 $para-txt-clr: #444;
@@ -31,6 +33,7 @@ $border-radius: 4px;
   line-height: 40px;
   color: #333;
 }
+
 .customer_m_no {
   font-family: $Montserrat;
   font-size: 14px;
@@ -52,8 +55,7 @@ $border-radius: 4px;
   // border:none;
 }
 
-.custom-dialog {
-}
+.custom-dialog {}
 
 .material-icons {
   font-size: 12px;
@@ -138,6 +140,7 @@ $border-radius: 4px;
   font-family: $Montserrat;
   font-size: 14px;
 }
+
 .rtp {
   background-color: #ab2d2d;
   padding: 9px;
@@ -187,6 +190,7 @@ $border-radius: 4px;
   border: none;
   border-radius: 1px;
 }
+
 .delivered {
   background-color: #008000;
   color: #fff;
@@ -204,18 +208,21 @@ $border-radius: 4px;
   padding: 6px;
 }
 
+
+
 .mat-tab-group {
   max-height: 74vh !important;
 }
 
 .inst {
-  margin-top: 6px;
+  // margin-top: 6px;
   margin-bottom: 6px;
   margin-bottom: 0px !important;
   // border: 1px solid #eee;
   color: #dc6504;
   font-family: $Montserrat;
   font-size: 14px;
+  border: 1px dashed #1bbc9d;
 }
 
 .orderPage-btns {

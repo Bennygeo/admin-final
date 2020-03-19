@@ -107,10 +107,21 @@ export class ItemListComponent implements OnInit {
     //   this.todaysDate = new Date();
     //   this.todaysDate = this.date_utils.getDateString(this.todaysDate, "");
     // } else {
-    this.todaysDate = new Date();
+    // this.todaysDate = new Date();
 
-    this.todaysDate = this.date_utils.getDateString(this.date_utils.addDaysToCalendar(this.todaysDate, 0), "");
+    // this.todaysDate = this.date_utils.getDateString(this.date_utils.addDaysToCalendar(this.todaysDate, 0), "");
     // console.log("this.todaysDate :: " + this.todaysDate);
+
+    let todayTime = new Date().getHours();
+    // debugger;
+    if (todayTime <= 11) {
+      this.todaysDate = new Date();
+      this.todaysDate = this.date_utils.getDateString(this.todaysDate, "");
+    } else {
+      this.todaysDate = new Date();
+      this.todaysDate = this.date_utils.getDateString(this.date_utils.addDaysToCalendar(this.todaysDate, 1), "");
+    }
+
     // }
     this.renderList();
   }
@@ -119,7 +130,6 @@ export class ItemListComponent implements OnInit {
     this.todaysDateFormatted = this.date_utils.dateFormater(this.todaysDate, "-");
 
     this.listObservable = this.firebase.readDailyOrders(this.todaysDate).subscribe((data: any) => {
-      // debugger;
       for (var key in data) {
         // console.log(data[key]);
         for (var items in data[key]) {
@@ -127,11 +137,13 @@ export class ItemListComponent implements OnInit {
 
           if (items == "bag") {
             // console.log(data[key][items]);
+            // console.log("**********");
+
             for (var _cat in data[key][items]) {
-              // console.log(_cat);
               if (_cat != 'address') {
                 for (var list in data[key][items][_cat]) {
                   // console.log(list);
+                  // console.log("------------");
                   if (!this.items_list[list]) this.items_list[list] = [];
 
                   // console.log(list);
@@ -141,25 +153,31 @@ export class ItemListComponent implements OnInit {
                     }
                   }
                 }
-
               }
             }
           }
 
           if (items == "greens") {
-
+            if (data[key]['greens']) {
+              for (var _green in data[key]['greens'].data) {
+                console.log(data[key]['greens'].data[_green].count);
+              }
+            }
           }
-
 
           if (items == "tender") {
-
+            if (data[key]["tender"].category == "subs") {
+              // debugger;
+              this.items_list[list].push(data[key]["tender"]);
+            }
           }
-
 
           if (items == "milk") {
-
+            if (data[key]["milk"].category == "subs") {
+              // debugger;
+              this.items_list[list].push(data[key]["milk"]);
+            }
           }
-
         }
       }
 
@@ -171,31 +189,56 @@ export class ItemListComponent implements OnInit {
           if (!this.total_items[key][this.items_list[key][i].name]) this.total_items[key][this.items_list[key][i].name] = [];
           if (!this.total_items[key]["total"]) this.total_items[key]["total"] = 0;
 
+          // console.log(this.items_list[key][i].name);
+          // console.log("-------------");
+          // 
           if (this.items_list[key][i].name == "Tender Coconut") {
-            this.total_items[key][this.items_list[key][i].name].push(this.items_list[key][i].quantity);
+            if (this.items_list[key][i].category == 'subs') {
+              this.total_items[key][this.items_list[key][i].name].push(this.items_list[key][i].per_day);
+            } else {
+              this.total_items[key][this.items_list[key][i].name].push(this.items_list[key][i].quantity);
+            }
             //update total
-            this.total_items[key]["total"] += this.items_list[key][i].quantity;
+            if (!this.total_items[key][this.items_list[key][i].name]['total']) this.total_items[key][this.items_list[key][i].name]['total'] = 0;
+
+
+            if (this.items_list[key][i].category == 'subs') {
+              this.total_items[key][this.items_list[key][i].name]['total'] += this.items_list[key][i].per_day;
+            } else {
+              this.total_items[key][this.items_list[key][i].name]['total'] += this.items_list[key][i].quantity;
+            }
 
           } else if (this.items_list[key][i].name == "Fresh Cow Milk") {
-            this.total_items[key][this.items_list[key][i].name].push(this.items_list[key][i].quantity);
+
+            if (this.items_list[key][i].category == 'subs') {
+              this.total_items[key][this.items_list[key][i].name].push(this.items_list[key][i].per_day);
+            } else {
+              this.total_items[key][this.items_list[key][i].name].push(this.items_list[key][i].quantity);
+            }
 
             //update total
-            this.total_items[key]["total"] += this.items_list[key][i].quantity;
+            if (!this.total_items[key][this.items_list[key][i].name]['total']) this.total_items[key][this.items_list[key][i].name]['total'] = 0;
 
+            if (this.items_list[key][i].category == 'subs') {
+              this.total_items[key][this.items_list[key][i].name]['total'] += this.items_list[key][i].per_day;
+            } else {
+              this.total_items[key][this.items_list[key][i].name]['total'] += this.items_list[key][i].quantity;
+            }
           } else {
-            this.total_items[key][this.items_list[key][i].name].push(this.items_list[key][i].weight);
 
+            this.total_items[key][this.items_list[key][i].name].push(this.items_list[key][i].weight);
             //update total
             if (!this.total_items[key][this.items_list[key][i].name]['total']) this.total_items[key][this.items_list[key][i].name]['total'] = 0;
             this.total_items[key][this.items_list[key][i].name]['total'] += this.items_list[key][i].weight;
           }
-
         }
       }
 
-      console.log(this.total_items);
+      // console.log(this.total_items);
+      var ffff = this.total_items;
       this._changeDet.detectChanges();
-      console.log("***********88");
+      // console.log("***********88");
+      // debugger;
 
     });
   }

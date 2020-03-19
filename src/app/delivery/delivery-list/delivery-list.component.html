@@ -1,95 +1,95 @@
 <div class="container">
-    <p style="padding: 12px; background-color: #333; color:#fff; text-align: center; margin-bottom: 0px;">Hi {{name}}!
-    </p>
-    <p style="padding: 6px;text-align: left; font-size: 14px; border-bottom:1px dotted #ccc; margin: 0;">Orders on
-        <span style="font-weight: 500;">{{todaysDateFormatted}}</span></p>
+  <p style="padding: 12px; background-color: #333; color:#fff; text-align: center; margin-bottom: 0px;">Hi {{name}}!
+  </p>
+  <p style="padding: 6px;text-align: left; font-size: 14px; border-bottom:1px dotted #ccc; margin: 0;">Orders on
+    <span style="font-weight: 500;">{{todaysDateFormatted}}</span></p>
 
-    <div class="row">
-        <div class="col-6">
-            <mat-form-field>
-                <mat-label>Sort By</mat-label>
-                <mat-select (selectionChange)="sortChange($event.value)">
-                    <mat-option *ngFor="let sort of sortVals" [value]="sort">
-                        {{sort}}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-        </div>
-        <div class="col-6">
-            <form class="input-form" style="padding: 0; margin:0;">
-                <mat-form-field class="input-full-width" style="margin-top:0px; width:100%">
-                    <input matInput placeholder="Search" value="" (input)="inputTxtChanged($event.target.value)">
-                </mat-form-field>
-            </form>
-        </div>
+  <div class="row">
+    <div class="col-6">
+      <mat-form-field>
+        <mat-label>Sort By</mat-label>
+        <mat-select (selectionChange)="sortChange($event.value)">
+          <mat-option *ngFor="let sort of sortVals" [value]="sort">
+            {{sort}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
     </div>
-    <!-- <div class="row" style="margin:6px; font-size: 14px;">
+    <div class="col-6">
+      <form class="input-form" style="padding: 0; margin:0;">
+        <mat-form-field class="input-full-width" style="margin-top:0px; width:100%">
+          <input matInput placeholder="Search" value="" (input)="inputTxtChanged($event.target.value)">
+        </mat-form-field>
+      </form>
+    </div>
+  </div>
+  <!-- <div class="row" style="margin:6px; font-size: 14px;">
         <div class="col-6">Green : {{green_count}}</div>
         <div class="col-6">Orange : {{orange_count}}</div>
     </div> -->
 
-    <mat-tab-group #tabGroup (selectedTabChange)="tabChanged($event)" [selectedIndex]="this.tab_index">
-        <mat-tab label="Orders :: {{total_undelivered}}" mat-align-tabs="center">
-            <div disabled class="col-12" style="margin-bottom: 12px;">
-                <div *ngFor="let user of users; let j=index;" class="row"
-                    style=" border-bottom:1px dashed #ccc; margin-top:6px;" (click)="onUserClick($event,j)">
-                    <div class="col-6" style="padding: 0;">
-                        <div style="font-size: 18px;">{{j+1}}. {{address[user].name}}</div>
-                    </div>
+  <mat-tab-group #tabGroup (selectedTabChange)="tabChanged($event)" [selectedIndex]="this.tab_index">
+    <mat-tab label="Orders :: {{total_undelivered}}" mat-align-tabs="center">
+      <div disabled class="col-12" style="margin-bottom: 12px;">
+        <div *ngFor="let user of users; let j=index;" class="row"
+          style=" border-bottom:1px dashed #ccc; margin-top:6px;" (click)="onUserClick($event,j)">
+          <div class="col-6" style="padding: 0;">
+            <div style="font-size: 18px;">{{j+1}}. {{address[user].name}}</div>
+          </div>
 
-                    <div class="col-6"
-                        style="text-align: right; margin-left: -6px; margin-right: -6px; padding-right: 0;">
-                        <!-- <button style="margin:3px; height: 36px;" class="btn btn-primary btns"
+          <div class="col-6" style="text-align: right; margin-left: -6px; margin-right: -6px; padding-right: 0;">
+            <!-- <button style="margin:3px; height: 36px;" class="btn btn-primary btns"
                             (click)="viewAction($event)" id="{{'view_'+i}}">View</button> -->
 
-                        <a style="border: 1px solid #ccc; width: 55px; margin: 0; padding: 6px; height: 36px; margin-top: 6px; text-align: center; line-height: 36px; background-color: #eee; color:#000;"
-                            href="tel:{{user}}">Call
-                        </a>
-                    </div>
+            <a style="border: 1px solid #ccc; width: 55px; margin: 0; padding: 6px; height: 36px; margin-top: 6px; text-align: center; line-height: 36px; background-color: #eee; color:#000;"
+              href="tel:{{user}}">Call
+            </a>
+          </div>
 
-                    <div class="addr col-12" >{{address[user].building}}, {{address[user].block}}, {{address[user].floor}},
-                        {{address[user].door}}, {{address[user].area}}</div>
+          <div class="addr col-12">{{address[user].building}}, {{address[user].block}}, {{address[user].floor}},
+            {{address[user].door}}, {{address[user].area}}</div>
 
-                    <div style="display: none;" id="box_{{j}}">
-                        <div class="col-12" style="margin-bottom: 12px; font-size: 16px; padding: 0;"
-                            *ngFor="let _product of products[user]; let i=index">
-                            <mat-checkbox (change)="selection_change_handler($event)" [disableRipple]="true"
-                                [checked]="_product['delivered']" [disabled]="_product['delivered']" id="items_{{i}}_{{j}}"><span
-                                    style="color: #666;">
-                                    <b>{{_product.name}}</b>
-                                    x </span>
-                                <b>{{_product.per_day }}</b>
-                                <span>({{_product.nut_variety}})</span>
-                            </mat-checkbox>
-                        </div>
+          <div class="inst col-12">{{instructions[user].delivery_mode}}</div>
 
-                        <div class="col-12" style="margin-bottom: 12px; ">
-                            <button style="margin:0px; height: 38px; width:100%; padding:0;"
-                                class="btn btn-primary btns" style="margin-bottom: 12px; "
-                                (click)="deliveredAction($event)" id="{{'deliver_'+j}}">Delivered</button>
-                        </div>
-                    </div>
-                </div>
+          <div style="display: none;" id="box_{{j}}">
+            <div class="col-12" style="margin-bottom: 12px; font-size: 16px; padding: 0;"
+              *ngFor="let _product of products[user]; let i=index">
+              <mat-checkbox (change)="selection_change_handler($event)" [disableRipple]="true"
+                [checked]="_product['delivered']" [disabled]="_product['delivered']" id="items_{{i}}_{{j}}"><span
+                  style="color: #666;">
+                  <b>{{_product.name}}</b>
+                  x </span>
+                <b>{{_product.per_day }}</b>
+                <span>({{_product.nut_variety}})</span>
+              </mat-checkbox>
             </div>
-        </mat-tab>
-    </mat-tab-group>
-    <mat-spinner *ngIf="listFlg" style="margin:0 auto;"></mat-spinner>
 
-    <div class="myModal center" style="z-index: 100;" *ngIf="overlay">
-        <div style="background-color: #fff; padding:24px; border-radius:2px;">
-            <input [(ngModel)]="priceVal"
-                style="text-align: center; display: block; border:none; border-bottom: 1px dotted #999;">
-            <p style="text-align: center; font-size: 11px; color: #999; margin:12px;">Remaining to pay</p>
-            <div style="display: flex; justify-content:center;">
-                <button class="btn btn-outline-secondary" style="margin-left: 0 !important; margin-right:6px;"
-                    (click)="modalSaveAction()">Save</button>
-                <button class="btn btn-outline-secondary" (click)="modalCancelAction()">Cancel</button>
+            <div class="col-12" style="margin-bottom: 12px; ">
+              <button style="margin:0px; height: 38px; width:100%; padding:0;" class="btn btn-primary btns"
+                style="margin-bottom: 12px; " (click)="deliveredAction($event)" id="{{'deliver_'+j}}">Delivered</button>
             </div>
+          </div>
         </div>
-    </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+  <mat-spinner *ngIf="listFlg" style="margin:0 auto;"></mat-spinner>
 
-    <div id="overlay" (click)="overlayClickHandler()" *ngIf="overlay">
-
+  <div class="myModal center" style="z-index: 100;" *ngIf="overlay">
+    <div style="background-color: #fff; padding:24px; border-radius:2px;">
+      <input [(ngModel)]="priceVal"
+        style="text-align: center; display: block; border:none; border-bottom: 1px dotted #999;">
+      <p style="text-align: center; font-size: 11px; color: #999; margin:12px;">Remaining to pay</p>
+      <div style="display: flex; justify-content:center;">
+        <button class="btn btn-outline-secondary" style="margin-left: 0 !important; margin-right:6px;"
+          (click)="modalSaveAction()">Save</button>
+        <button class="btn btn-outline-secondary" (click)="modalCancelAction()">Cancel</button>
+      </div>
     </div>
+  </div>
+
+  <div id="overlay" (click)="overlayClickHandler()" *ngIf="overlay">
+
+  </div>
 
 </div>

@@ -205,6 +205,25 @@ export class FireBase implements OnInit {
         });
     }
 
+    public user_order_status_update_for_subs(date, id, loc_id, status, callback) {
+        // this.db.database.ref("/orders_test/" + date + "/" + id + "/bag/" + timestamp + "/" + category + "/" + p_id + "/").update({
+        this.db.database.ref("/users/" + id + "/orders/subs/tender/" + loc_id + "/dates/" + date + "/").update({
+            'delivered': status,
+            'timestamp': new Date().getTime()
+            // 'active': active
+        }, (error) => {
+            if (error) console.log("The update_orders_status write failed...");
+            else {
+                console.log("Update_orders_status Data saved successfully!");
+                callback();
+            }
+        });
+    }
+
+    public ledger_bal_update_for_subs(date, id, loc_id, status, callback){
+
+    }
+
     /*
     * Write from customer list ts
     */
