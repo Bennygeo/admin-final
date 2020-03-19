@@ -146,10 +146,27 @@ export class ItemListComponent implements OnInit {
                   // console.log("------------");
                   if (!this.items_list[list]) this.items_list[list] = [];
 
-                  // console.log(list);
+
                   if (list != 'others') {
-                    for (var item_lists in data[key][items][_cat][list]) {
-                      this.items_list[list].push(data[key][items][_cat][list][item_lists]);
+                    let _target = data[key][items][_cat][list];
+
+                    for (var item_lists in _target) {
+                      // console.log(item_lists);
+
+                      if (item_lists == "product_1") {
+                        // debugger;
+                        if (_target[item_lists].type == "Large") {
+                          if (!this.items_list["tender_large"]) this.items_list["tender_large"] = [];
+                          this.items_list["tender_large"].push(_target[item_lists]);
+                        }
+
+                        if (_target[item_lists].type == "Medium") {
+                          if (!this.items_list["tender_medium"]) this.items_list["tender_medium"] = [];
+                          this.items_list["tender_medium"].push(_target[item_lists]);
+                        }
+                      } else {
+                        this.items_list[list].push(_target[item_lists]);
+                      }
                     }
                   }
                 }
@@ -157,31 +174,48 @@ export class ItemListComponent implements OnInit {
             }
           }
 
-          if (items == "greens") {
-            if (data[key]['greens']) {
-              for (var _green in data[key]['greens'].data) {
-                console.log(data[key]['greens'].data[_green].count);
-              }
-            }
-          }
+          // if (items == "greens") {
+          //   if (data[key]['greens']) {
+          //     for (var _green in data[key]['greens'].data) {
+          //       console.log(data[key]['greens'].data[_green].count);
+          //     }
+          //   }
+          // }
+
+          // console.log(items);
+          // console.log("itrem :: ");
 
           if (items == "tender") {
-            if (data[key]["tender"].category == "subs") {
-              // debugger;
-              this.items_list[list].push(data[key]["tender"]);
+            // console.log("key :: " + key);
+            // console.log(data[key]);
+
+            if (data[key][items].category == "subs") {
+
+              if (data[key][items].type == "Large") {
+
+                if (!this.items_list[items + "_large"]) this.items_list[items + "_large"] = [];
+                this.items_list[items + "_large"].push(data[key][items]);
+              }
+
+              if (data[key][items].type == "Medium") {
+                if (!this.items_list[items + "_medium"]) this.items_list[items + "_medium"] = [];
+                this.items_list[items + "_medium"].push(data[key][items]);
+              }
+
+
             }
           }
 
           if (items == "milk") {
-            if (data[key]["milk"].category == "subs") {
-              // debugger;
-              this.items_list[list].push(data[key]["milk"]);
+            if (data[key][items].category == "subs") {
+              if (!this.items_list[items]) this.items_list[items] = [];
+              this.items_list[items].push(data[key][items]);
             }
           }
         }
       }
 
-      // console.log(this.items_list);
+      console.log(this.items_list);
       for (var key in this.items_list) {
         this.total_items[key] = {}
         for (var i = 0; i < this.items_list[key].length; i++) {
