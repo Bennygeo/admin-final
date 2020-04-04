@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import * as $ from 'jquery';
 
 @Injectable()
 export class Utils {
@@ -23,6 +24,29 @@ export class Utils {
 
         this.weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         this.todayString = this.weekdays[this.todayNo];
+    }
+
+    public smoothNavigation(target, pad) {
+        window.setTimeout((target) => {
+            var hash = $("#" + target);
+            if (hash.length > 0) {
+                $('html, body').animate({
+                    scrollTop: $(hash).offset().top - pad
+                }, 500);
+            }
+        }, 100, target);
+    }
+
+    public smoothNavigation_1(target, parent, pad) {
+        // $("#" + parent).scrollTop({ top: $("#" + parent).offset().top + 'px' });
+        var hash = $("#" + target);
+        var parent = $("#" + parent);
+
+        var pos = hash.offset().top;
+        // parent.animate({ top: pos });
+        // parent.css({ top: pos + 'px' });
+
+
     }
 
     static trace = console.log;

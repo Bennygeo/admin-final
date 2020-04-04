@@ -1,11 +1,9 @@
 $break-small: 320px;
 $break-large: 1200px;
 
-$font-stack: Lato,
-sans-serif;
+$font-stack: Lato, sans-serif;
 $primary-bg-color: #efefef;
-$Montserrat: Montserrat,
-sans-serif;
+$Montserrat: Montserrat, sans-serif;
 
 $title-txt-clr: #333;
 $para-txt-clr: #444;
@@ -55,7 +53,8 @@ $border-radius: 4px;
   // border:none;
 }
 
-.custom-dialog {}
+.custom-dialog {
+}
 
 .material-icons {
   font-size: 12px;
@@ -208,10 +207,8 @@ $border-radius: 4px;
   padding: 6px;
 }
 
-
-
 .mat-tab-group {
-  max-height: 74vh !important;
+  // max-height: 74vh !important;
 }
 
 .inst {
@@ -240,6 +237,14 @@ $border-radius: 4px;
   top: 0;
   left: 0;
   z-index: 1;
+}
+.all_delivered {
+  text-indent: 6px;
+  padding: 6px;
+  background-color: #1bbc9d;
+  color: #fff;
+  font-family: $Montserrat;
+  font-size: 13px;
 }
 
 ::ng-deep .mat-select {

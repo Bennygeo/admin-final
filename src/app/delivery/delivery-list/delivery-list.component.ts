@@ -72,6 +72,9 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
   cashbacks: any = {};
   instructions: any = {};
   data: any;
+
+  track_delivered_cnts: Object = {};
+
   private _user_data: any;
 
   constructor(
@@ -101,9 +104,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
       this.name = params.get('name');
     });
 
-
-
-    // let todayTime = new Date().getHours();
+    let todayTime = new Date().getHours();
     // // debugger;
     // if (todayTime <= 11) {
     //   this.todaysDate = new Date();
@@ -113,7 +114,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
     //   this.todaysDate = this.date_utils.getDateString(this.date_utils.addDaysToCalendar(this.todaysDate, 1), "");
     // }
     this.todaysDate = new Date();
-    this.todaysDate = this.date_utils.getDateString(this.date_utils.addDaysToCalendar(this.todaysDate, 2), "");
+    this.todaysDate = this.date_utils.getDateString(this.date_utils.addDaysToCalendar(this.todaysDate, 1), "");
     // debugger;
     this.renderList();
   }
@@ -143,6 +144,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
       this.address = {};
 
       this.users = Object.keys(data);
+      // console.log(data);
 
       for (let key in data) {
         this.products[key] = [];
@@ -157,14 +159,12 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
           }
 
           if (item != 'address') {
-            // console.log("item :: " + item);
             if (item == 'bag') {
               let _data = data[key]['bag'];
 
               for (let _items in _data) {
                 try {
                   if (_items == "address") {
-                    // debugger;
                     this.address[key] = JSON.parse(data[key]['bag']['address']);
                   }
                 } catch (e) { }
@@ -172,10 +172,8 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
                 let deliveryFlg = (_data.delivery_status == "Delivered") ? true : false;
                 this.deliveredStatus = (deliveryFlg) ? "Done" : "Delivered";
 
-                // debugger;
                 _data.assigned_to = "Bala";
                 if (_data.assigned_to == this.name) {
-                  //   // debugger;
                   let _product = {};
 
                   if (_items != "address") {
@@ -192,23 +190,21 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
 
                         if (key1 != 'others') {
                           for (let val in _data[_items][key1]) {
-                            // console.log(_data[_items][key1][val]["name"]);
-                            // console.log("-----------------------");
-                            // console.log(val);
-
                             if (_data[_items][key1][val]["name"] == "Tender Coconut") {
+
+                              // _data[_items][key1][val].name,
                               _product = {
+                                price: _data[_items][key1][val].name,
                                 name: _data[_items][key1][val].name,
                                 nut_variety: _data[_items][key1][val]["category"],
                                 per_day: (_data[_items][key1][val].quantity) + " " + _data[_items][key1][val]["unit_name"] + " " + _data[_items][key1][val].type,
                                 category: _data[_items][key1][val]["category"],
                                 p_id: _data[_items][key1][val]["id"],
                                 timestamp_id: _items,
-                                "delivered": _data[_items][key1][val]["delivered"] ? true : false || false,
+                                "delivered": _data[_items][key1][val]["delivered"] ? "delivered" : false || false,
                               }
 
                             } else if (_data[_items][key1][val]["name"] == "Fresh Cow Milk") {
-                              // debugger;
                               _product = {
                                 name: _data[_items][key1][val].name,
                                 nut_variety: _data[_items][key1][val]["category"],
@@ -216,18 +212,17 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
                                 category: _data[_items][key1][val]["category"],
                                 p_id: _data[_items][key1][val]["id"],
                                 timestamp_id: _items,
-                                "delivered": _data[_items][key1][val]["delivered"] ? true : false || false,
+                                "delivered": _data[_items][key1][val]["delivered"] ? "delivered" : false || false,
                               }
-
                             } else {
                               _product = {
                                 name: _data[_items][key1][val].name,
                                 nut_variety: _data[_items][key1][val]["category"],
-                                per_day: (_data[_items][key1][val].weight || _data[_items][key1][val].original_weight) + " " + _data[_items][key1][val]["unit_name"],
+                                per_day: (_data[_items][key1][val].units * _data[_items][key1][val].original_weight) + " " + _data[_items][key1][val]["unit_name"],
                                 category: _data[_items][key1][val]["category"],
                                 p_id: _data[_items][key1][val]["id"],
                                 timestamp_id: _items,
-                                "delivered": _data[_items][key1][val]["delivered"] ? true : false || false,
+                                "delivered": _data[_items][key1][val]["delivered"] ? "delivered" : false || false,
                               }
                             }
                             this.products[key].push(_product);
@@ -242,28 +237,32 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
 
             if (item == 'milk' || item == 'tender') {
               let _data = data[key][item];
-              let deliveryFlg = (_data.delivery_status == "Delivered") ? true : false;
+              let deliveryFlg = (_data.delivery_status == "delivered") ? true : false;
               this.deliveredStatus = (deliveryFlg) ? "Done" : "Delivered";
 
               _data.assigned_to = "Bala";
-              // debugger;
-
-              if (_data.assigned_to == this.name) {
-                let _product = {};
-                _product = {
-                  name: data[key][item].name,
-                  nut_variety: data[key][item]["nut_variety"] + " " + data[key][item]["type"] + " - " + data[key][item]['original_weight'] + "" + data[key][item]['unit_name'] + " (Subscription)",
-                  per_day: data[key][item]["per_day"],
-                  category: "subs",
-                  history_id: data[key][item]["history_id"],
+              if (!_data.paused) {
+                if (_data.assigned_to == this.name) {
+                  let _product = {};
+                  // debugger;
+                  _product = {
+                    price: data[key][item].price,
+                    name: data[key][item].name,
+                    nut_variety: data[key][item]["nut_variety"] + " " + data[key][item]["type"] + " - " + data[key][item]['original_weight'] + "" + data[key][item]['unit_name'] + " (Subscription)",
+                    per_day: data[key][item]["per_day"],
+                    category: "subs",
+                    cat_name: item,
+                    history_id: data[key][item]["history_id"],
+                    "delivered": deliveryFlg ? "delivered" : ""
+                  }
+                  this.products[key].push(_product);
                 }
-                this.products[key].push(_product);
               }
             }
 
             if (item == "greens") {
               let _data = data[key][item];
-              let deliveryFlg = (_data.delivery_status == "Delivered") ? true : false;
+              let deliveryFlg = (_data.delivery_status == "delivered") ? true : false;
               this.deliveredStatus = (deliveryFlg) ? "Done" : "Delivered";
 
               _data.assigned_to = "Bala";
@@ -273,17 +272,22 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
 
                 for (let _greens in data[key][item]['data']) {
                   _product = {
+                    price: data[key][item].price,
                     name: data[key][item]['data'][_greens].name[0],
                     nut_variety: 'greens',
                     per_day: data[key][item]['data'][_greens]["count"],
                     category: "subs",
+                    cat_name: item,
                     history_id: data[key][item]["history_id"],
+                    "delivered": data[key][item]["delivered"] ? "delivered" : false || false,
                   }
                   this.products[key].push(_product);
                 }
               }
             }
           }
+          // debugger;
+
 
           // let _data = data[key].tender;
           // let _data = data[key][item];
@@ -394,15 +398,36 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
           //   });
           // }
           // }
+        }
+      }
 
+      //to avoid user view if item length is zero
+      for (var key1 in this.products) {
+        if (this.products[key1].length == 0) {
+          //delete object entry if item length is 0
+          delete this.products[key1];
+          //remove user from user array list
+          let _index = this.users.indexOf(key1);
+          this.users.splice(_index, 1);
+        } else {
+          // debugger;
+          this.track_delivered_cnts[key1] = {
+            un_delivered_cnt: 0,
+            delivered_cnt: 0
+          }
+          for (let items in this.products[key1]) {
+            if (this.products[key1][items].delivered != "delivered") {
+              this.track_delivered_cnts[key1].un_delivered_cnt++;
+            } else {
+              this.track_delivered_cnts[key1].delivered_cnt++;
+            }
+          }
         }
       }
 
       this.target_ary = [];
       if (this.tab_index == 0) this.target_ary = this.undelivered_list;
       if (this.tab_index == 1) this.target_ary = this.delivered_list;
-
-      // debugger;
 
       this.target_ary.sort(compare);
       function compare(a, b) {
@@ -414,7 +439,6 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
         }
         return 0;
       }
-
       // this.userListUpdateObservable.unsubscribe();
       this.changeDet.detectChanges();
     });
@@ -442,99 +466,93 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
   }
 
   deliveredAction(e) {
+    // this.manual_cashback_fn(e);
     this.selectedIndex = e.currentTarget.id.split("_")[1] * 1;
     $('#deliver_' + this.selectedIndex).attr({ 'disabled': 'true' });
     $('#deliver_' + this.selectedIndex).css({ 'pointer-events': 'none' });
-
     this.selectedTarget = this.products[this.users[this.selectedIndex]];
 
     var _user_info = this.firebase.readUserInfo("users", String(this.users[this.selectedIndex])).subscribe((data) => {
-
       try {
         _user_info.unsubscribe();
-      } catch (e) {
+      } catch (e) { }
 
-      }
       this._user_data = data;
       this.tc_selection = true;
 
       if (!this.tc_selection) {
         this._commons.openSnackBar("Tick the delivered items.", "");
       } else {
-        // if (this.tab_index == 0) this.list = this.undelivered_list;
-        // if (this.tab_index == 1) this.list = this.delivered_list;
-
         let _check = moment(new Date(), 'YYYY/MM/DD');
-        let _month = moment(_check.format('M'), 'MM').format('MMMM');//check.format('M');
+        let _month = moment(_check.format('M'), 'MM').format('MMMM');
         let _day = _check.format('D');
         let _year = _check.format('YYYY');
 
-        // debugger;
         let _past_timestamp = "";
+
         for (var key in this.products[this.users[this.selectedIndex]]) {
           let _target = this.products[this.users[this.selectedIndex]][key];
 
           if (_target.category == "subs") {
-            // console.log(_target);
-            // console.log("----------");
+            // if (_target.name == "Tender Coconut") {
 
-            if (_target.name == "Tender Coconut") {
-              // debugger;
+            // date, id, subs_cat, status, callback
+            // debugger;
+            if (_target.delivered != 'delivered') {
+              this.firebase.update_orders_status_subs(this.todaysDate, this.users[this.selectedIndex], _target.cat_name, "delivered", () => { });
+
               this.firebase.user_order_status_update_for_subs(this.todaysDate, this.users[this.selectedIndex], _target.history_id, "delivered", () => {
                 alert("subscription status update");
               });
 
-              if (this._user_data) {
-                let _ledger = this._user_data.ledger;
-                debugger;
-                // this.firebase.ledger_bal_update_for_subs(this.users[this.selectedIndex], ()=>{});
+              if (data) {
+                let _ledger = data['ledger'] - (_target.price * _target.per_day);
+                this.firebase.ledger_bal_update_for_subs(this.users[this.selectedIndex], _ledger, () => { });
               }
-
-
             }
-            // if(_target.name == "Tender Coconut")
-
-          } else {
-
-            // if (!this.products[this.users[this.selectedIndex]][key].delivered) {
-            //   let timestamp = this.products[this.users[this.selectedIndex]][key]["timestamp_id"];
-
-            //   //write daily order status
-            //   this.firebase.update_orders_status(this.todaysDate, this.users[this.selectedIndex], timestamp, this.products[this.users[this.selectedIndex]][key].category, this.products[this.users[this.selectedIndex]][key].p_id, "delivered", () => { });
-
-            //   if (timestamp != _past_timestamp) {
-            //     if (this.products[this.users[this.selectedIndex]][key]['category'] != "subs") {
-            //       this.firebase.update_user_history_status(this.users[this.selectedIndex], _year, _month, _day, timestamp, "delivered", () => {
-
-            //       });
-            //     }
-            //   }
-            //   _past_timestamp = timestamp;
             // }
+          } else {
+            if (!this.products[this.users[this.selectedIndex]][key].delivered) {
+              let timestamp = this.products[this.users[this.selectedIndex]][key]["timestamp_id"];
+
+              //write daily order status
+              this.firebase.update_orders_status(this.todaysDate, this.users[this.selectedIndex], timestamp, this.products[this.users[this.selectedIndex]][key].category, this.products[this.users[this.selectedIndex]][key].p_id, "delivered", () => { });
+
+              if (timestamp != _past_timestamp) {
+                if (this.products[this.users[this.selectedIndex]][key]['category'] != "subs") {
+                  this.firebase.update_user_history_status(this.users[this.selectedIndex], _year, _month, _day, timestamp, "delivered", () => {
+
+                  });
+                }
+              }
+              _past_timestamp = timestamp;
+            }
           }
         }
 
         // debugger;
-        // if (this.cashbacks[this.users[this.selectedIndex]] != 0) {
-        //   this.firebase.readUserInfo("users", String(this.users[this.selectedIndex])).subscribe((data) => {
-        //     let _wallet = data['wallet'] + this.cashbacks[this.users[this.selectedIndex]];
-        //     let _ledger = data['ledger'];
+        if (this.cashbacks[this.users[this.selectedIndex]] != 0) {
+          this.firebase.readUserInfo("users", String(this.users[this.selectedIndex])).subscribe((data) => {
+            let _wallet = data['wallet'] + this.cashbacks[this.users[this.selectedIndex]];
+            let _ledger = data['ledger'];
 
-        //     // id, obj, callback, pageName
-        //     this.firebase.write_wallet(this.users[this.selectedIndex], { wallet: _wallet, ledger: _ledger }, () => { alert("wallet successfully updated."); }, "delivery-app");
-        //     let type = "Credit";
+            // id, obj, callback, pageName
+            this.firebase.write_wallet(this.users[this.selectedIndex], { wallet: _wallet, ledger: _ledger }, () => {
+              // alert("wallet successfully updated.");
+            }, "delivery-app");
+            let type = "Credit";
 
-        //     this.firebase.write_wallet_history(new Date().getTime(), this.users[this.selectedIndex], { type: type, amt: this.cashbacks[this.users[this.selectedIndex]], razor_id: "", category: "Cashback" }, () => {
-        //       alert("Cashback successfully credited to your account.");
-        //     })
-        //   });
-        // }
+            this.firebase.write_wallet_history(new Date().getTime(), this.users[this.selectedIndex], { type: type, amt: this.cashbacks[this.users[this.selectedIndex]], razor_id: "", category: "Cashback" }, () => {
+              // alert("Cashback successfully credited to your account.");
+            })
+          });
+        }
 
         // debugger;
-        let calbackFlg1 = false;
-        let calbackFlg2 = false;
+        // let calbackFlg1 = false;
+        // let calbackFlg2 = false;
         // debugger;
-        this.selectedTarget.delivery_status = "Delivered";
+        // this.selectedTarget.delivery_status = "Delivered";
         // update order history
         // this.firebase.update_delivery_status_order(this.selectedTarget.m_no, this.selectedTarget, this.todaysDate, () => {
         //   calbackFlg1 = true;
@@ -556,12 +574,35 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
         //   }
         // });
       }
-
-
     });
+  }
 
+  manual_cashback_fn(e) {
+    // for undelivered item cashback
+    // debugger;
 
+    this.selectedIndex = e.currentTarget.id.split("_")[1] * 1;
+    $('#deliver_' + this.selectedIndex).attr({ 'disabled': 'true' });
+    $('#deliver_' + this.selectedIndex).css({ 'pointer-events': 'none' });
 
+    this.selectedTarget = this.products[this.users[this.selectedIndex]];
+
+    // if (this.cashbacks[this.users[this.selectedIndex]] != 0) {
+    this.firebase.readUserInfo("users", String(this.users[this.selectedIndex])).subscribe((data) => {
+
+      let _cashback_amt = 4;
+      let _wallet = data['wallet'] + _cashback_amt;
+      let _ledger = data['ledger'];
+
+      // id, obj, callback, pageName
+      this.firebase.write_wallet(this.users[this.selectedIndex], { wallet: _wallet, ledger: _ledger }, () => { alert("wallet successfully updated."); }, "delivery-app");
+      let type = "Credit";
+
+      this.firebase.write_wallet_history(new Date().getTime(), this.users[this.selectedIndex], { type: type, amt: _cashback_amt, razor_id: "", category: "Cashback" }, () => {
+        alert("Cashback successfully credited to your account.");
+      })
+    });
+    // }
   }
 
   tabChanged(evt) {
@@ -621,7 +662,7 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
     let items_id = evt.source.id.split("_")[1];
     let target_mobile = this.users[user_id];
 
-    console.log(this.products[target_mobile][items_id]);
+    // console.log(this.products[target_mobile][items_id]);
     this.products[target_mobile][items_id].selected = (this.products[target_mobile][items_id].selected) ? false : true;
     // console.log("---------------------------" + this.products[target_mobile][items_id].selected);
     // debugger;
@@ -704,9 +745,14 @@ export class DeliveryListComponent implements OnInit, OnDestroy {
   }
 
   onUserClick(evt, target) {
+
+
+    // smoothNavigation
     $('#box_' + this.prev_target).css({ "display": "none" });
     $('#box_' + target).css({ "display": "block" });
     this.prev_target = target;
+
+    this._utils.smoothNavigation("user_" + target, 0);
   }
 
   ngOnDestroy(): void {

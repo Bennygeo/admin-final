@@ -9,6 +9,7 @@ import { PageNotFoundComponent } from '../others/page-not-found/page-not-found.c
 import { ReportComponent } from './report/report.component';
 import { UnpaidComponent } from './unpaid/unpaid.component';
 import { ItemListComponent } from './item-list/item-list.component';
+import { PriceUpdateComponent } from './price-update/price-update.component';
 
 const routes: Routes = [
 
@@ -47,6 +48,10 @@ const routes: Routes = [
     component: ItemListComponent,
     // outlet: 'homeOutlet'
   },
+  {
+    path: 'update_price',
+    component: PriceUpdateComponent
+  }
   // { path: 'no-access', component: NoAccessComponent },
   // { path: '**', component: PageNotFoundComponent }
 ];

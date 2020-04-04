@@ -243,3 +243,631 @@ label {
   background-color: #3f51b5;
   border-color: #333;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* You can add global styles to this file, and also import other style files */
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+@import "~bootstrap/dist/css/bootstrap.min.css";
+
+$break-small: 320px;
+$break-large: 1200px;
+
+$font-stack: Lato, sans-serif;
+$primary-bg-color: #efefef;
+$Montserrat: Montserrat, sans-serif;
+
+$title-txt-clr: #333;
+$para-txt-clr: #444;
+
+$border-radius: 4px;
+
+div,
+p,
+span {
+  // color: #555;
+  font-family: $Montserrat;
+  font-size: 13px;
+}
+
+.container-ts {
+  font-family: $font-stack;
+  padding-right: 6px;
+  padding-left: 6px;
+  margin-right: auto;
+  margin-left: auto;
+  // background-color: $primary-bg-color;
+}
+
+@media (min-width: $break-large) {
+  .container-ts {
+    width: 1141px;
+  }
+}
+
+h3 {
+  font-family: $Montserrat;
+  color: #222;
+  text-align: center;
+  width: 100%;
+  font-size: 20px;
+  padding-top: 24px;
+  /* text-decoration: underline; */
+  /* padding-bottom: 24px; */
+  /* background-color: rgba(27, 188, 157, .1); */
+  /* border-bottom:1px solid #ddd; */
+}
+
+h5 {
+  // font-family: Lato, sans-serif;
+  font-family: $Montserrat;
+  color: #111;
+  text-align: center;
+  width: 100%;
+  padding-top: 24px;
+  padding-bottom: 24px;
+  font-size: 20px;
+  // font-weight: 600;
+  margin-bottom: 0;
+  /* border-bottom: 1px solid #ddd; */
+}
+
+.center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+button.active.focus,
+button.active:focus,
+button.focus,
+button.focus:active,
+button:active:focus,
+button:focus {
+  // outline: thin dotted;
+  // outline-offset: -2px;
+  box-shadow: none;
+}
+
+button,
+mat-raised-button {
+  box-shadow: none;
+  // width: 100%;
+}
+
+.mat-raised-button:not([class*="mat-elevation-z"]) {
+  box-shadow: none;
+}
+
+.mat-mini-fab:not([class*="mat-elevation-z"]) {
+  box-shadow: none;
+}
+
+mat-chip {
+  transition: none !important;
+  box-shadow: none !important;
+}
+
+.custom-dialog-container .mat-dialog-container {
+  /* add your styles */
+  padding: 0px;
+  -webkit-transition: height 0.6s;
+  /* Safari */
+  transition: height 0.6s;
+}
+
+.mat-dialog-container {
+  height: auto !important;
+}
+
+.mat-form-field,
+button,
+span {
+  font-family: Montserrat, sans-serif;
+  font-size: 13px;
+}
+
+.addToBagBtn {
+  color: #fff;
+  border-radius: $border-radius;
+}
+
+.radio_button_cls {
+  font-family: $Montserrat;
+  font-size: 14px;
+  margin-top: 12px;
+}
+
+.removeFromBagBtn {
+  background-color: #eee;
+  color: #000;
+  border-radius: 0 !important;
+  margin-top: 12px;
+  border-radius: $border-radius;
+}
+
+label {
+  margin: 0px !important;
+}
+
+.emptyDot {
+  width: 12px;
+  height: 12px;
+  position: relative;
+  background-color: #ff4081;
+  border-radius: 50%;
+  display: block;
+  top: -47px;
+  right: -99px;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+button.active.focus,
+button.active:focus,
+button.focus,
+button.focus:active,
+button:active:focus,
+button:focus {
+  // outline: thin dotted;
+  // outline-offset: -2px;
+  box-shadow: none;
+}
+
+button,
+mat-raised-button {
+  box-shadow: none;
+  // width: 100%;
+}
+
+.mat-raised-button:not([class*="mat-elevation-z"]) {
+  box-shadow: none;
+}
+
+.mat-mini-fab:not([class*="mat-elevation-z"]) {
+  box-shadow: none;
+}
+
+mat-chip {
+  transition: none !important;
+  box-shadow: none !important;
+}
+
+.custom-dialog-container,
+mat-dialog-container {
+  -webkit-transition: height 2s;
+  /* Safari */
+  transition: height 2s;
+}
+
+.noselect {
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Safari */
+  -khtml-user-select: none;
+  /* Konqueror HTML */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+  user-select: none;
+  /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
+
+.mat-button.mat-accent[disabled],
+.mat-button.mat-primary[disabled],
+.mat-button.mat-warn[disabled],
+.mat-button[disabled][disabled],
+.mat-icon-button.mat-accent[disabled],
+.mat-icon-button.mat-primary[disabled],
+.mat-icon-button.mat-warn[disabled],
+.mat-icon-button[disabled][disabled],
+.mat-stroked-button.mat-accent[disabled],
+.mat-stroked-button.mat-primary[disabled],
+.mat-stroked-button.mat-warn[disabled],
+.mat-stroked-button[disabled][disabled] {
+  background-color: #ccc;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle,
+.mat-radio-outer-circle {
+  border-color: #1bbc9d !important;
+}
+
+.mat-radio-button.mat-accent .mat-radio-inner-circle {
+  background-color: #1bbc9d !important;
+}
+
+.mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element:not(.mat-radio-persistent-ripple),
+.mat-radio-button.mat-accent.mat-radio-checked .mat-radio-persistent-ripple,
+.mat-radio-button.mat-accent:active .mat-radio-persistent-ripple {
+  background: none !important;
+}
+
+.cart-icon-font-size {
+  font-size: 20px;
+}
+
+.mat-checkbox-checked.mat-primary .mat-checkbox-background,
+.mat-checkbox-indeterminate.mat-primary .mat-checkbox-background {
+  background-color: #1bbc9d !important;
+  border-color: #1bbc9d !important;
+}
+
+::ng-deep .mat-checkbox .mat-checkbox-frame {
+  border-color: #1bbc9d !important;
+}
+
+::ng-deep .mat-progress-bar-fill::after {
+  border-color: #1bbc9d !important;
+}
+
+mat-tab-group,
+.mat-tab-label-content {
+  font-family: $Montserrat !important;
+  font-size: 15px;
+}
+
+.mat-tab-labels,
+.mat-tab-label,
+.mat-tab-link {
+  color: white;
+  font-size: 16px;
+  background-color: #fff;
+}
+
+.mat-tab-group.mat-primary .mat-ink-bar,
+.mat-tab-nav-bar.mat-primary .mat-ink-bar {
+  background: #1bbc9d;
+  height: 3px;
+}
+
+.row-no-padding {
+  [class*="col-"] {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+}
+
+.row-no-padding > [class*="col-"] {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Small devices (tablets, 768px and up) */
+@media (min-width: 320) and (max-width: 640) {
+  .row-sm-no-padding {
+    [class*="col-"] {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+  }
+}
+
+.subscribe_cart_btn_width {
+  width: 140px;
+  float: left;
+}
+
+.mat-ripple-element {
+  display: none !important;
+}
+
+.mat-form-field,
+input {
+  font-family: $Montserrat;
+  font-size: 14px;
+}
+
+.title {
+  font-family: Montserrat, sans-serif;
+  // text-indent: 6px;
+  font-size: 16px;
+  text-transform: uppercase;
+  // font-weight: bolder;
+  text-align: left;
+  // padding: 0 20px;
+  padding-left: 6px;
+  margin-top: 24px;
+  margin-bottom: 6px;
+  color: #1bbc9d;
+}
+
+.product_weight {
+  font-family: $Montserrat;
+  font-size: 12px;
+  margin-top: 3px;
+  margin-bottom: 3px;
+}
+
+.pName {
+  font-weight: bolder;
+  color: #666;
+}
+
+.pName,
+.price {
+  font-weight: bolder;
+  line-height: 1.5;
+  margin: 0;
+  font-size: 14px;
+  font-family: $Montserrat;
+  margin-top: 6px;
+}
+
+.price {
+  color: #333 !important;
+}
+
+// Cart and checkout page
+.order_total {
+  font-family: $Montserrat;
+  text-align: left;
+  font-size: 18px;
+  text-align: center;
+  margin-bottom: 12px;
+  color: #1bbc9d;
+  padding-top: 6px;
+}
+
+.tg {
+  width: 100%;
+  font-weight: normal;
+  font-family: $Montserrat;
+  font-size: 14px;
+}
+
+.tg-col1 {
+  text-align: left;
+  font-weight: normal;
+  font-size: 13px;
+  // @extend %montserrat;
+}
+
+.tg-col2 {
+  text-align: right;
+  font-weight: normal;
+  font-size: 14px;
+}
+
+.topPadding {
+  margin-top: 66px;
+}
+
+button:focus {
+  outline: none !important;
+}
+
+mat-chip {
+  transition: none !important;
+  box-shadow: none !important;
+}
+
+.mat-raised-button {
+  box-shadow: none !important;
+}
+
+@media only screen and (max-width: 600px) {
+  /* Styles */
+  .input-full-width {
+    width: 98%;
+  }
+
+  ::ng-deep .cdk-overlay-pane {
+    min-width: 86% !important;
+  }
+}
+
+::ng-deep .mat-active {
+  color: #fff !important;
+  background-color: #1bbc9d !important;
+  font-family: $Montserrat;
+  font-size: 14px;
+}
+
+::ng-deep .mat-select-value-text {
+  color: #333 !important;
+  //   font-weight: bolder;
+}
+
+::ng-deep .cdk-overlay-pane {
+  min-width: auto;
+}
+
+/* to change selected item color in the select list */
+::ng-deep .mat-form-field-ripple {
+  background-color: #1bbc9d !important;
+}
+
+// ::ng-deep mat-form-field span.mat-form-field-label-wrapper label {
+//   color: #999 !important;
+// }
+
+::ng-deep mat-form-field.mat-focused span.mat-form-field-label-wrapper label {
+  color: #1bbc9d !important;
+}
+
+::ng-deep.mat-calendar-period-button {
+  display: none !important;
+}
+
+::ng-deep.mat-datepicker-content .mat-calendar {
+  // width: unset !important;
+  // height: unset !important;
+  // width: 90vw !important;
+  font-family: $Montserrat;
+  font-size: 14px !important;
+}
+
+::ng-deep.mat-calendar-body-active {
+  border-radius: 3px !important;
+  background-color: #1bbc9d !important;
+}
+
+::ng-deep.mat-calendar-body-today {
+  border: 1px solid #1bbc9d !important;
+  border-radius: 3px !important;
+}
+
+::ng-deep.mat-calendar-body-selected {
+  border-radius: 3px !important;
+  background-color: #1bbc9d;
+}
+
+::ng-deep .mat-active {
+  color: #fff !important;
+  background-color: #1bbc9d !important;
+  font-family: $Montserrat;
+  font-size: 14px;
+}
+
+::ng-deep .mat-select-value-text {
+  color: #333;
+  //   font-weight: bolder;
+}
+
+::ng-deep .cdk-overlay-pane {
+  min-width: auto;
+}
+
+::ng-deep mat-form-field.mat-focused span.mat-form-field-label-wrapper label {
+  color: #333 !important;
+}
+
+::ng-deep .mat-checkbox .mat-checkbox-frame {
+  border-color: #1bbc9d !important;
+}
+
+.fixed_center {
+  position: fixed;
+  width: 300px;
+  min-height: 100px;
+  left: 50%;
+  top: 50%;
+  background-color: #fff;
+  border: 1px solid #eee;
+  border-radius: $border-radius;
+  transform: translate(-50%, -50%);
+  padding: 24px;
+  font-size: 13px;
+  z-index: 501;
+}
+
+.bg_block {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  z-index: 500;
+  background-color: rgba(0, 0, 0, 0.51);
+}
+
+.snackbarClr {
+  background-color: #1bbc9d;
+  color: #fff;
+  padding: 3px;
+  margin: 0;
+}
+
+.plstwrap .row {
+  // padding: 20px;
+  margin: 0;
+  margin-top: 32px;
+
+  .cw1 {
+    // border: 1px solid #eee;
+    // background-color: #fff;
+    border-radius: 4px;
+    padding: 0;
+    margin-bottom: 12px;
+    margin-left: 6px;
+    // padding: 10px 20px;
+  }
+}
+
+// set position of the contents after header and search container
+.content_pos_after_else_case {
+  margin-top: 55px;
+}
+
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+  .content_pos_after {
+    margin-top: 102px !important;
+  }
+}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+  .content_pos_after {
+    margin-top: 102px !important;
+  }
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+  .content_pos_after {
+    margin-top: 55px !important;
+  }
+}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+  .content_pos_after {
+    margin-top: 55px !important;
+  }
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+  .content_pos_after {
+    margin-top: 55px !important;
+  }
+}
+
+.centered {
+  position: fixed;
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+

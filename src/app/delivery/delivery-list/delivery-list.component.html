@@ -28,10 +28,10 @@
         <div class="col-6">Orange : {{orange_count}}</div>
     </div> -->
 
-  <mat-tab-group #tabGroup (selectedTabChange)="tabChanged($event)" [selectedIndex]="this.tab_index">
+  <mat-tab-group #tabGroup (selectedTabChange)="tabChanged($event)" [selectedIndex]="this.tab_index" id="userCont">
     <mat-tab label="Orders :: {{total_undelivered}}" mat-align-tabs="center">
       <div disabled class="col-12" style="margin-bottom: 12px;">
-        <div *ngFor="let user of users; let j=index;" class="row"
+        <div *ngFor="let user of users; let j=index;" class="row" id="user_{{j}}"
           style=" border-bottom:1px dashed #ccc; margin-top:6px;" (click)="onUserClick($event,j)">
           <div class="col-6" style="padding: 0;">
             <div style="font-size: 18px;">{{j+1}}. {{address[user].name}}</div>
@@ -64,10 +64,18 @@
               </mat-checkbox>
             </div>
 
-            <div class="col-12" style="margin-bottom: 12px; ">
+            <!-- <div class="col-12">{{track_delivered_cnts[user].un_delivered_cnt}}</div> -->
+            <!-- <div>-----------------------</div> -->
+
+            <div class="col-12" style="margin-bottom: 12px;" *ngIf="track_delivered_cnts[user].un_delivered_cnt > 0">
               <button style="margin:0px; height: 38px; width:100%; padding:0;" class="btn btn-primary btns"
                 style="margin-bottom: 12px; " (click)="deliveredAction($event)" id="{{'deliver_'+j}}">Delivered</button>
             </div>
+
+            <div *ngIf="track_delivered_cnts[user].un_delivered_cnt == 0" class="all_delivered">
+              All items delivered.
+            </div>
+
           </div>
         </div>
       </div>

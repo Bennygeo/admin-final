@@ -54,6 +54,18 @@ export class FireBase implements OnInit {
         });
     }
 
+    /*
+  *  read product list
+  */
+    public readProducts() {
+        return new Observable((observer) => {
+            var ref = this.db.database.ref('/products_list/');
+            ref.on("value", function (snapshot) {
+                observer.next(snapshot.exportVal());
+            });
+        });
+    }
+
     public readOrders(id) {
         return new Observable((observer) => {
             var ref = this.db.database.ref("users_info/" + id + '/history/');
@@ -205,10 +217,11 @@ export class FireBase implements OnInit {
         });
     }
 
-    public user_order_status_update_for_subs(date, id, loc_id, status, callback) {
-        // this.db.database.ref("/orders_test/" + date + "/" + id + "/bag/" + timestamp + "/" + category + "/" + p_id + "/").update({
-        this.db.database.ref("/users/" + id + "/orders/subs/tender/" + loc_id + "/dates/" + date + "/").update({
-            'delivered': status,
+    //update orde status for subscription
+    public update_orders_status_subs(date, id, subs_cat, status, callback) {
+        // users/id/orders/history/year/month/day/timestamp/category/p_id/ .delivered = true
+        this.db.database.ref("/orders_test/" + date + "/" + id + "/" + subs_cat + "/").update({
+            'delivery_status': status,
             'timestamp': new Date().getTime()
             // 'active': active
         }, (error) => {
@@ -220,8 +233,32 @@ export class FireBase implements OnInit {
         });
     }
 
-    public ledger_bal_update_for_subs(date, id, loc_id, status, callback){
+    public user_order_status_update_for_subs(date, id, loc_id, status, callback) {
+        // this.db.database.ref("/orders_test/" + date + "/" + id + "/bag/" + timestamp + "/" + category + "/" + p_id + "/").update({
+        this.db.database.ref("/users/" + id + "/orders/subs/tender/" + loc_id + "/dates/" + date + "/").update({
+            'delivered': status,
+            'delivery_status': status,
+            'timestamp': new Date().getTime()
+            // 'active': active
+        }, (error) => {
+            if (error) console.log("The update_orders_status write failed...");
+            else {
+                console.log("Update_orders_status Data saved successfully!");
+                callback();
+            }
+        });
+    }
 
+    public ledger_bal_update_for_subs(id, amt, callback) {
+        this.db.database.ref("/users/" + id + "/").update({
+            'ledger': amt,
+        }, (error) => {
+            if (error) console.log("The ledger_bal_update_for_subs write failed...");
+            else {
+                console.log("ledger_bal_update_for_subs Data saved successfully!");
+                callback();
+            }
+        });
     }
 
     /*
@@ -563,5 +600,7 @@ export class FireBase implements OnInit {
             }
         });
     }
+
+
 }
 

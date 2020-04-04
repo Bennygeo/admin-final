@@ -22,6 +22,8 @@ import { ReportComponent } from './report/report.component';
 import { UnpaidComponent } from './unpaid/unpaid.component';
 import { MultidatepickerComponent } from '../utils/multidate/multidatepicker.component';
 import { ItemListComponent } from './item-list/item-list.component';
+import { PriceUpdateComponent } from './price-update/price-update.component';
+import { ProductViewComponent } from './product-view/product-view.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +38,9 @@ import { ItemListComponent } from './item-list/item-list.component';
     ReportComponent,
     UnpaidComponent,
     MultidatepickerComponent,
-    ItemListComponent
+    ItemListComponent,
+    PriceUpdateComponent,
+    ProductViewComponent
   ],
   imports: [
     CommonModule,

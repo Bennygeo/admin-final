@@ -1,0 +1,65 @@
+<div class="row product_details">
+
+    <div class="col-md-12 col-xs-5 col-5" align="center"
+        style=" padding-left: 6px; margin-bottom: 6px; margin-top:6px;">
+        <div>
+            <img [src]="data.p_imgSrc">
+        </div>
+    </div>
+    <div class="col-md-12 col-xs-7 col-7 detailsCont">
+        <div style="margin-top:12px;">
+            <!-- <div style="width:180px; margin: 0">{{data.p_name}}({{data.p_grams}} g)</div> -->
+            <div class="pName">
+                <span>{{data.p_name}}</span>
+            </div>
+            <div class="product_weight">{{data["weight"]}} {{data["unit_name"]}}</div>
+        </div>
+
+        <mat-form-field class="input-full-width">
+            <mat-select placeholder="unit name" style="color:black; width:100%;" (click)="mousedownAction($event)"
+                #unit_Select (openedChange)="onUnitSelect($event.value)">
+                <mat-option *ngFor="let unit of unit_list" [value]="unit.value">
+                    {{unit.value}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+
+
+        <!-- <div class="cutStyle" *ngIf="product['cutOption'] && !product['cutOnly']">
+            <mat-checkbox color="primary" [(ngModel)]="cutFlag" (change)="onCutBoxChange()" [disableRipple]="true">Cut @
+                Rs.
+                {{(this.product["cut_price"] * this.quantity)}}</mat-checkbox>
+        </div> -->
+
+        <!-- <div style="width:fit-content;" *ngIf="cutFlag || product['cutOnly']">
+            <div class="cutStyle">Cut style</div>
+            <div class="row" style="margin:0">
+                <div *ngFor="let item of data['cutStyles']['imgs']; let i=index;" id='cutStyle_{{i}}'
+                    (mousedown)="cutStyleClick($event)" class="cutStyleImgCont">
+                    <img [src]="assetsUrl+item" class="cutStyleImg" />
+                    <div style="position: absolute; margin-top:-36px; margin-left: 0px; font-size: 16px;"
+                        *ngIf="trackCuts[i]">
+                        <i class="material-icons" style="font-size: 36px; color:#fff;">done</i>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+        <div class="price" *ngIf="!offer_flg">Rs. {{data["total_price"].toFixed(2)}}</div>
+
+        <div class="price" *ngIf="offer_flg">Rs. {{ data['total_price'].toFixed(2)}}
+            <span style="text-decoration: line-through; color:#aaa; font-size: 14px; font-weight: 500;">
+                Rs. {{data['original_price']}} </span>
+
+            <span style="font-size:12px; color:#1bbc9d; font-style: italic; font-weight: 500;">
+                {{data['offer']}}% off.</span>
+        </div>
+
+        <div [ngStyle]="{'margin-top': '6px','margin-bottom':'6px'}">
+            <button mat-button class="addToBagBtn" (click)="updateProduct()">
+                Update
+            </button>
+        </div>
+
+    </div>
+</div>

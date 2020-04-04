@@ -121,40 +121,32 @@ export class ItemListComponent implements OnInit {
       this.todaysDate = new Date();
       this.todaysDate = this.date_utils.getDateString(this.date_utils.addDaysToCalendar(this.todaysDate, 1), "");
     }
-
+    // console.log(this.todaysDate);
     // }
     this.renderList();
   }
 
   renderList() {
+
     this.todaysDateFormatted = this.date_utils.dateFormater(this.todaysDate, "-");
 
     this.listObservable = this.firebase.readDailyOrders(this.todaysDate).subscribe((data: any) => {
+      this.listFlg = !true;
       for (var key in data) {
         // console.log(data[key]);
         for (var items in data[key]) {
-          // debugger;
-
           if (items == "bag") {
-            // console.log(data[key][items]);
-            // console.log("**********");
-
             for (var _cat in data[key][items]) {
               if (_cat != 'address') {
                 for (var list in data[key][items][_cat]) {
-                  // console.log(list);
-                  // console.log("------------");
+
                   if (!this.items_list[list]) this.items_list[list] = [];
-
-
                   if (list != 'others') {
                     let _target = data[key][items][_cat][list];
 
                     for (var item_lists in _target) {
-                      // console.log(item_lists);
-
                       if (item_lists == "product_1") {
-                        // debugger;
+
                         if (_target[item_lists].type == "Large") {
                           if (!this.items_list["tender_large"]) this.items_list["tender_large"] = [];
                           this.items_list["tender_large"].push(_target[item_lists]);
@@ -164,6 +156,10 @@ export class ItemListComponent implements OnInit {
                           if (!this.items_list["tender_medium"]) this.items_list["tender_medium"] = [];
                           this.items_list["tender_medium"].push(_target[item_lists]);
                         }
+                      } else if (item_lists == "product_2") {
+                        // debugger;
+                        if (!this.items_list["milk"]) this.items_list["milk"] = [];
+                        this.items_list["milk"].push(_target[item_lists]);
                       } else {
                         this.items_list[list].push(_target[item_lists]);
                       }
@@ -186,36 +182,33 @@ export class ItemListComponent implements OnInit {
           // console.log("itrem :: ");
 
           if (items == "tender") {
-            // console.log("key :: " + key);
-            // console.log(data[key]);
+            // if (data[key][items].category == "subs") {
+            if (data[key][items].type == "Large" && data[key][items].nut_variety == 'Green') {
+              if (!this.items_list[items + "_large"]) this.items_list[items + "_large"] = [];
+              this.items_list[items + "_large"].push(data[key][items]);
+            }
+            if (data[key][items].type == "Medium" && data[key][items].nut_variety == 'Green') {
+              if (!this.items_list[items + "_medium"]) this.items_list[items + "_medium"] = [];
+              this.items_list[items + "_medium"].push(data[key][items]);
+            }
 
-            if (data[key][items].category == "subs") {
-
-              if (data[key][items].type == "Large") {
-
-                if (!this.items_list[items + "_large"]) this.items_list[items + "_large"] = [];
-                this.items_list[items + "_large"].push(data[key][items]);
-              }
-
-              if (data[key][items].type == "Medium") {
-                if (!this.items_list[items + "_medium"]) this.items_list[items + "_medium"] = [];
-                this.items_list[items + "_medium"].push(data[key][items]);
-              }
-
-
+            if (data[key][items].type == "Large" && data[key][items].nut_variety == 'Orange') {
+              if (!this.items_list[items + "_orange"]) this.items_list[items + "_orange"] = [];
+              this.items_list[items + "_orange"].push(data[key][items]);
             }
           }
+          // }
 
           if (items == "milk") {
-            if (data[key][items].category == "subs") {
-              if (!this.items_list[items]) this.items_list[items] = [];
-              this.items_list[items].push(data[key][items]);
-            }
+            // if (data[key][items].category == "subs") {
+            if (!this.items_list[items]) this.items_list[items] = [];
+            if (!data[key][items].paused) this.items_list[items].push(data[key][items]);
+            // }
           }
         }
       }
 
-      console.log(this.items_list);
+      // console.log(this.items_list);
       for (var key in this.items_list) {
         this.total_items[key] = {}
         for (var i = 0; i < this.items_list[key].length; i++) {
@@ -227,43 +220,50 @@ export class ItemListComponent implements OnInit {
           // console.log("-------------");
           // 
           if (this.items_list[key][i].name == "Tender Coconut") {
-            if (this.items_list[key][i].category == 'subs') {
-              this.total_items[key][this.items_list[key][i].name].push(this.items_list[key][i].per_day);
-            } else {
-              this.total_items[key][this.items_list[key][i].name].push(this.items_list[key][i].quantity);
-            }
-            //update total
-            if (!this.total_items[key][this.items_list[key][i].name]['total']) this.total_items[key][this.items_list[key][i].name]['total'] = 0;
+
+            if (!this.items_list[key][i].paused) {
+              if (this.items_list[key][i].category == 'subs') {
+                // debugger
+                this.total_items[key][this.items_list[key][i].name].push(this.items_list[key][i].per_day);
+              } else {
+                this.total_items[key][this.items_list[key][i].name].push(this.items_list[key][i].quantity);
+              }
+              //update total
+              if (!this.total_items[key][this.items_list[key][i].name]['total']) this.total_items[key][this.items_list[key][i].name]['total'] = 0;
 
 
-            if (this.items_list[key][i].category == 'subs') {
-              this.total_items[key][this.items_list[key][i].name]['total'] += this.items_list[key][i].per_day;
-            } else {
-              this.total_items[key][this.items_list[key][i].name]['total'] += this.items_list[key][i].quantity;
+              if (this.items_list[key][i].category == 'subs') {
+                this.total_items[key][this.items_list[key][i].name]['total'] += this.items_list[key][i].per_day;
+              } else {
+                this.total_items[key][this.items_list[key][i].name]['total'] += this.items_list[key][i].quantity;
+              }
             }
 
           } else if (this.items_list[key][i].name == "Fresh Cow Milk") {
 
-            if (this.items_list[key][i].category == 'subs') {
-              this.total_items[key][this.items_list[key][i].name].push(this.items_list[key][i].per_day);
-            } else {
-              this.total_items[key][this.items_list[key][i].name].push(this.items_list[key][i].quantity);
-            }
+            if (!this.items_list[key][i].paused) {
+              if (this.items_list[key][i].category == 'subs') {
+                this.total_items[key][this.items_list[key][i].name].push(this.items_list[key][i].per_day);
+              } else {
+                this.total_items[key][this.items_list[key][i].name].push(this.items_list[key][i].quantity);
+              }
 
-            //update total
-            if (!this.total_items[key][this.items_list[key][i].name]['total']) this.total_items[key][this.items_list[key][i].name]['total'] = 0;
+              //update total
+              if (!this.total_items[key][this.items_list[key][i].name]['total']) this.total_items[key][this.items_list[key][i].name]['total'] = 0;
 
-            if (this.items_list[key][i].category == 'subs') {
-              this.total_items[key][this.items_list[key][i].name]['total'] += this.items_list[key][i].per_day;
-            } else {
-              this.total_items[key][this.items_list[key][i].name]['total'] += this.items_list[key][i].quantity;
+              if (this.items_list[key][i].category == 'subs') {
+                this.total_items[key][this.items_list[key][i].name]['total'] += this.items_list[key][i].per_day;
+              } else {
+                this.total_items[key][this.items_list[key][i].name]['total'] += this.items_list[key][i].quantity;
+              }
             }
           } else {
 
-            this.total_items[key][this.items_list[key][i].name].push(this.items_list[key][i].weight);
+            // debugger;
+            this.total_items[key][this.items_list[key][i].name].push(this.items_list[key][i].original_weight * this.items_list[key][i].units);
             //update total
             if (!this.total_items[key][this.items_list[key][i].name]['total']) this.total_items[key][this.items_list[key][i].name]['total'] = 0;
-            this.total_items[key][this.items_list[key][i].name]['total'] += this.items_list[key][i].weight;
+            this.total_items[key][this.items_list[key][i].name]['total'] += this.items_list[key][i].original_weight * this.items_list[key][i].units;
           }
         }
       }

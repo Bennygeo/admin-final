@@ -15,6 +15,13 @@ export class CommonsService {
   orders: Object = {};
   deliveryBoysList: Object = {};
 
+  public unit_list: Array<Object> = [
+    { value: 'grams', viewValue: 'grams' },
+    { value: 'pc', viewValue: 'pc' },
+    { value: 'bunch', viewValue: 'bunch' },
+    { value: 'ltr', viewValue: 'ltr' }
+  ];
+
   onUserListUpdate: EventEmitter<any> = new EventEmitter();
   userOrdersUpdate: EventEmitter<any> = new EventEmitter();
   sendCustomerMsg: EventEmitter<any> = new EventEmitter();

@@ -63,7 +63,11 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   restore() {
-    this._router.navigate(["admin/unpaid"]);
+    // this._router.navigate(["admin/unpaid"]);
+  }
+
+  update_product_price() {
+    this._router.navigate(["admin/update_price"]);
   }
 
   sendMessage() {

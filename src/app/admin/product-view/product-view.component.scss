@@ -1,0 +1,118 @@
+$font-stack: Lato, sans-serif;
+$primary-bg-color: #efefef;
+$Montserrat: Montserrat, sans-serif;
+$mobilewidth: 480px;
+
+$break-small: 320px;
+$break-large: 1200px;
+
+.row > div > img {
+    // width: 55px;
+    // margin: 0 auto;
+    // margin-left: 18px;
+    margin-top: 0px;
+}
+
+.cutStyle {
+    font-size: 12px;
+}
+
+.std_delivery {
+    line-height: 27px;
+}
+
+.stdDeliveryTxt {
+    font-family: $Montserrat;
+    font-size: 12px;
+    margin-top: 6px;
+}
+
+.cutStyleImgCont {
+    border: 2px solid #1bbc9d;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 3px;
+    cursor: pointer;
+
+    .cutStyleImg {
+        width: 30px !important;
+        margin: 0;
+        margin-bottom: 0px;
+    }
+    :hover {
+    }
+}
+
+.p_desc {
+    margin-left: 6px;
+}
+
+.plusMinusComp {
+    margin-top: 6px;
+    text-align: center;
+    display: block;
+}
+
+.detailsCont {
+    padding-left: 6px;
+    padding-right: 6px;
+    min-height: 140px;
+    padding-left: 12px;
+    padding-bottom: 12px;
+}
+
+.product_details {
+    border: 1px solid #e1edeb;
+    background-color: rgba(255, 255, 255, 1);
+    margin: -10px;
+    margin-top: 18px;
+    border-radius: 4px;
+}
+
+.onCart_bg_color {
+    background-color: #fff;
+}
+
+.product_details:hover {
+    border: 1px solid #ccc;
+    -webkit-box-shadow: 1px 3px 7px -4px rgba(0, 0, 0, 0.48);
+    -moz-box-shadow: 1px 3px 7px -4px rgba(0, 0, 0, 0.48);
+    box-shadow: 1px 3px 7px -4px rgba(0, 0, 0, 0.48);
+}
+
+.shell_life {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: brown;
+}
+
+.offer_txt {
+    font-family: $Montserrat;
+    background-color: #fff0d4;
+    text-align: center;
+    font-size: 13px;
+    width: 100%;
+    padding: 3px;
+    margin-top: 6px;
+}
+
+// @media only screen and (min-width: 320px) and (max-width: 480px) {
+@media screen and (max-width: $mobilewidth) {
+    /* Styles */
+    .detailsCont {
+        padding-left: 6px;
+        padding-right: 6px;
+        min-height: auto;
+    }
+
+    .product_details {
+        border: 1px solid #eee;
+        margin: -15px;
+        margin-top: 18px;
+        border-radius: 4px;
+    }
+}
