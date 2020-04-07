@@ -602,5 +602,24 @@ export class FireBase implements OnInit {
     }
 
 
+    public write_product_prop(cat, index, data, callback) {
+        this.db.database.ref("products_list/" + cat + "/" + index + "/").update({
+            'p_whole_sale_price': data['whole_sale_price'],
+            'profit_percent': data['profit_percent'],
+            'show_off_percent': data['show_off_percent'],
+            'total_price': data['total_price'],
+            'p_grams': data['weight'],
+            'unit_name': data['unit'],
+            'offer_percentage': data['offer_percentage']
+        }, (error) => {
+            if (error) console.log("write_wallet_history write failed...");
+            else {
+                console.log("write_wallet_history saved successfully!");
+                callback();
+            }
+        });
+    }
+
+
 }
 

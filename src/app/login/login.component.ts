@@ -55,15 +55,16 @@ export class LoginComponent implements OnInit {
 
     if (flg) {
       // console.log("this.pswd :: " + this.pswd);
-      if (this.username == "9486140936" || this.username == "8072129358") {
+      if (this.username == "9486140936" || this.username == "8072129358" || this.username == "9962756355") {
         if (this.pswd == this.loginData[this.username].pswd) {
           // console.log("Good");
           this.submit_btn_disable = true;
           this._loginSerice.setLoginStatus('admin', true);
-
+          this._router.navigate(["/"]);
           window.setTimeout(() => {
-            // debugger;
-            this._router.navigate(["/admin/item_list/"]);
+            // console.log("dsfdsfds");
+            debugger;
+            this._router.navigate(["admin/update_price"]);
           }, 2000);
 
           this._storageService.writeData("thinkspot_login", { who: 'admin', isLogged: true, target: this.username, name: 'admin' });

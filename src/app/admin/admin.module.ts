@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { AdminRoutingModule } from './admin-routing.module';
 import { TestComponent } from './test/test.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatFormFieldModule, MatOptionModule, MatSelectModule, MatButtonModule, MatInputModule, MatDialogModule, MatSnackBarModule, MatCheckboxModule, MatIconModule, MatRadioModule, MatDialogRef, MatTabsModule, MatProgressSpinnerModule } from '@angular/material';
+import { MatFormFieldModule, MatOptionModule, MatSelectModule, MatButtonModule, MatInputModule, MatDialogModule, MatSnackBarModule, MatCheckboxModule, MatIconModule, MatRadioModule, MatDialogRef, MatTabsModule, MatProgressSpinnerModule, MatSliderModule, GestureConfig } from '@angular/material';
 import { Ng2SearchPipeModule, Ng2SearchPipe } from 'ng2-search-filter';
 import { AddressComponent } from './address/address.component';
 import { CustomerListComponent } from './customer-list/customer-list.component';
@@ -24,6 +24,7 @@ import { MultidatepickerComponent } from '../utils/multidate/multidatepicker.com
 import { ItemListComponent } from './item-list/item-list.component';
 import { PriceUpdateComponent } from './price-update/price-update.component';
 import { ProductViewComponent } from './product-view/product-view.component';
+import { HAMMER_GESTURE_CONFIG } from '@angular/platform-browser';
 
 @NgModule({
   declarations: [
@@ -47,6 +48,7 @@ import { ProductViewComponent } from './product-view/product-view.component';
     AdminRoutingModule,
     FormsModule,
     MatFormFieldModule, MatOptionModule, MatSelectModule, MatButtonModule, MatInputModule, MatSnackBarModule, MatCheckboxModule, MatIconModule, MatRadioModule,
+    MatSliderModule,
     MatDialogModule,
     Ng2SearchPipeModule,
     ScrollDispatchModule,
@@ -68,6 +70,7 @@ import { ProductViewComponent } from './product-view/product-view.component';
     CommonsService,
     DateUtils,
     Ng2SearchPipe,
+    { provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig },
     // MatDialogRef
   ],
 })

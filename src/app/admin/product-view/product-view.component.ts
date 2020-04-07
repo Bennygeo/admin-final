@@ -1,6 +1,5 @@
-import { Component, OnInit, Input, ChangeDetectorRef, NgZone, ViewChild } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { CommonsService } from 'src/app/services/commons.service';
-import { FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'product-view',
@@ -10,36 +9,27 @@ import { FormGroup } from '@angular/forms';
 export class ProductViewComponent implements OnInit {
 
   @Input() data: Object = {};
-  unit_list: Array<Object>;
+
+  selectedTarget: Object = {};
+  price: number = 0;
 
   constructor(
     private _service: CommonsService,
-    private _changeDet: ChangeDetectorRef,
-    private _ngZone: NgZone,
   ) {
 
   }
 
   ngOnInit() {
-    this.unit_list = this._service.unit_list;
-
+    // debugger;
+    this.data['original_price'] = Number(this.data['p_whole_sale_price'] * (1 + this.data['show_off_percent'] / 100)).toFixed(2);
+    this.data['total_price'] = (this.data['p_whole_sale_price'] * (1 + this.data['profit_percent'] / 100));
   }
 
-  onUnitSelect(val) {
-    // console.log("unit select");
-
-    console.log("val : " + val);
-    // this._changeDet.detectChanges();
-    this._ngZone.run(() => { });
-  }
-
-  updateProduct() {
-
-  }
-
-  mousedownAction(evt) {
-    console.log("mouse down");
-    this._ngZone.run(() => { });
-    // this._changeDet.detectChanges();
+  /*
+   * on view product action
+   */
+  viewProduct(target) {
+    //recieved by price-update component
+    this._service.on_individual_product_view_dispatch.emit(this.data);
   }
 }

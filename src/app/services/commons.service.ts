@@ -15,12 +15,19 @@ export class CommonsService {
   orders: Object = {};
   deliveryBoysList: Object = {};
 
-  public unit_list: Array<Object> = [
-    { value: 'grams', viewValue: 'grams' },
-    { value: 'pc', viewValue: 'pc' },
-    { value: 'bunch', viewValue: 'bunch' },
-    { value: 'ltr', viewValue: 'ltr' }
-  ];
+  // public unit_list: Array<Object> = [
+  //   { value: 'grams', viewValue: 'grams' },
+  //   { value: 'pc', viewValue: 'pc' },
+  //   { value: 'bunch', viewValue: 'bunch' },
+  //   { value: 'ltr', viewValue: 'ltr' }
+  // ];
+
+  public unit_list: Array<string> = ['grams', 'pc', 'bunch', 'ltr'];
+  public weights: Array<string> = ["1", "100", "200", "250", "500"];
+
+
+  //used by product view component
+  on_individual_product_view_dispatch: EventEmitter<any> = new EventEmitter();
 
   onUserListUpdate: EventEmitter<any> = new EventEmitter();
   userOrdersUpdate: EventEmitter<any> = new EventEmitter();

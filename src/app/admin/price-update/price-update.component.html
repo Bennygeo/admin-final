@@ -1,9 +1,96 @@
 <app-home></app-home>
 
+
+
+
+
+<!-- Current product view -->
+<div *ngIf="individual_product_view"
+    style="width:100vw; height:100vh; position: fixed; background-color: rgba(0, 0, 0, 0.5); z-index: 300; top:0; left:0; pointer-events: visiblePainted; border-radius: 4px;"
+    (click)="outsideClick()">
+</div>
+<div style="left: 50%; top:50%; transform: translate(-50%, -50%); background-color: #fff; min-height:260px; width:300px; position: fixed; border-radius: 4px; padding:12px; z-index: 301;"
+    *ngIf="individual_product_view">
+
+
+    <div class="col-12" align="center" style=" padding-left: 6px; margin-bottom: 6px; margin-top:6px;">
+        <div>
+            <img [src]="selectedTarget.p_imgSrc">
+        </div>
+    </div>
+    <div style="text-align: center; font-size: 14px;">{{selectedTarget.p_name}}</div>
+    <div style="text-align: left; font-size: 14px; margin-bottom: 12px; font-weight: bold;">
+        ₹ {{selectedTarget["total_price"]}}
+
+        <span style="text-decoration: line-through; color:#aaa; font-size: 14px; font-weight: 500;">
+            Rs. {{selectedTarget['original_price']}} </span>
+
+        <span style="font-size:12px; color:#1bbc9d; font-style: italic; font-weight: 500;">
+            {{selectedTarget['offer_percentage']}}% off.</span>
+    </div>
+
+    <mat-form-field class="input-full-width">
+        <mat-label>Weight selection</mat-label>
+        <mat-select placeholder="unit name" style="color:black; width:100%;" (selectionChange)="onUnitSelect($event)"
+            [(ngModel)]="selected_weight">
+            <mat-option *ngFor="let unit of weights" [value]="unit">
+                {{unit}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="input-full-width">
+        <mat-label>Unit selection</mat-label>
+        <mat-select placeholder="unit name" style="color:black; width:100%;" (selectionChange)="onUnitSelect($event)"
+            [(ngModel)]="selected_unit">
+            <mat-option *ngFor="let unit of unit_list" [value]="unit">
+                {{unit}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+
+    <div>Whole sale price :: <span style="font-weight: bold; font-size: 16px;">₹ {{whole_sale_price}}</span></div>
+    <div class="col-12" style="margin-top: 24px; padding: 0;">
+        <mat-slider thumbLabel tickInterval="1" min="1" max="160" [value]="whole_sale_price"
+            (input)="whole_sale_change_action($event)" style="width: 100%; padding: 0;">
+        </mat-slider>
+    </div>
+
+    <div>Profit percentage :: <span style="font-weight: bold; font-size: 16px;">{{profit_percentage}}%</span></div>
+    <div class="col-12" style="margin-top: 24px; padding: 0;">
+        <mat-slider thumbLabel tickInterval="1" min="0" max="150" style="width: 100%; padding: 0;"
+            [value]="profit_percentage" (input)="profit_percent_action($event)">
+        </mat-slider>
+    </div>
+
+    <div>show off percentage :: <span style="font-weight: bold; font-size: 16px;">{{show_off_percentage}}%</span></div>
+    <div class="col-12" style="margin-top: 24px; padding: 0;">
+        <mat-slider thumbLabel tickInterval="1" min="0" max="150" style="width: 100%; padding: 0;"
+            [value]="show_off_percentage" (input)="show_off_percent_action($event)">
+        </mat-slider>
+    </div>
+
+    <div class="col-12" style="margin-top:12px; padding: 0;">
+        <button class="btn mat-button" (click)="update_to_firebase($event)"
+            style="text-align: center; background-color: cornflowerblue; color: #fff; width: 100%;">Update</button>
+    </div>
+</div>
+
+<!-- Firebase processing status -->
+<div *ngIf="fb_writing"
+    style="width:100vw; height:100vh; position: fixed; background-color: rgba(0, 0, 0, 0.5); z-index: 303; top:0; left:0; pointer-events: visiblePainted; border-radius: 4px;">
+    <div class="fb_write_status_txt" *ngIf="fb_writing">
+        <mat-spinner style="margin:0 auto; margin-bottom: 12px;" diameter="30"> fdsgs dsfg ds</mat-spinner>
+        Writing in firebase...
+    </div>
+</div>
+
+<!-- List the products -->
 <div class="container">
     <div *ngFor="let item of products_list | keyvalue" class="row">
         <h3 class="title">{{item.key}}</h3>
-        <div *ngFor="let _item of item.value" class="col-md-3 col-lg-3, col-xs-12">
+        <div *ngFor="let _item of item.value" class="col-md-3 col-lg-3 col-xs-12">
             <product-view [data]='_item'></product-view>
         </div>
     </div>
