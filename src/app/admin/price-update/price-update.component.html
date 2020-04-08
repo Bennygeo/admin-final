@@ -15,10 +15,10 @@
 
     <div class="col-12" align="center" style=" padding-left: 6px; margin-bottom: 6px; margin-top:6px;">
         <div>
-            <img [src]="selectedTarget.p_imgSrc">
+            <img [src]="selectedTarget['p_imgSrc']">
         </div>
     </div>
-    <div style="text-align: center; font-size: 14px;">{{selectedTarget.p_name}}</div>
+    <div style="text-align: center; font-size: 14px;">{{selectedTarget['p_name']}}</div>
     <div style="text-align: left; font-size: 14px; margin-bottom: 12px; font-weight: bold;">
         ₹ {{selectedTarget["total_price"]}}
 
@@ -31,8 +31,8 @@
 
     <mat-form-field class="input-full-width">
         <mat-label>Weight selection</mat-label>
-        <mat-select placeholder="unit name" style="color:black; width:100%;" (selectionChange)="onUnitSelect($event)"
-            [(ngModel)]="selected_weight">
+        <mat-select placeholder="select weight" style="color:black; width:100%;"
+            (selectionChange)="onWeightSelect($event)" [(ngModel)]="selected_weight">
             <mat-option *ngFor="let unit of weights" [value]="unit">
                 {{unit}}
             </mat-option>
@@ -41,7 +41,7 @@
 
     <mat-form-field class="input-full-width">
         <mat-label>Unit selection</mat-label>
-        <mat-select placeholder="unit name" style="color:black; width:100%;" (selectionChange)="onUnitSelect($event)"
+        <mat-select placeholder="Select unit" style="color:black; width:100%;" (selectionChange)="onUnitSelect($event)"
             [(ngModel)]="selected_unit">
             <mat-option *ngFor="let unit of unit_list" [value]="unit">
                 {{unit}}
@@ -81,14 +81,38 @@
 <div *ngIf="fb_writing"
     style="width:100vw; height:100vh; position: fixed; background-color: rgba(0, 0, 0, 0.5); z-index: 303; top:0; left:0; pointer-events: visiblePainted; border-radius: 4px;">
     <div class="fb_write_status_txt" *ngIf="fb_writing">
-        <mat-spinner style="margin:0 auto; margin-bottom: 12px;" diameter="30"> fdsgs dsfg ds</mat-spinner>
+        <mat-spinner style="margin:0 auto; margin-bottom: 12px;" diameter="30"></mat-spinner>
         Writing in firebase...
+    </div>
+</div>
+
+
+<!-- search box -->
+<div class="row search-full-width">
+    <div class="s006">
+        <form>
+            <fieldset>
+                <div class="inner-form">
+                    <div class="input-field">
+                        <button class="btn-search" type="button">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                <path
+                                    d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z">
+                                </path>
+                            </svg>
+                        </button>
+                        <input id="search" type="text" (input)="searchChangeAction($event)"
+                            placeholder="Search vegetables.." value="" />
+                    </div>
+                </div>
+            </fieldset>
+        </form>
     </div>
 </div>
 
 <!-- List the products -->
 <div class="container">
-    <div *ngFor="let item of products_list | keyvalue" class="row">
+    <div *ngFor="let item of search_result_obj | keyvalue" class="row">
         <h3 class="title">{{item.key}}</h3>
         <div *ngFor="let _item of item.value" class="col-md-3 col-lg-3 col-xs-12">
             <product-view [data]='_item'></product-view>

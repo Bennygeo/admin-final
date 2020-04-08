@@ -1,8 +1,9 @@
-import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, NgZone, OnChanges, DoCheck } from '@angular/core';
 import { FireBase } from 'src/app/utils/firebase';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { Globals, Places } from 'src/app/utils/utils';
 import { CommonsService } from 'src/app/services/commons.service';
+import { Ng2SearchPipe } from 'ng2-search-filter';
 
 
 @Component({
@@ -10,11 +11,12 @@ import { CommonsService } from 'src/app/services/commons.service';
   templateUrl: './price-update.component.html',
   styleUrls: ['./price-update.component.scss']
 })
-export class PriceUpdateComponent implements OnInit {
+export class PriceUpdateComponent implements OnInit, OnChanges, DoCheck {
 
   firebase: FireBase;
 
-  products_list: Object = {};
+  products_list: any = {};
+  products_list_copy: any = {};
 
   places: Places[] = Globals.Places;
   individual_product_view: boolean = false;
@@ -37,14 +39,24 @@ export class PriceUpdateComponent implements OnInit {
   fb_writing: boolean = false;
 
   data: any;
+  search_result_obj: any = {};
 
   constructor(
     private db: AngularFireDatabase,
     private _changeDet: ChangeDetectorRef,
     private _ngZone: NgZone,
-    private _service: CommonsService
+    private _service: CommonsService,
+    private ng2: Ng2SearchPipe,
   ) {
     this.firebase = new FireBase(this.db);
+  }
+  ngDoCheck(): void {
+    console.log("ngDoCheck happened");
+  }
+
+  ngOnChanges(changes: import("@angular/core").SimpleChanges): void {
+    console.log("cahnge happened");
+
   }
 
   ngOnInit() {
@@ -54,14 +66,15 @@ export class PriceUpdateComponent implements OnInit {
 
     this.firebase.readProducts().subscribe((data: any) => {
       this.data = data;
-      this.products_list ={};
+      this.products_list = {};
       for (let keys in this.data) {
         if (!this.products_list[keys]) this.products_list[keys] = [];
         for (var key in this.data[keys]) {
           // this.products_list[keys].push(this.data[keys][key]);
-          this.products_list[keys][key]=(this.data[keys][key]);
+          this.products_list[keys][key] = (this.data[keys][key]);
         }
       }
+      this.search_result_obj = JSON.parse(JSON.stringify(this.products_list));
       this._changeDet.detectChanges();
       // this._ngZone.run(()=>{});
     });
@@ -147,8 +160,41 @@ export class PriceUpdateComponent implements OnInit {
     });
   }
 
+  onWeightSelect(evt) {
+
+  }
+
+  onUnitSelect(evt) {
+
+  }
+
   outsideClick() {
     this.individual_product_view = false;
+  }
+
+  searchChangeAction(evt) {
+
+    let searchText = evt.currentTarget.value;
+    let _ary = [];
+
+    let list_cpy = JSON.parse(JSON.stringify(this.products_list));
+
+    if (searchText != '') {
+      for (var cat in list_cpy) {
+        // if (cat != 'subs' && cat != 'greens' && cat != 'milk' && cat != 'tender') {
+        // if (cat == 'Vegetables' || cat == 'Milk') {
+        let ary = []
+        ary = this.ng2.transform(list_cpy[cat], searchText);
+        this.search_result_obj[cat] = ary;
+        _ary = _ary.concat(ary);
+        // }
+      }
+    } else {
+      this.search_result_obj = JSON.parse(JSON.stringify(this.products_list));
+    }
+    console.log(this.products_list);
+    // this._changeDet.detectChanges();
+
   }
 
 }

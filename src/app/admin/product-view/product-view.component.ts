@@ -12,6 +12,7 @@ export class ProductViewComponent implements OnInit {
 
   selectedTarget: Object = {};
   price: number = 0;
+  offer_flg: boolean = true;
 
   constructor(
     private _service: CommonsService,
