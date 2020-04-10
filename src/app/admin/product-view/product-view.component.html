@@ -12,12 +12,8 @@
             <div class="pName">
                 <span>{{data['p_name']}}</span>
             </div>
-            <div class="product_weight">{{data["weight"]}} {{data["unit_name"]}}</div>
+            <div class="product_weight">{{data["p_grams"]}} {{data["unit_name"]}}</div>
         </div>
-
-
-
-
 
         <!-- <div class="cutStyle" *ngIf="product['cutOption'] && !product['cutOnly']">
             <mat-checkbox color="primary" [(ngModel)]="cutFlag" (change)="onCutBoxChange()" [disableRipple]="true">Cut @
@@ -38,7 +34,6 @@
                 </div>
             </div>
         </div> -->
-
 
         <div class="price" *ngIf="offer_flg">Rs. {{data['total_price']}}
             <span style="text-decoration: line-through; color:#aaa; font-size: 14px; font-weight: 500;">
