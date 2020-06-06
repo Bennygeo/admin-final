@@ -303,6 +303,16 @@ fieldset {
     border: 1px solid #919191;
 }
 
+.mat-checkbox-checked.mat-primary .mat-checkbox-background,
+.mat-checkbox-indeterminate.mat-primary .mat-checkbox-background {
+    background-color: #1bbc9d !important;
+    border-color: #1bbc9d !important;
+}
+
+::ng-deep .mat-checkbox .mat-checkbox-frame {
+    border-color: #1bbc9d !important;
+}
+
 /*=====  End of Choices  ======*/
 * {
     box-sizing: border-box;
@@ -401,30 +411,27 @@ fieldset {
     fill: #666;
 }
 
-
 /* Extra small devices (phones, 600px and down) */
 @media only screen and (max-width: 600px) {
-  
     .search-full-width {
-      display: block;
-      // margin-top: 60px;
-      // margin-top: 3px;
-      background: #fff;
+        display: block;
+        // margin-top: 60px;
+        // margin-top: 3px;
+        background: #fff;
     }
-  
+
     #search {
-      width: 96vw;
+        width: 96vw;
     }
-  }
-  
-  /* Small devices (portrait tablets and large phones, 600px and up) */
-  @media only screen and (min-width: 600px) {
+}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
     .searchCont {
-      display: block;
+        display: block;
     }
-  
+
     #search {
-      width: auto;
+        width: auto;
     }
-  }
-  
+}

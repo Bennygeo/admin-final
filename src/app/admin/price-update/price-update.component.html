@@ -50,8 +50,8 @@
 
     <div>Whole sale price :: <span style="font-weight: bold; font-size: 16px;">₹ {{whole_sale_price}}</span></div>
     <div class="col-12" style="margin-top: 24px; padding: 0;">
-        <mat-slider thumbLabel tickInterval="1" min="{{whole_sale_slider_range.min}}"
-            max="{{whole_sale_slider_range.max}}" [value]="whole_sale_price" (input)="whole_sale_change_action($event)"
+        <mat-slider thumbLabel tickInterval="1" [max]="whole_sale_slider_range['max']"
+            [min]="whole_sale_slider_range['min']" [value]="whole_sale_price" (input)="whole_sale_change_action($event)"
             style="width: 100%; padding: 0;">
         </mat-slider>
     </div>
@@ -68,6 +68,11 @@
         <mat-slider thumbLabel tickInterval="1" min="0" max="150" style="width: 100%; padding: 0;"
             [value]="show_off_percentage" (input)="show_off_percent_action($event)">
         </mat-slider>
+    </div>
+
+    <div class="col-12">
+        <mat-checkbox [(ngModel)]="product_availability_flg" (change)="product_availability($event)">Disable
+        </mat-checkbox>
     </div>
 
     <div class="col-12" style="margin-top:12px; padding: 0;">

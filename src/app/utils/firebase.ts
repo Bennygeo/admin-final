@@ -610,7 +610,8 @@ export class FireBase implements OnInit {
             'p_grams': data['p_grams'],
             'unit_name': data['unit'],
             'unit': data['unit'],
-            'offer_percentage': data['offer_percentage']
+            'offer_percentage': data['offer_percentage'],
+            'disabled': data['disabled']
         }, (error) => {
             if (error) console.log("write_wallet_history write failed...");
             else {

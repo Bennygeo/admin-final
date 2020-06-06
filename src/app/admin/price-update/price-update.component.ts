@@ -69,6 +69,11 @@ export class PriceUpdateComponent implements OnInit, OnChanges {
   //Slider range will be multiplied by 2.
   slider_in_between_range: number = 25;
 
+  /*
+  * Active status of product availability
+  */
+  product_availability_flg: boolean = false;
+
   constructor(
     private db: AngularFireDatabase,
     private _changeDet: ChangeDetectorRef,
@@ -117,6 +122,7 @@ export class PriceUpdateComponent implements OnInit, OnChanges {
 
       this.selectedTarget['weight'] = this.selected_weight;
       this.selectedTarget['unit'] = this.selected_unit;
+      this.product_availability_flg = data.disabled;
 
       // debugger;
       this.whole_sale_price = this.selectedTarget['p_whole_sale_price'];
@@ -174,6 +180,8 @@ export class PriceUpdateComponent implements OnInit, OnChanges {
     this.selectedTarget['unit'] = this.selected_unit;
     this.selectedTarget['unit_name'] = this.selected_unit;
     this.selectedTarget['p_grams'] = this.selected_weight;
+    this.selectedTarget['disabled'] = this.product_availability_flg;
+    // debugger;
     this.loading_status_msg = "Writing in firebase...";
 
     this.firebase.write_product_prop(this.category, this.target_id, this.selectedTarget, () => {
@@ -195,6 +203,11 @@ export class PriceUpdateComponent implements OnInit, OnChanges {
 
   outsideClick() {
     this.individual_product_view = false;
+  }
+
+  product_availability() {
+    console.log("flg : " + this.product_availability_flg);
+
   }
 
   searchChangeAction(evt) {
